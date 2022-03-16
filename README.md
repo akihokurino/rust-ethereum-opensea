@@ -2,7 +2,7 @@
 
 ## Specs
 
-- truffle
+- truffle ( https://trufflesuite.com/ )
 - solidity
 - open zeppelin ( https://openzeppelin.com/ )
 - infura ( https://infura.io/ )
