@@ -6,3 +6,6 @@ compile:
 
 console:
 	./node_modules/.bin/truffle develop
+
+deploy:
+	./node_modules/.bin/truffle migrate --reset --network rinkeby
