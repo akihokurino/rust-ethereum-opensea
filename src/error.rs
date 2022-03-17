@@ -25,3 +25,10 @@ impl From<SdkError<PutObjectError>> for CliError {
         Self::Internal(msg)
     }
 }
+
+impl From<serde_json::Error> for CliError {
+    fn from(e: serde_json::Error) -> Self {
+        let msg = format!("json parse error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
