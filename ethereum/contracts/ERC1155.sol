@@ -80,4 +80,16 @@ contract RustToken1155 is Context, ERC1155, Ownable {
     function currentSupply() public view virtual returns (uint256) {
         return _localTokenId - 1;
     }
+
+    function usedTokenNames() public view virtual returns (string[] memory) {
+        if (_localTokenId == 1) {
+            return new string[](0);
+        }
+        uint256 len = _localTokenId - 1;
+        string[] memory names = new string[](len);
+        for (uint256 i = 0; i < len; i++) {
+            names[i] = _token2name[i + 1];
+        }
+        return names;
+    }
 }

@@ -59,4 +59,12 @@ contract("RustToken721", (accounts) => {
     const supply = await contract.currentSupply();
     assert.equal(supply, 1, "error");
   });
+
+  it("usedTokenNames 1", async () => {
+    const contract = await RustToken721.deployed();
+    contract.setTokenBaseURI("https://test-token.jp");
+
+    const names = await contract.usedTokenNames();
+    assert.equal(names[0], "TokenA", "error");
+  });
 });
