@@ -1,2 +1,5 @@
 .secret
 node_modules
+
+private-net/geth/*
+private-net/history

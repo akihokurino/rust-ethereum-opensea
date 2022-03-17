@@ -58,6 +58,10 @@ contract RustToken1155 is Context, ERC1155, Ownable {
         _mintBatch(to, tokenIds, amounts, "");
     }
 
+    function tokenBaseURI() public view virtual returns (string memory) {
+        return _tokenBaseURI;
+    }
+
     function uri(uint256 tokenId)
         public
         view

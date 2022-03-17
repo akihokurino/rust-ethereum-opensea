@@ -19,3 +19,11 @@ create-nft: build
 	--nft-description $(DESCRIPTION) \
 	--nft-image-url $(IMAGE_URL) \
 	--nft-stats level=10 rank=3
+
+info: build
+	./target/debug/rust-opensea \
+	--command info
+
+extract-abi:
+	cat ethereum/build/contracts/RustToken721.json | jq '.abi' > src/open_sea/rust-token721.abi.json
+	cat ethereum/build/contracts/RustToken1155.json | jq '.abi' > src/open_sea/rust-token1155.abi.json

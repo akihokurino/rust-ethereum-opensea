@@ -32,3 +32,24 @@ impl From<serde_json::Error> for CliError {
         Self::Internal(msg)
     }
 }
+
+impl From<web3::Error> for CliError {
+    fn from(e: web3::Error) -> Self {
+        let msg = format!("web3 error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
+impl From<web3::ethabi::Error> for CliError {
+    fn from(e: web3::ethabi::Error) -> Self {
+        let msg = format!("web3 abi error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
+impl From<web3::contract::Error> for CliError {
+    fn from(e: web3::contract::Error) -> Self {
+        let msg = format!("web3 contract error: {:?}", e);
+        Self::Internal(msg)
+    }
+}

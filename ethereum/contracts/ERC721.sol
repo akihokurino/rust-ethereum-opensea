@@ -32,6 +32,10 @@ contract RustToken721 is Context, ERC721Enumerable, Ownable {
         _localTokenId += 1;
     }
 
+    function tokenBaseURI() public view virtual returns (string memory) {
+        return _tokenBaseURI;
+    }
+
     function tokenURI(uint256 tokenId)
         public
         view

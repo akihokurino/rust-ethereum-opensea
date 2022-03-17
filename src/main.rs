@@ -3,20 +3,24 @@ mod command;
 mod error;
 mod open_sea;
 
-use crate::command::{create_nft, initialize};
+use crate::command::{info, init, mint};
 use crate::error::CliError;
 use clap::{Arg, Command};
 use dotenv::dotenv;
-use std::env;
 
 const COMMAND: &str = "command";
-const COMMAND_INITIALIZE: &str = "initialize";
-const COMMAND_CREATE_NFT: &str = "create-nft";
+const COMMAND_INIT: &str = "init";
+const COMMAND_MINT: &str = "mint";
+const COMMAND_INFO: &str = "info";
 
 const NFT_NAME: &str = "nft-name";
 const NFT_DESCRIPTION: &str = "nft-description";
 const NFT_IMAGE_URL: &str = "nft-image-url";
+const NFT_AMOUNT: &str = "nft-amount";
 const NFT_STATS: &str = "nft-stats";
+const NFT_SCHEMA: &str = "nft-schema";
+const NFT_SCHEMA_ERC721: &str = "erc721";
+const NFT_SCHEMA_ERC1155: &str = "erc1155";
 
 #[tokio::main]
 pub async fn main() {
@@ -30,7 +34,7 @@ pub async fn main() {
             Arg::new(COMMAND)
                 .help("exec command name")
                 .long(COMMAND)
-                .possible_values(&[COMMAND_INITIALIZE, COMMAND_CREATE_NFT])
+                .possible_values(&[COMMAND_INIT, COMMAND_MINT, COMMAND_INFO])
                 .required(true)
                 .takes_value(true),
         )
@@ -56,20 +60,30 @@ pub async fn main() {
                 .takes_value(true),
         )
         .arg(
+            Arg::new(NFT_AMOUNT)
+                .help("nft amount")
+                .long(NFT_IMAGE_URL)
+                .required(false)
+                .takes_value(true),
+        )
+        .arg(
             Arg::new(NFT_STATS)
                 .help("nft stats")
                 .long(NFT_STATS)
                 .multiple_values(true)
                 .required(false)
                 .takes_value(true),
+        )
+        .arg(
+            Arg::new(NFT_SCHEMA)
+                .help("nft schema")
+                .long(NFT_SCHEMA)
+                .possible_values(&[NFT_SCHEMA_ERC721, NFT_SCHEMA_ERC1155])
+                .required(false)
+                .takes_value(true),
         );
 
     let matches = app.get_matches();
-
-    let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");
-    let wallet_secret = env::var("WALLET_SECRET").expect("WALLET_SECRET must be set");
-
-    let command = matches.value_of(COMMAND).unwrap();
 
     let nft_name: String = matches.value_of(NFT_NAME).unwrap_or_default().to_string();
     let nft_description: String = matches
@@ -88,12 +102,35 @@ pub async fn main() {
             (splited[0].to_string(), splited[1].to_string())
         })
         .collect::<Vec<(String, String)>>();
+    let nft_amount: i32 = matches
+        .value_of(NFT_AMOUNT)
+        .unwrap_or_default()
+        .parse()
+        .unwrap_or(0);
+    let nft_schema: String = matches
+        .value_of(NFT_SCHEMA)
+        .unwrap_or(NFT_SCHEMA_ERC721)
+        .to_string();
 
-    let result = match command {
-        COMMAND_INITIALIZE => initialize::exec().await,
-        COMMAND_CREATE_NFT => {
-            create_nft::exec(nft_name, nft_description, nft_image_url, nft_stats).await
-        }
+    let result = match matches.value_of(COMMAND).unwrap() {
+        COMMAND_INIT => init::exec().await,
+        COMMAND_MINT => match nft_schema.as_str() {
+            NFT_SCHEMA_ERC721 => {
+                mint::erc721(nft_name, nft_description, nft_image_url, nft_stats).await
+            }
+            NFT_SCHEMA_ERC1155 => {
+                mint::erc1155(
+                    nft_name,
+                    nft_description,
+                    nft_image_url,
+                    nft_amount,
+                    nft_stats,
+                )
+                .await
+            }
+            _ => Err(CliError::Internal("unknown schema".to_string())),
+        },
+        COMMAND_INFO => info::show().await,
         _ => Err(CliError::Internal("unknown command".to_string())),
     };
 
@@ -102,5 +139,5 @@ pub async fn main() {
         return;
     }
 
-    println!("success: {}", command);
+    println!("success");
 }
