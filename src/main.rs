@@ -62,7 +62,7 @@ pub async fn main() {
         .arg(
             Arg::new(NFT_AMOUNT)
                 .help("nft amount")
-                .long(NFT_IMAGE_URL)
+                .long(NFT_AMOUNT)
                 .required(false)
                 .takes_value(true),
         )
@@ -102,7 +102,7 @@ pub async fn main() {
             (splited[0].to_string(), splited[1].to_string())
         })
         .collect::<Vec<(String, String)>>();
-    let nft_amount: i32 = matches
+    let nft_amount: u128 = matches
         .value_of(NFT_AMOUNT)
         .unwrap_or_default()
         .parse()

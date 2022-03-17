@@ -39,7 +39,7 @@ pub async fn erc1155(
     name: String,
     description: String,
     image_url: String,
-    amount: i32,
+    amount: u128,
     attrs: Vec<(String, String)>,
 ) -> CliResult<()> {
     if name.is_empty()

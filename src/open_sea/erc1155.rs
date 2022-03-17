@@ -102,7 +102,7 @@ impl CLI {
         Ok(())
     }
 
-    pub async fn mint(&self, name: String, amount: i32) -> CliResult<()> {
+    pub async fn mint(&self, name: String, amount: u128) -> CliResult<()> {
         let prev_key = SecretKey::from_str(&self.wallet_secret.clone()).unwrap();
         let gas_limit: i64 = 5500000;
         let gas_price: i64 = 35000000000;
