@@ -20,11 +20,13 @@ make init
 ### mint erc721
 ```
 make mint NAME=name DESCRIPTION=desc IMAGE_URL=https://test.com/test.png SCHEMA=erc721
+make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png SCHEMA=erc721
 ```
 
 ### mint erc1155
 ```
 make mint NAME=name DESCRIPTION=desc IMAGE_URL=https://test.com/test.png AMOUNT=10 SCHEMA=erc1155
+make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png AMOUNT=10 SCHEMA=erc1155
 ```
 
 ### show contract info

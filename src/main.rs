@@ -16,6 +16,7 @@ const COMMAND_INFO: &str = "info";
 const NFT_NAME: &str = "nft-name";
 const NFT_DESCRIPTION: &str = "nft-description";
 const NFT_IMAGE_URL: &str = "nft-image-url";
+const NFT_IMAGE_FILENAME: &str = "nft-image-filename";
 const NFT_AMOUNT: &str = "nft-amount";
 const NFT_STATS: &str = "nft-stats";
 const NFT_SCHEMA: &str = "nft-schema";
@@ -60,6 +61,13 @@ pub async fn main() {
                 .takes_value(true),
         )
         .arg(
+            Arg::new(NFT_IMAGE_FILENAME)
+                .help("nft image filename")
+                .long(NFT_IMAGE_FILENAME)
+                .required(false)
+                .takes_value(true),
+        )
+        .arg(
             Arg::new(NFT_AMOUNT)
                 .help("nft amount")
                 .long(NFT_AMOUNT)
@@ -94,6 +102,10 @@ pub async fn main() {
         .value_of(NFT_IMAGE_URL)
         .unwrap_or_default()
         .to_string();
+    let nft_image_filename: String = matches
+        .value_of(NFT_IMAGE_FILENAME)
+        .unwrap_or_default()
+        .to_string();
     let nft_stats: Vec<_> = matches.values_of(NFT_STATS).unwrap_or_default().collect();
     let nft_stats = nft_stats
         .iter()
@@ -116,13 +128,21 @@ pub async fn main() {
         COMMAND_INIT => init::exec().await,
         COMMAND_MINT => match nft_schema.as_str() {
             NFT_SCHEMA_ERC721 => {
-                mint::erc721(nft_name, nft_description, nft_image_url, nft_stats).await
+                mint::erc721(
+                    nft_name,
+                    nft_description,
+                    nft_image_url,
+                    nft_image_filename,
+                    nft_stats,
+                )
+                .await
             }
             NFT_SCHEMA_ERC1155 => {
                 mint::erc1155(
                     nft_name,
                     nft_description,
                     nft_image_url,
+                    nft_image_filename,
                     nft_amount,
                     nft_stats,
                 )

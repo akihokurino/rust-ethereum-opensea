@@ -4,6 +4,7 @@ ROOT := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 NAME := ""
 DESCRIPTION := ""
 IMAGE_URL := ""
+IMAGE_FILENAME := ""
 AMOUNT := "1"
 SCHEMA := "erc721"
 
@@ -20,6 +21,7 @@ mint: build
 	--nft-name $(NAME) \
 	--nft-description $(DESCRIPTION) \
 	--nft-image-url $(IMAGE_URL) \
+	--nft-image-filename $(IMAGE_FILENAME) \
 	--nft-amount $(AMOUNT) \
 	--nft-stats level=10 rank=3 \
 	--nft-schema $(SCHEMA) \

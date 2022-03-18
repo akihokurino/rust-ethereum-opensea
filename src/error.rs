@@ -53,3 +53,10 @@ impl From<web3::contract::Error> for CliError {
         Self::Internal(msg)
     }
 }
+
+impl From<std::io::Error> for CliError {
+    fn from(e: std::io::Error) -> Self {
+        let msg = format!("io error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
