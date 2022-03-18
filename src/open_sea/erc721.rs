@@ -95,9 +95,9 @@ impl CLI {
             )
             .await?;
 
-        println!("tx id: {:?}", result.transaction_type);
-        println!("gas used: {:?}", result.gas_used);
-        println!("status: {:?}", result.status);
+        println!("tx id: {:?}", result.transaction_hash);
+        println!("gas used: {:?}", result.gas_used.unwrap_or_default());
+        println!("status: {:?}", result.status.unwrap_or_default());
 
         Ok(())
     }
@@ -121,9 +121,9 @@ impl CLI {
             )
             .await?;
 
-        println!("tx id: {:?}", result.transaction_type);
-        println!("gas used: {:?}", result.gas_used);
-        println!("status: {:?}", result.status);
+        println!("tx id: {:?}", result.transaction_hash);
+        println!("gas used: {:?}", result.gas_used.unwrap_or_default());
+        println!("status: {:?}", result.status.unwrap_or_default());
 
         Ok(())
     }

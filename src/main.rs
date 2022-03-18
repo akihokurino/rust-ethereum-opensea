@@ -138,6 +138,4 @@ pub async fn main() {
         println!("error: {:?}", e);
         return;
     }
-
-    println!("success");
 }
