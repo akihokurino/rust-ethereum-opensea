@@ -11,7 +11,9 @@ use dotenv::dotenv;
 const COMMAND: &str = "command";
 const COMMAND_INIT: &str = "init";
 const COMMAND_MINT: &str = "mint";
-const COMMAND_INFO: &str = "info";
+const COMMAND_CONTRACT_INFO: &str = "contract-info";
+const COMMAND_ASSET_INFO: &str = "asset-info";
+const COMMAND_SELL_ORDER_INFO: &str = "sell-order-info";
 
 const NFT_NAME: &str = "nft-name";
 const NFT_DESCRIPTION: &str = "nft-description";
@@ -22,6 +24,10 @@ const NFT_STATS: &str = "nft-stats";
 const NFT_SCHEMA: &str = "nft-schema";
 const NFT_SCHEMA_ERC721: &str = "erc721";
 const NFT_SCHEMA_ERC1155: &str = "erc1155";
+const NFT_CONTRACT_ADDRESS: &str = "contract-address";
+const NFT_TOKEN_ID: &str = "token-id";
+
+const TEST_API_BASE_URL: &str = "https://testnets-api.opensea.io";
 
 #[tokio::main]
 pub async fn main() {
@@ -33,50 +39,49 @@ pub async fn main() {
         .about("OpenSea CLI")
         .arg(
             Arg::new(COMMAND)
-                .help("exec command name")
                 .long(COMMAND)
-                .possible_values(&[COMMAND_INIT, COMMAND_MINT, COMMAND_INFO])
+                .possible_values(&[
+                    COMMAND_INIT,
+                    COMMAND_MINT,
+                    COMMAND_CONTRACT_INFO,
+                    COMMAND_ASSET_INFO,
+                    COMMAND_SELL_ORDER_INFO,
+                ])
                 .required(true)
                 .takes_value(true),
         )
         .arg(
             Arg::new(NFT_NAME)
-                .help("nft name")
                 .long(NFT_NAME)
                 .required(false)
                 .takes_value(true),
         )
         .arg(
             Arg::new(NFT_DESCRIPTION)
-                .help("nft description")
                 .long(NFT_DESCRIPTION)
                 .required(false)
                 .takes_value(true),
         )
         .arg(
             Arg::new(NFT_IMAGE_URL)
-                .help("nft image url")
                 .long(NFT_IMAGE_URL)
                 .required(false)
                 .takes_value(true),
         )
         .arg(
             Arg::new(NFT_IMAGE_FILENAME)
-                .help("nft image filename")
                 .long(NFT_IMAGE_FILENAME)
                 .required(false)
                 .takes_value(true),
         )
         .arg(
             Arg::new(NFT_AMOUNT)
-                .help("nft amount")
                 .long(NFT_AMOUNT)
                 .required(false)
                 .takes_value(true),
         )
         .arg(
             Arg::new(NFT_STATS)
-                .help("nft stats")
                 .long(NFT_STATS)
                 .multiple_values(true)
                 .required(false)
@@ -84,9 +89,20 @@ pub async fn main() {
         )
         .arg(
             Arg::new(NFT_SCHEMA)
-                .help("nft schema")
                 .long(NFT_SCHEMA)
                 .possible_values(&[NFT_SCHEMA_ERC721, NFT_SCHEMA_ERC1155])
+                .required(false)
+                .takes_value(true),
+        )
+        .arg(
+            Arg::new(NFT_CONTRACT_ADDRESS)
+                .long(NFT_CONTRACT_ADDRESS)
+                .required(false)
+                .takes_value(true),
+        )
+        .arg(
+            Arg::new(NFT_TOKEN_ID)
+                .long(NFT_TOKEN_ID)
                 .required(false)
                 .takes_value(true),
         );
@@ -123,6 +139,14 @@ pub async fn main() {
         .value_of(NFT_SCHEMA)
         .unwrap_or(NFT_SCHEMA_ERC721)
         .to_string();
+    let nft_contract_address: String = matches
+        .value_of(NFT_CONTRACT_ADDRESS)
+        .unwrap_or_default()
+        .to_string();
+    let nft_token_id: String = matches
+        .value_of(NFT_TOKEN_ID)
+        .unwrap_or_default()
+        .to_string();
 
     let result = match matches.value_of(COMMAND).unwrap() {
         COMMAND_INIT => init::exec().await,
@@ -150,7 +174,9 @@ pub async fn main() {
             }
             _ => Err(CliError::Internal("unknown schema".to_string())),
         },
-        COMMAND_INFO => info::show().await,
+        COMMAND_CONTRACT_INFO => info::show_contract().await,
+        COMMAND_ASSET_INFO => info::show_asset(nft_contract_address, nft_token_id).await,
+        COMMAND_SELL_ORDER_INFO => info::show_sell_order(nft_contract_address, nft_token_id).await,
         _ => Err(CliError::Internal("unknown command".to_string())),
     };
 

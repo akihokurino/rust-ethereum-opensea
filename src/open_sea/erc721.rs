@@ -10,14 +10,14 @@ use web3::types::U256;
 use web3::{transports, Web3};
 
 #[derive(Clone, Debug)]
-pub struct CLI {
+pub struct Client {
     cli: web3::Web3<transports::Http>,
     wallet_address: String,
     wallet_secret: String,
     pub contract_address: String,
 }
 
-impl CLI {
+impl Client {
     pub fn new() -> Self {
         let base_url = env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set");
         let transport = transports::Http::new(&base_url).ok().unwrap();
@@ -27,7 +27,7 @@ impl CLI {
         let wallet_secret = env::var("WALLET_SECRET").expect("WALLET_SECRET must be set");
         let contract_address = env::var("ERC721_ADDRESS").expect("ERC721_ADDRESS must be set");
 
-        CLI {
+        Client {
             cli,
             wallet_address,
             wallet_secret,

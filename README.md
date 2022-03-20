@@ -31,7 +31,17 @@ make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png AMOUNT=10 SCHEMA=er
 
 ### show contract info
 ```
-make info
+make contract-info
+```
+
+### show asset info
+```
+make asset-info CONTRACT_ADDRESS=0xab4d975cc0075e7eaf5eee17f652fe5d4c0ca180 TOKEN_ID=4
+```
+
+### show sell order info
+```
+make sell-order-info CONTRACT_ADDRESS=0xab4d975cc0075e7eaf5eee17f652fe5d4c0ca180 TOKEN_ID=4
 ```
 
 # Ethereum

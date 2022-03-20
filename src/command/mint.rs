@@ -25,7 +25,7 @@ pub async fn erc721(
         ));
     }
 
-    let erc721_cli = erc721::CLI::new();
+    let erc721_cli = erc721::Client::new();
     let s3_cli = s3::CLI::new();
 
     let nft_image_url = if !image_filename.is_empty() {
@@ -79,7 +79,7 @@ pub async fn erc1155(
         ));
     }
 
-    let erc1155_cli = erc1155::CLI::new();
+    let erc1155_cli = erc1155::Client::new();
     let s3_cli = s3::CLI::new();
 
     let nft_image_url = if !image_filename.is_empty() {

@@ -1,11 +1,14 @@
 use aws_sdk_s3::error::{CreateBucketError, PutObjectError};
 use aws_sdk_s3::types::SdkError;
+use reqwest::StatusCode;
 use thiserror::Error as ThisErr;
 
 #[derive(ThisErr, Debug, PartialOrd, PartialEq, Clone)]
 pub enum CliError {
     #[error("invalid parameter error: {0}")]
     InvalidArgument(String),
+    #[error("not found error")]
+    NotFound,
     #[error("internal error: {0}")]
     Internal(String),
 }
@@ -57,6 +60,21 @@ impl From<web3::contract::Error> for CliError {
 impl From<std::io::Error> for CliError {
     fn from(e: std::io::Error) -> Self {
         let msg = format!("io error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
+impl From<reqwest::Error> for CliError {
+    fn from(e: reqwest::Error) -> Self {
+        let code = e.status().unwrap_or_default();
+        let msg = format!("http error: {:?}", e);
+        if code == StatusCode::from_u16(400).unwrap() {
+            return Self::InvalidArgument(e.to_string());
+        }
+        if code == StatusCode::from_u16(404).unwrap() {
+            return Self::NotFound;
+        }
+
         Self::Internal(msg)
     }
 }

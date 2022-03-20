@@ -1629,6 +1629,7 @@ dependencies = [
  "dotenv",
  "hex-literal",
  "regex",
+ "reqwest",
  "secp256k1",
  "serde",
  "serde_json",
