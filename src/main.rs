@@ -3,7 +3,7 @@ mod command;
 mod error;
 mod open_sea;
 
-use crate::command::{info, init, mint};
+use crate::command::{info, init, mint, transaction};
 use crate::error::CliError;
 use crate::open_sea::api::OrderSide;
 use clap::{Arg, Command};
@@ -16,6 +16,7 @@ const COMMAND_CONTRACT_INFO: &str = "contract-info";
 const COMMAND_ASSET_INFO: &str = "asset-info";
 const COMMAND_SELL_ORDER_INFO: &str = "sell-order-info";
 const COMMAND_BUY_ORDER_INFO: &str = "buy-order-info";
+const COMMAND_BUY: &str = "buy";
 
 const NFT_NAME: &str = "nft-name";
 const NFT_DESCRIPTION: &str = "nft-description";
@@ -49,6 +50,7 @@ pub async fn main() {
                     COMMAND_ASSET_INFO,
                     COMMAND_SELL_ORDER_INFO,
                     COMMAND_BUY_ORDER_INFO,
+                    COMMAND_BUY,
                 ])
                 .required(true)
                 .takes_value(true),
@@ -185,6 +187,7 @@ pub async fn main() {
         COMMAND_BUY_ORDER_INFO => {
             info::show_order(nft_contract_address, nft_token_id, OrderSide::Buy).await
         }
+        COMMAND_BUY => transaction::buy(nft_contract_address, nft_token_id).await,
         _ => Err(CliError::Internal("unknown command".to_string())),
     };
 

@@ -36,7 +36,6 @@ impl ApiClient {
             url.query_pairs_mut()
                 .append_pair(q.0.as_str(), q.1.as_str());
         }
-        println!("call api: {}", url.to_string());
 
         let mut req = reqwest::Request::new(input.method, url);
 
@@ -50,10 +49,10 @@ impl ApiClient {
         *req.body_mut() = input.body;
 
         let cli = reqwest::Client::new();
-        let resp = cli.execute(req).await.map_err(|e| -> CliError {
-            println!("error: {}", e.to_string());
-            CliError::from(e)
-        })?;
+        let resp = cli
+            .execute(req)
+            .await
+            .map_err(|e| -> CliError { CliError::from(e) })?;
 
         Ok(resp)
     }
