@@ -5,6 +5,7 @@ mod open_sea;
 
 use crate::command::{info, init, mint};
 use crate::error::CliError;
+use crate::open_sea::api::OrderSide;
 use clap::{Arg, Command};
 use dotenv::dotenv;
 
@@ -14,6 +15,7 @@ const COMMAND_MINT: &str = "mint";
 const COMMAND_CONTRACT_INFO: &str = "contract-info";
 const COMMAND_ASSET_INFO: &str = "asset-info";
 const COMMAND_SELL_ORDER_INFO: &str = "sell-order-info";
+const COMMAND_BUY_ORDER_INFO: &str = "buy-order-info";
 
 const NFT_NAME: &str = "nft-name";
 const NFT_DESCRIPTION: &str = "nft-description";
@@ -46,6 +48,7 @@ pub async fn main() {
                     COMMAND_CONTRACT_INFO,
                     COMMAND_ASSET_INFO,
                     COMMAND_SELL_ORDER_INFO,
+                    COMMAND_BUY_ORDER_INFO,
                 ])
                 .required(true)
                 .takes_value(true),
@@ -176,7 +179,12 @@ pub async fn main() {
         },
         COMMAND_CONTRACT_INFO => info::show_contract().await,
         COMMAND_ASSET_INFO => info::show_asset(nft_contract_address, nft_token_id).await,
-        COMMAND_SELL_ORDER_INFO => info::show_sell_order(nft_contract_address, nft_token_id).await,
+        COMMAND_SELL_ORDER_INFO => {
+            info::show_order(nft_contract_address, nft_token_id, OrderSide::Sell).await
+        }
+        COMMAND_BUY_ORDER_INFO => {
+            info::show_order(nft_contract_address, nft_token_id, OrderSide::Buy).await
+        }
         _ => Err(CliError::Internal("unknown command".to_string())),
     };
 

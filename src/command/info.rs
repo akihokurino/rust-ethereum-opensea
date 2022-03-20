@@ -54,7 +54,11 @@ pub async fn show_asset(contract_address: String, token_id: String) -> CliResult
     Ok(())
 }
 
-pub async fn show_sell_order(contract_address: String, token_id: String) -> CliResult<()> {
+pub async fn show_order(
+    contract_address: String,
+    token_id: String,
+    side: OrderSide,
+) -> CliResult<()> {
     if contract_address.is_empty() || token_id.is_empty() {
         return Err(CliError::InvalidArgument(
             "parameter is invalid".to_string(),
@@ -64,13 +68,17 @@ pub async fn show_sell_order(contract_address: String, token_id: String) -> CliR
     let api_cli = ApiClient::new();
     let order = api_cli
         .get_order(api::get_order::Input {
-            side: OrderSide::Sell,
+            side,
             contract_address,
             token_id,
         })
         .await?;
 
-    println!("{:?}", order);
+    if order.orders.len() == 0 {
+        return Err(CliError::NotFound);
+    }
+
+    println!("{:?}", order.orders.first().unwrap());
 
     Ok(())
 }

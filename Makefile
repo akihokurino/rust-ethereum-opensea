@@ -40,6 +40,10 @@ sell-order-info: build
 	./target/debug/rust-opensea \
 	--command sell-order-info --contract-address $(CONTRACT_ADDRESS) --token-id $(TOKEN_ID)
 
+buy-order-info: build
+	./target/debug/rust-opensea \
+	--command buy-order-info --contract-address $(CONTRACT_ADDRESS) --token-id $(TOKEN_ID)
+
 extract-abi:
 	cat ethereum/build/contracts/RustToken721.json | jq '.abi' > src/open_sea/rust-token721.abi.json
 	cat ethereum/build/contracts/RustToken1155.json | jq '.abi' > src/open_sea/rust-token1155.abi.json

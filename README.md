@@ -39,9 +39,10 @@ make contract-info
 make asset-info CONTRACT_ADDRESS=0xab4d975cc0075e7eaf5eee17f652fe5d4c0ca180 TOKEN_ID=4
 ```
 
-### show sell order info
+### show order info
 ```
 make sell-order-info CONTRACT_ADDRESS=0xab4d975cc0075e7eaf5eee17f652fe5d4c0ca180 TOKEN_ID=4
+make buy-order-info CONTRACT_ADDRESS=0xab4d975cc0075e7eaf5eee17f652fe5d4c0ca180 TOKEN_ID=4
 ```
 
 # Ethereum
