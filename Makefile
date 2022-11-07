@@ -49,5 +49,5 @@ buy: build
 	--command buy --contract-address $(CONTRACT_ADDRESS) --token-id $(TOKEN_ID)
 
 extract-abi:
-	cat ethereum/build/contracts/RustToken721.json | jq '.abi' > src/open_sea/rust-token721.abi.json
-	cat ethereum/build/contracts/RustToken1155.json | jq '.abi' > src/open_sea/rust-token1155.abi.json
+	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq '.abi' > src/open_sea/rust-token721.abi.json
+	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq '.abi' > src/open_sea/rust-token1155.abi.json

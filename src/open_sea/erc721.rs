@@ -11,7 +11,7 @@ use web3::{transports, Web3};
 
 #[derive(Clone, Debug)]
 pub struct Client {
-    cli: web3::Web3<transports::Http>,
+    cli: Web3<Http>,
     wallet_address: String,
     wallet_secret: String,
     pub contract_address: String,
@@ -20,7 +20,7 @@ pub struct Client {
 impl Client {
     pub fn new() -> Self {
         let base_url = env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set");
-        let transport = transports::Http::new(&base_url).ok().unwrap();
+        let transport = Http::new(&base_url).ok().unwrap();
         let cli = Web3::new(transport);
 
         let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");
