@@ -1,10 +1,10 @@
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract RustToken721 is Context, ERC721Enumerable, Ownable {
+contract RustToken721 is ERC721Enumerable, Ownable {
     mapping(string => uint256) private _name2token;
     mapping(uint256 => string) private _token2name;
     uint256 _localTokenId = 1;
@@ -53,19 +53,6 @@ contract RustToken721 is Context, ERC721Enumerable, Ownable {
                     ".metadata.json"
                 )
             );
-    }
-
-    function ownerAddressOf(string memory tokenName)
-        public
-        view
-        virtual
-        returns (address)
-    {
-        uint256 tokenId = _name2token[tokenName];
-        if (!_exists(tokenId)) {
-            return address(0);
-        }
-        return ownerOf(tokenId);
     }
 
     function currentSupply() public view virtual returns (uint256) {

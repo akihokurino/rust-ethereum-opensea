@@ -6,61 +6,57 @@
 - rust-web3 ( https://github.com/tomusdrw/rust-web3 )
 - aws-sdk-rust ( https://github.com/awslabs/aws-sdk-rust )
 - infura ( https://infura.io/ )
-- metamask
-- geth
-- rinkeby
+- goerli
+- hardhat ( https://hardhat.org/ )
+- solidity
+- open zeppelin ( https://openzeppelin.com/ )
 
 ## Command
 
 ### init contract
+
 ```
 make init
 ```
 
 ### mint erc721
+
 ```
 make mint NAME=name DESCRIPTION=desc IMAGE_URL=https://test.com/test.png SCHEMA=erc721
 make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png SCHEMA=erc721
 ```
 
 ### mint erc1155
+
 ```
 make mint NAME=name DESCRIPTION=desc IMAGE_URL=https://test.com/test.png AMOUNT=10 SCHEMA=erc1155
 make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png AMOUNT=10 SCHEMA=erc1155
 ```
 
 ### show contract info
+
 ```
 make contract-info
 ```
 
 ### show asset info
+
 ```
 make asset-info CONTRACT_ADDRESS=0xab4d975cc0075e7eaf5eee17f652fe5d4c0ca180 TOKEN_ID=4
 ```
 
 ### show order info
+
 ```
 make sell-order-info CONTRACT_ADDRESS=0xab4d975cc0075e7eaf5eee17f652fe5d4c0ca180 TOKEN_ID=4
 make buy-order-info CONTRACT_ADDRESS=0xab4d975cc0075e7eaf5eee17f652fe5d4c0ca180 TOKEN_ID=4
 ```
 
 ### buy
+
 ```
 make buy CONTRACT_ADDRESS=0xab4d975cc0075e7eaf5eee17f652fe5d4c0ca180 TOKEN_ID=4
 ```
-
-# Ethereum
-
-## Specs
-
-- truffle ( https://trufflesuite.com/ )
-- solidity
-- open zeppelin ( https://openzeppelin.com/ )
-- infura ( https://infura.io/ )
-- metamask
-- geth
-- rinkeby
 
 ## Deployed Contract Addresses（Rinkeby）
 

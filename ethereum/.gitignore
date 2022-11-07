@@ -1,6 +1,11 @@
-.secret
 node_modules
+.env
+coverage
+coverage.json
+typechain
+typechain-types
 
-private-net/geth/*
-private-net/keystore/*
-private-net/history
+#Hardhat files
+cache
+artifacts
+
