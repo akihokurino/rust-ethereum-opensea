@@ -22,15 +22,13 @@ make init
 ### mint erc721
 
 ```
-make mint NAME=name DESCRIPTION=desc IMAGE_URL=https://test.com/test.png SCHEMA=erc721
-make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png SCHEMA=erc721
+make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png SCHEMA=ERC721
 ```
 
 ### mint erc1155
 
 ```
-make mint NAME=name DESCRIPTION=desc IMAGE_URL=https://test.com/test.png AMOUNT=10 SCHEMA=erc1155
-make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png AMOUNT=10 SCHEMA=erc1155
+make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png AMOUNT=10 SCHEMA=ERC1155
 ```
 
 ### show contract info
@@ -42,23 +40,29 @@ make contract-info
 ### show asset info
 
 ```
-make asset-info CONTRACT_ADDRESS=0xab4d975cc0075e7eaf5eee17f652fe5d4c0ca180 TOKEN_ID=4
+make asset-info CONTRACT_ADDRESS=0x00 TOKEN_ID=1
 ```
 
 ### show order info
 
 ```
-make sell-order-info CONTRACT_ADDRESS=0xab4d975cc0075e7eaf5eee17f652fe5d4c0ca180 TOKEN_ID=4
-make buy-order-info CONTRACT_ADDRESS=0xab4d975cc0075e7eaf5eee17f652fe5d4c0ca180 TOKEN_ID=4
+make sell-order-info CONTRACT_ADDRESS=0x00 TOKEN_ID=1
+make buy-order-info CONTRACT_ADDRESS=0x00 TOKEN_ID=1
 ```
 
-### buy
+### sell
 
 ```
-make buy CONTRACT_ADDRESS=0xab4d975cc0075e7eaf5eee17f652fe5d4c0ca180 TOKEN_ID=4
+make sell TOKEN_ID=1 ETHER=1 SCHEMA=ERC721
 ```
 
-## Deployed Contract Addresses（Rinkeby）
+### transfer
+
+```
+make transfer TOKEN_ID=1 TO_ADDRESS=0x00 SCHEMA=ERC721
+```
+
+## Deployed Contract Addresses（Goerli）
 
 - ERC721
   `0x0ccCDB50B9EF2e6FA7133a54533640175E4BcDD1`

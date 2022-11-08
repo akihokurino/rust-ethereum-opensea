@@ -46,7 +46,6 @@ buy-order-info: build
 sell: build
 	./target/debug/rust-opensea \
 	--command sell \
-	--contract-address $(CONTRACT_ADDRESS) \
 	--token-id $(TOKEN_ID) \
 	--schema $(SCHEMA) \
 	--sell-ether $(ETHER)
@@ -54,7 +53,6 @@ sell: build
 transfer: build
 	./target/debug/rust-opensea \
 	--command transfer \
-	--contract-address $(CONTRACT_ADDRESS) \
 	--token-id $(TOKEN_ID) \
 	--schema $(SCHEMA) \
 	--to-address $(TO_ADDRESS)

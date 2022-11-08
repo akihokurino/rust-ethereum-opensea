@@ -168,10 +168,8 @@ pub async fn main() {
         COMMAND_BUY_ORDER_INFO => {
             info::show_order(contract_address, token_id, OrderSide::Buy).await
         }
-        COMMAND_SELL => transaction::sell(contract_address, token_id, schema, sell_ether).await,
-        COMMAND_TRANSFER => {
-            transaction::transfer(contract_address, token_id, schema, to_address).await
-        }
+        COMMAND_SELL => transaction::sell(token_id, schema, sell_ether).await,
+        COMMAND_TRANSFER => transaction::transfer(token_id, schema, to_address).await,
         COMMAND_KEY_GEN => key::generate().await,
         _ => Err(CliError::Internal("unknown command".to_string())),
     };
