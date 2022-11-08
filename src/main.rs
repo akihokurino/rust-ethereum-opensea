@@ -4,7 +4,7 @@ mod error;
 mod model;
 mod open_sea;
 
-use crate::command::{info, init, key, mint, transaction};
+use crate::command::{info, key, mint, transaction};
 use crate::error::CliError;
 use crate::model::Schema;
 use crate::open_sea::api::OrderSide;
@@ -14,7 +14,6 @@ use std::str::FromStr;
 
 const COMMAND: &str = "command";
 
-const COMMAND_INIT: &str = "init";
 const COMMAND_MINT: &str = "mint";
 const COMMAND_CONTRACT_INFO: &str = "contract-info";
 const COMMAND_ASSET_INFO: &str = "asset-info";
@@ -46,7 +45,6 @@ pub async fn main() {
             Arg::new(COMMAND)
                 .long(COMMAND)
                 .possible_values(&[
-                    COMMAND_INIT,
                     COMMAND_MINT,
                     COMMAND_CONTRACT_INFO,
                     COMMAND_ASSET_INFO,
@@ -155,7 +153,6 @@ pub async fn main() {
         .to_string();
 
     let result = match matches.value_of(COMMAND).unwrap() {
-        COMMAND_INIT => init::initialize().await,
         COMMAND_MINT => match schema {
             Schema::ERC721 => mint::erc721(name, description, image_filename).await,
             Schema::ERC1155 => mint::erc1155(name, description, image_filename, amount).await,

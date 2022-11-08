@@ -8,14 +8,8 @@ contract RustToken721 is ERC721Enumerable, Ownable {
     mapping(string => uint256) private _name2token;
     mapping(uint256 => string) private _token2name;
     uint256 _localTokenId = 1;
-    string _tokenBaseURI = "";
 
     constructor() ERC721("RustToken721", "RT") {}
-
-    function setTokenBaseURI(string memory baseURI) public onlyOwner {
-        require(bytes(baseURI).length > 0, "should set not empty base url");
-        _tokenBaseURI = baseURI;
-    }
 
     function mint(address to, string memory tokenName)
         public
@@ -32,10 +26,6 @@ contract RustToken721 is ERC721Enumerable, Ownable {
         _localTokenId += 1;
     }
 
-    function tokenBaseURI() public view virtual returns (string memory) {
-        return _tokenBaseURI;
-    }
-
     function tokenURI(uint256 tokenId)
         public
         view
@@ -44,7 +34,13 @@ contract RustToken721 is ERC721Enumerable, Ownable {
         returns (string memory)
     {
         string memory tokenName = _token2name[tokenId];
-        return string(abi.encodePacked(_tokenBaseURI, tokenName));
+        return
+            string(
+                abi.encodePacked(
+                    "https://ipfs.moralis.io:2053/ipfs/",
+                    tokenName
+                )
+            );
     }
 
     function currentSupply() public view virtual returns (uint256) {

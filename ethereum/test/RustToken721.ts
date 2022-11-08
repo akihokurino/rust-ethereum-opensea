@@ -9,11 +9,6 @@ describe("RustToken721", function () {
 
     const [owner, other] = await ethers.getSigners();
 
-    await contract.setTokenBaseURI("https://ipfs.moralis.io:2053/ipfs/");
-    expect(await contract.tokenBaseURI()).to.equal(
-      "https://ipfs.moralis.io:2053/ipfs/"
-    );
-
     await contract.mint(owner.address, "A");
     expect(await contract.tokenURI(1)).to.equal(
       "https://ipfs.moralis.io:2053/ipfs/A"

@@ -52,14 +52,6 @@ impl Client {
         Ok(name)
     }
 
-    pub async fn get_base_url(&self) -> CliResult<String> {
-        let c = self.contract()?;
-        let result = c.query("tokenBaseURI", (), None, Options::default(), None);
-        let url: String = result.await?;
-
-        Ok(url)
-    }
-
     pub async fn get_already_used_names(&self) -> CliResult<Vec<String>> {
         let c = self.contract()?;
         let result = c.query("usedTokenNames", (), None, Options::default(), None);
@@ -74,32 +66,6 @@ impl Client {
         let supply: u128 = result.await?;
 
         Ok(supply)
-    }
-
-    pub async fn set_base_url(&self, base_url: String) -> CliResult<()> {
-        let prev_key = SecretKey::from_str(&self.wallet_secret).unwrap();
-        let gas_limit: i64 = 5500000;
-        let gas_price: i64 = 35000000000;
-
-        let c = self.contract()?;
-        let result = c
-            .signed_call_with_confirmations(
-                "setTokenBaseURI",
-                base_url,
-                Options::with(|opt| {
-                    opt.gas = Some(U256::from(gas_limit));
-                    opt.gas_price = Some(U256::from(gas_price));
-                }),
-                1,
-                SecretKeyRef::from(&prev_key),
-            )
-            .await?;
-
-        println!("tx id: {:?}", result.transaction_hash);
-        println!("gas used: {:?}", result.gas_used.unwrap_or_default());
-        println!("status: {:?}", result.status.unwrap_or_default());
-
-        Ok(())
     }
 
     pub async fn mint(&self, hash: String) -> CliResult<()> {

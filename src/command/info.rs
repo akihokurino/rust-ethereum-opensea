@@ -10,11 +10,9 @@ pub async fn show_contract() -> CliResult<()> {
     println!("------------------------------------------------------------");
     println!("ERC721 info: {}", erc721_cli.contract_address);
     let name = erc721_cli.get_name().await?;
-    let base_url = erc721_cli.get_base_url().await?;
     let supply_num = erc721_cli.get_current_supply().await?;
     let used_names = erc721_cli.get_already_used_names().await?;
-    println!("name = {}", name);
-    println!("base_url = {}", base_url);
+    println!("contract_name = {}", name);
     println!("supply_num = {}", supply_num);
     println!("used_names = {:?}", used_names);
     println!("------------------------------------------------------------");
@@ -22,11 +20,9 @@ pub async fn show_contract() -> CliResult<()> {
     println!("------------------------------------------------------------");
     println!("ERC1155 info: {}", erc1155_cli.contract_address);
     let name = erc1155_cli.get_name().await?;
-    let base_url = erc1155_cli.get_base_url().await?;
     let supply_num = erc1155_cli.get_current_supply().await?;
     let used_names = erc1155_cli.get_already_used_names().await?;
-    println!("name = {}", name);
-    println!("base_url = {}", base_url);
+    println!("contract_name = {}", name);
     println!("supply_num = {}", supply_num);
     println!("used_names = {:?}", used_names);
     println!("------------------------------------------------------------");

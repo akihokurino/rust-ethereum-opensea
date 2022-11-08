@@ -8,17 +8,11 @@ contract RustToken1155 is ERC1155, Ownable {
     mapping(string => uint256) private _name2token;
     mapping(uint256 => string) private _token2name;
     uint256 _localTokenId = 1;
-    string _tokenBaseURI = "";
 
     string public name = "RustToken1155";
     string public symbol = "RT";
 
     constructor() ERC1155("") {}
-
-    function setTokenBaseURI(string memory baseURI) public onlyOwner {
-        require(bytes(baseURI).length > 0, "should set not empty base url");
-        _tokenBaseURI = baseURI;
-    }
 
     function mint(
         address to,
@@ -58,10 +52,6 @@ contract RustToken1155 is ERC1155, Ownable {
         _mintBatch(to, tokenIds, amounts, "");
     }
 
-    function tokenBaseURI() public view virtual returns (string memory) {
-        return _tokenBaseURI;
-    }
-
     function uri(uint256 tokenId)
         public
         view
@@ -70,7 +60,13 @@ contract RustToken1155 is ERC1155, Ownable {
         returns (string memory)
     {
         string memory tokenName = _token2name[tokenId];
-        return string(abi.encodePacked(_tokenBaseURI, tokenName));
+        return
+            string(
+                abi.encodePacked(
+                    "https://ipfs.moralis.io:2053/ipfs/",
+                    tokenName
+                )
+            );
     }
 
     function currentSupply() public view virtual returns (uint256) {

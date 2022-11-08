@@ -13,12 +13,6 @@
 
 ## Command
 
-### init contract
-
-```
-make init
-```
-
 ### mint erc721
 
 ```
@@ -60,6 +54,12 @@ make sell TOKEN_ID=1 ETHER=1 SCHEMA=ERC721
 
 ```
 make transfer TOKEN_ID=1 TO_ADDRESS=0x00 SCHEMA=ERC721
+```
+
+### generate private key and public key
+
+```
+make key-gen
 ```
 
 ## Deployed Contract Addresses（Goerli）

@@ -1,11 +1,11 @@
 MAKEFLAGS=--no-builtin-rules --no-builtin-variables --always-make
 ROOT := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 
-NAME := ""
-DESCRIPTION := ""
-IMAGE_FILENAME := ""
+NAME := "RustToken Sample"
+DESCRIPTION := "RustToken Sample Generate"
+IMAGE_FILENAME := "sample.png"
 AMOUNT := "1"
-SCHEMA := "erc721"
+SCHEMA := "ERC721"
 CONTRACT_ADDRESS := ""
 TOKEN_ID := ""
 ETHER := ""
@@ -13,10 +13,6 @@ TO_ADDRESS := ""
 
 build:
 	cargo build
-
-init: build
-	./target/debug/rust-opensea \
-	--command init
 
 mint: build
 	./target/debug/rust-opensea \

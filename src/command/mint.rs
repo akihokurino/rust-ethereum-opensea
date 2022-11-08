@@ -21,6 +21,7 @@ pub async fn erc721(name: String, description: String, image_filename: String) -
     let mut buf = Vec::new();
     let _ = file.read_to_end(&mut buf)?;
 
+    println!("{}", "uploading ipfs..........");
     let output = lambda::invoke_open_sea_sdk(lambda::invoke_open_sea_sdk::Input::create_metadata(
         &name,
         &description,
@@ -33,8 +34,12 @@ pub async fn erc721(name: String, description: String, image_filename: String) -
             "IPFSのサーバーが起動していません".to_string(),
         ));
     }
-    let ipfs_hash = output.ipfs_response.unwrap().hash;
+    let res = output.ipfs_response.unwrap();
+    let ipfs_hash = res.hash;
+    println!("ipfs_hash: {}", ipfs_hash.clone());
+    println!("ipfs_url: {}", res.url);
 
+    println!("{}", "minting..........");
     let erc721_cli = erc721::Client::new();
     erc721_cli.mint(ipfs_hash).await?;
 
@@ -62,6 +67,7 @@ pub async fn erc1155(
     let mut buf = Vec::new();
     let _ = file.read_to_end(&mut buf)?;
 
+    println!("{}", "uploading ipfs..........");
     let output = lambda::invoke_open_sea_sdk(lambda::invoke_open_sea_sdk::Input::create_metadata(
         &name,
         &description,
@@ -74,8 +80,12 @@ pub async fn erc1155(
             "IPFSのサーバーが起動していません".to_string(),
         ));
     }
-    let ipfs_hash = output.ipfs_response.unwrap().hash;
+    let res = output.ipfs_response.unwrap();
+    let ipfs_hash = res.hash;
+    println!("ipfs_hash: {}", ipfs_hash.clone());
+    println!("ipfs_url: {}", res.url);
 
+    println!("{}", "minting..........");
     let erc1155_cli = erc1155::Client::new();
     erc1155_cli.mint(ipfs_hash, amount).await?;
 
