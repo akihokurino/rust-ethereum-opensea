@@ -11,6 +11,9 @@
 - solidity
 - open zeppelin ( https://openzeppelin.com/ )
 
+## Related
+- https://github.com/akihokurino/lambda-opensea
+
 ## Command
 
 ### mint erc721
