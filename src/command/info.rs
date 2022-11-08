@@ -1,6 +1,7 @@
 use crate::error::CliResult;
+use crate::ethereum::{erc1155, erc721};
 use crate::open_sea::api::OrderSide;
-use crate::open_sea::*;
+use crate::open_sea::{api, ApiClient};
 use crate::CliError;
 
 pub async fn show_contract() -> CliResult<()> {

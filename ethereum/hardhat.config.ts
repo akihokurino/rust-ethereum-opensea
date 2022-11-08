@@ -13,7 +13,7 @@ const config: HardhatUserConfig = {
       url: process.env.CHAIN_URL!,
       accounts: [process.env.WALLET_SECRET!],
     },
-  }
+  },
 };
 
 export default config;

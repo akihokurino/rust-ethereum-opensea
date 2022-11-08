@@ -50,6 +50,13 @@ impl From<web3::contract::Error> for CliError {
     }
 }
 
+impl From<web3::contract::deploy::Error> for CliError {
+    fn from(e: web3::contract::deploy::Error) -> Self {
+        let msg = format!("web3 contract deploy error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
 impl From<std::io::Error> for CliError {
     fn from(e: std::io::Error) -> Self {
         let msg = format!("io error: {:?}", e);

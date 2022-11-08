@@ -57,6 +57,12 @@ key-gen: build
 	./target/debug/rust-opensea \
 	--command key-gen
 
+deploy-contract: build
+	./target/debug/rust-opensea \
+	--command deploy-contract
+
 extract-abi:
 	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq '.abi' > src/open_sea/rust-token721.abi.json
 	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq '.abi' > src/open_sea/rust-token1155.abi.json
+	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq -r '.bytecode' > src/open_sea/rust-token721.bin
+	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq -r '.bytecode' > src/open_sea/rust-token1155.bin

@@ -1,10 +1,11 @@
 mod aws;
 mod command;
 mod error;
+mod ethereum;
 mod model;
 mod open_sea;
 
-use crate::command::{info, key, mint, transaction};
+use crate::command::{info, init, key, mint, transaction};
 use crate::error::CliError;
 use crate::model::Schema;
 use crate::open_sea::api::OrderSide;
@@ -22,6 +23,7 @@ const COMMAND_BUY_ORDER_INFO: &str = "buy-order-info";
 const COMMAND_SELL: &str = "sell";
 const COMMAND_TRANSFER: &str = "transfer";
 const COMMAND_KEY_GEN: &str = "key-gen";
+const COMMAND_DEPLOY_CONTRACT: &str = "deploy-contract";
 
 const ARGS_NAME: &str = "name";
 const ARGS_DESCRIPTION: &str = "description";
@@ -53,6 +55,7 @@ pub async fn main() {
                     COMMAND_SELL,
                     COMMAND_TRANSFER,
                     COMMAND_KEY_GEN,
+                    COMMAND_DEPLOY_CONTRACT,
                 ])
                 .required(true)
                 .takes_value(true),
@@ -153,6 +156,7 @@ pub async fn main() {
         .to_string();
 
     let result = match matches.value_of(COMMAND).unwrap() {
+        COMMAND_DEPLOY_CONTRACT => init::deploy_contract().await,
         COMMAND_MINT => match schema {
             Schema::ERC721 => mint::erc721(name, description, image_filename).await,
             Schema::ERC1155 => mint::erc1155(name, description, image_filename, amount).await,

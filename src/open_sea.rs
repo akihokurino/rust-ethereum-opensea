@@ -3,18 +3,8 @@ use crate::CliError;
 use reqwest::header::{HeaderMap, HeaderValue};
 use reqwest::{Body, Method, Response, Url};
 use std::env;
-use web3::types::Address;
 
 pub mod api;
-pub mod erc1155;
-pub mod erc721;
-
-fn parse_address(address: String) -> Option<Address> {
-    match address.trim_start_matches("0x").parse() {
-        Ok(value) => Some(value),
-        Err(_e) => None,
-    }
-}
 
 #[derive(Clone, Debug)]
 pub struct ApiClient {

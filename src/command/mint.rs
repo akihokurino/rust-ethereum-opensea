@@ -1,6 +1,6 @@
 use crate::aws::lambda;
 use crate::error::CliResult;
-use crate::open_sea::*;
+use crate::ethereum::{erc1155, erc721};
 use crate::CliError;
 use std::fs::File;
 use std::io::Read;
