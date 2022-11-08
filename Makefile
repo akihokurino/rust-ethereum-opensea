@@ -3,12 +3,13 @@ ROOT := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 
 NAME := ""
 DESCRIPTION := ""
-IMAGE_URL := ""
 IMAGE_FILENAME := ""
 AMOUNT := "1"
 SCHEMA := "erc721"
 CONTRACT_ADDRESS := ""
 TOKEN_ID := ""
+ETHER := ""
+TO_ADDRESS := ""
 
 build:
 	cargo build
@@ -20,13 +21,11 @@ init: build
 mint: build
 	./target/debug/rust-opensea \
 	--command mint \
-	--nft-name $(NAME) \
-	--nft-description $(DESCRIPTION) \
-	--nft-image-url $(IMAGE_URL) \
-	--nft-image-filename $(IMAGE_FILENAME) \
-	--nft-amount $(AMOUNT) \
-	--nft-stats level=10 rank=3 \
-	--nft-schema $(SCHEMA) \
+	--name $(NAME) \
+	--description $(DESCRIPTION) \
+	--image-filename $(IMAGE_FILENAME) \
+	--amount $(AMOUNT) \
+	--schema $(SCHEMA) \
 
 contract-info: build
 	./target/debug/rust-opensea \
@@ -44,9 +43,25 @@ buy-order-info: build
 	./target/debug/rust-opensea \
 	--command buy-order-info --contract-address $(CONTRACT_ADDRESS) --token-id $(TOKEN_ID)
 
-buy: build
+sell: build
 	./target/debug/rust-opensea \
-	--command buy --contract-address $(CONTRACT_ADDRESS) --token-id $(TOKEN_ID)
+	--command sell \
+	--contract-address $(CONTRACT_ADDRESS) \
+	--token-id $(TOKEN_ID) \
+	--schema $(SCHEMA) \
+	--sell-ether $(ETHER)
+
+transfer: build
+	./target/debug/rust-opensea \
+	--command transfer \
+	--contract-address $(CONTRACT_ADDRESS) \
+	--token-id $(TOKEN_ID) \
+	--schema $(SCHEMA) \
+	--to-address $(TO_ADDRESS)
+
+key-gen: build
+	./target/debug/rust-opensea \
+	--command key-gen
 
 extract-abi:
 	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq '.abi' > src/open_sea/rust-token721.abi.json

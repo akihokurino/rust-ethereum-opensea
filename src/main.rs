@@ -4,7 +4,7 @@ mod error;
 mod model;
 mod open_sea;
 
-use crate::command::{info, init, mint, transaction};
+use crate::command::{info, init, key, mint, transaction};
 use crate::error::CliError;
 use crate::model::Schema;
 use crate::open_sea::api::OrderSide;
@@ -22,6 +22,7 @@ const COMMAND_SELL_ORDER_INFO: &str = "sell-order-info";
 const COMMAND_BUY_ORDER_INFO: &str = "buy-order-info";
 const COMMAND_SELL: &str = "sell";
 const COMMAND_TRANSFER: &str = "transfer";
+const COMMAND_KEY_GEN: &str = "key-gen";
 
 const ARGS_NAME: &str = "name";
 const ARGS_DESCRIPTION: &str = "description";
@@ -53,6 +54,7 @@ pub async fn main() {
                     COMMAND_BUY_ORDER_INFO,
                     COMMAND_SELL,
                     COMMAND_TRANSFER,
+                    COMMAND_KEY_GEN,
                 ])
                 .required(true)
                 .takes_value(true),
@@ -153,7 +155,7 @@ pub async fn main() {
         .to_string();
 
     let result = match matches.value_of(COMMAND).unwrap() {
-        COMMAND_INIT => init::exec().await,
+        COMMAND_INIT => init::initialize().await,
         COMMAND_MINT => match schema {
             Schema::ERC721 => mint::erc721(name, description, image_filename).await,
             Schema::ERC1155 => mint::erc1155(name, description, image_filename, amount).await,
@@ -170,6 +172,7 @@ pub async fn main() {
         COMMAND_TRANSFER => {
             transaction::transfer(contract_address, token_id, schema, to_address).await
         }
+        COMMAND_KEY_GEN => key::generate().await,
         _ => Err(CliError::Internal("unknown command".to_string())),
     };
 
