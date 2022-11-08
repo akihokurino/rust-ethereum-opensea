@@ -62,9 +62,9 @@ make transfer TOKEN_ID=1 TO_ADDRESS=0x00 SCHEMA=ERC721
 make key-gen
 ```
 
-## Deployed Contract Addresses（Goerli）
+## Deployed Contract Address（Goerli）
 
 - ERC721
-  `0x0ccCDB50B9EF2e6FA7133a54533640175E4BcDD1`
+  `0x73d1bD8296570aD04E7C03b76Cd9b7AFAEc4f0df`
 - ERC1155
-  `0x8287087a8861d466dC3f30cbDBfD51CbC26b3AEC`
+  `0xBeC715357CC02653EaAE065BEc21d4B11092a5fC`
