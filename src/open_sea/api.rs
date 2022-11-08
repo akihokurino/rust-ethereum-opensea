@@ -43,20 +43,20 @@ impl ApiClient {
         struct Body {}
 
         let body = Body {};
-        let side = match input.side {
+        let _side = match input.side {
             OrderSide::Buy => "0",
             OrderSide::Sell => "1",
         };
         let query = vec![
             ("limit".to_string(), "1".to_string()),
-            ("side".to_string(), side.to_string()),
+            // ("side".to_string(), side.to_string()),
             ("asset_contract_address".to_string(), input.contract_address),
-            ("token_id".to_string(), input.token_id),
+            ("token_ids".to_string(), input.token_id),
         ];
 
         self.call(CallInput {
             method: Method::GET,
-            path: "/wyvern/v1/orders".to_string(),
+            path: "/v2/orders/goerli/seaport/listings".to_string(),
             body: Some(
                 serde_json::to_string(&body)
                     .map_err(|e| CliError::Internal(e.to_string()))?
@@ -130,24 +130,10 @@ pub mod get_order {
 
     #[derive(Debug, Serialize, Deserialize)]
     pub struct Order {
-        pub id: i64,
-        pub exchange: String,
+        pub order_hash: String,
+        pub side: String,
         pub current_price: String,
-        pub quantity: String,
-        pub asset: Asset,
-    }
-
-    #[derive(Debug, Serialize, Deserialize)]
-    pub struct Asset {
-        pub asset_contract: AssetContract,
-    }
-
-    #[derive(Debug, Serialize, Deserialize)]
-    pub struct AssetContract {
-        pub address: String,
-        pub asset_contract_type: String,
-        pub name: String,
-        pub nft_version: String,
-        pub schema_name: String,
+        pub created_date: String,
+        pub closing_date: String,
     }
 }
