@@ -7,11 +7,11 @@ use web3::contract::{Contract, Options};
 use web3::signing::SecretKeyRef;
 use web3::transports::Http;
 use web3::types::U256;
-use web3::{transports, Web3};
+use web3::Web3;
 
 #[derive(Clone, Debug)]
 pub struct Client {
-    cli: web3::Web3<transports::Http>,
+    cli: Web3<Http>,
     wallet_address: String,
     wallet_secret: String,
     pub contract_address: String,
@@ -20,7 +20,7 @@ pub struct Client {
 impl Client {
     pub fn new() -> Self {
         let base_url = env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set");
-        let transport = transports::Http::new(&base_url).ok().unwrap();
+        let transport = Http::new(&base_url).ok().unwrap();
         let cli = Web3::new(transport);
 
         let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");
@@ -77,7 +77,7 @@ impl Client {
     }
 
     pub async fn set_base_url(&self, base_url: String) -> CliResult<()> {
-        let prev_key = SecretKey::from_str(&self.wallet_secret.clone()).unwrap();
+        let prev_key = SecretKey::from_str(&self.wallet_secret).unwrap();
         let gas_limit: i64 = 5500000;
         let gas_price: i64 = 35000000000;
 
@@ -102,8 +102,8 @@ impl Client {
         Ok(())
     }
 
-    pub async fn mint(&self, name: String, amount: u128) -> CliResult<()> {
-        let prev_key = SecretKey::from_str(&self.wallet_secret.clone()).unwrap();
+    pub async fn mint(&self, hash: String, amount: u128) -> CliResult<()> {
+        let prev_key = SecretKey::from_str(&self.wallet_secret).unwrap();
         let gas_limit: i64 = 5500000;
         let gas_price: i64 = 35000000000;
 
@@ -113,7 +113,7 @@ impl Client {
                 "mint",
                 (
                     parse_address(self.wallet_address.clone()).unwrap(),
-                    name,
+                    hash,
                     amount,
                 ),
                 Options::with(|opt| {

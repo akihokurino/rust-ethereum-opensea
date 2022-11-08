@@ -44,15 +44,7 @@ contract RustToken721 is ERC721Enumerable, Ownable {
         returns (string memory)
     {
         string memory tokenName = _token2name[tokenId];
-        return
-            string(
-                abi.encodePacked(
-                    _tokenBaseURI,
-                    "/",
-                    tokenName,
-                    ".metadata.json"
-                )
-            );
+        return string(abi.encodePacked(_tokenBaseURI, tokenName));
     }
 
     function currentSupply() public view virtual returns (uint256) {

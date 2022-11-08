@@ -70,15 +70,7 @@ contract RustToken1155 is ERC1155, Ownable {
         returns (string memory)
     {
         string memory tokenName = _token2name[tokenId];
-        return
-            string(
-                abi.encodePacked(
-                    _tokenBaseURI,
-                    "/",
-                    tokenName,
-                    ".metadata.json"
-                )
-            );
+        return string(abi.encodePacked(_tokenBaseURI, tokenName));
     }
 
     function currentSupply() public view virtual returns (uint256) {

@@ -1,18 +1,15 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+  const RustToken721 = await ethers.getContractFactory("RustToken721");
+  const rustToken721 = await RustToken721.deploy();
+  await rustToken721.deployed();
+  console.log("RustToken721 deployed to:", rustToken721.address);
 
-  const lockedAmount = ethers.utils.parseEther("1");
-
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-  await lock.deployed();
-
-  console.log(`Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`);
+  const RustToken1155 = await ethers.getContractFactory("RustToken1155");
+  const rustToken1155 = await RustToken1155.deploy();
+  await rustToken1155.deployed();
+  console.log("RustToken1155 deployed to:", rustToken1155.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

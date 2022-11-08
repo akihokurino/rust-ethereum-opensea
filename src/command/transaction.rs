@@ -1,29 +1,37 @@
+use crate::aws::lambda;
 use crate::error::CliResult;
-use crate::open_sea::api::OrderSide;
-use crate::open_sea::*;
-use crate::CliError;
+use crate::model::Schema;
 
-pub async fn buy(contract_address: String, token_id: String) -> CliResult<()> {
-    if contract_address.is_empty() || token_id.is_empty() {
-        return Err(CliError::InvalidArgument(
-            "parameter is invalid".to_string(),
-        ));
-    }
+pub async fn sell(
+    contract_address: String,
+    token_id: String,
+    schema: Schema,
+    ether: f64,
+) -> CliResult<()> {
+    lambda::invoke_open_sea_sdk(lambda::invoke_open_sea_sdk::Input::sell(
+        &contract_address,
+        &token_id,
+        &schema,
+        ether,
+    ))
+    .await?;
 
-    let api_cli = ApiClient::new();
-    let order = api_cli
-        .get_order(api::get_order::Input {
-            side: OrderSide::Sell,
-            contract_address,
-            token_id,
-        })
-        .await?;
+    Ok(())
+}
 
-    if order.orders.len() == 0 {
-        return Err(CliError::NotFound);
-    }
-
-    let order = order.orders.first().unwrap();
+pub async fn transfer(
+    contract_address: String,
+    token_id: String,
+    schema: Schema,
+    to_address: String,
+) -> CliResult<()> {
+    lambda::invoke_open_sea_sdk(lambda::invoke_open_sea_sdk::Input::transfer(
+        &contract_address,
+        &token_id,
+        &schema,
+        &to_address,
+    ))
+    .await?;
 
     Ok(())
 }

@@ -1,13 +1,13 @@
 use crate::error::CliResult;
-use crate::{CliError, TEST_API_BASE_URL};
+use crate::CliError;
 use reqwest::header::{HeaderMap, HeaderValue};
 use reqwest::{Body, Method, Response, Url};
+use std::env;
 use web3::types::Address;
 
 pub mod api;
 pub mod erc1155;
 pub mod erc721;
-pub mod metadata;
 
 fn parse_address(address: String) -> Option<Address> {
     match address.trim_start_matches("0x").parse() {
@@ -23,7 +23,7 @@ pub struct ApiClient {
 
 impl ApiClient {
     pub fn new() -> Self {
-        let base_url = TEST_API_BASE_URL;
+        let base_url = env::var("OPENSEA_API_BASE_URL").expect("should set opensea base url");
         ApiClient {
             base_url: base_url.parse().unwrap(),
         }

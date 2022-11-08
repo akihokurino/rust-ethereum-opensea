@@ -1,5 +1,5 @@
-use aws_sdk_s3::error::{CreateBucketError, PutObjectError};
-use aws_sdk_s3::types::SdkError;
+use aws_sdk_lambda::error::InvokeError;
+use aws_sdk_lambda::types::SdkError;
 use reqwest::StatusCode;
 use thiserror::Error as ThisErr;
 
@@ -15,16 +15,9 @@ pub enum CliError {
 
 pub type CliResult<T> = Result<T, CliError>;
 
-impl From<SdkError<CreateBucketError>> for CliError {
-    fn from(e: SdkError<CreateBucketError>) -> Self {
-        let msg = format!("s3 create bucket error: {:?}", e);
-        Self::Internal(msg)
-    }
-}
-
-impl From<SdkError<PutObjectError>> for CliError {
-    fn from(e: SdkError<PutObjectError>) -> Self {
-        let msg = format!("s3 put object error: {:?}", e);
+impl From<SdkError<InvokeError>> for CliError {
+    fn from(e: SdkError<InvokeError>) -> Self {
+        let msg = format!("lambda invoke error: {:?}", e);
         Self::Internal(msg)
     }
 }

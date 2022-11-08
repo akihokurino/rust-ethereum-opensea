@@ -7,7 +7,7 @@ use web3::contract::{Contract, Options};
 use web3::signing::SecretKeyRef;
 use web3::transports::Http;
 use web3::types::U256;
-use web3::{transports, Web3};
+use web3::Web3;
 
 #[derive(Clone, Debug)]
 pub struct Client {
@@ -77,7 +77,7 @@ impl Client {
     }
 
     pub async fn set_base_url(&self, base_url: String) -> CliResult<()> {
-        let prev_key = SecretKey::from_str(&self.wallet_secret.clone()).unwrap();
+        let prev_key = SecretKey::from_str(&self.wallet_secret).unwrap();
         let gas_limit: i64 = 5500000;
         let gas_price: i64 = 35000000000;
 
@@ -102,8 +102,8 @@ impl Client {
         Ok(())
     }
 
-    pub async fn mint(&self, name: String) -> CliResult<()> {
-        let prev_key = SecretKey::from_str(&self.wallet_secret.clone()).unwrap();
+    pub async fn mint(&self, hash: String) -> CliResult<()> {
+        let prev_key = SecretKey::from_str(&self.wallet_secret).unwrap();
         let gas_limit: i64 = 5500000;
         let gas_price: i64 = 35000000000;
 
@@ -111,7 +111,7 @@ impl Client {
         let result = c
             .signed_call_with_confirmations(
                 "mint",
-                (parse_address(self.wallet_address.clone()).unwrap(), name),
+                (parse_address(self.wallet_address.clone()).unwrap(), hash),
                 Options::with(|opt| {
                     opt.gas = Some(U256::from(gas_limit));
                     opt.gas_price = Some(U256::from(gas_price));
