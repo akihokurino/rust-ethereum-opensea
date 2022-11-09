@@ -1,14 +1,22 @@
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 
 async function main() {
-  const RustToken721 = await ethers.getContractFactory("RustToken721");
-  const rustToken721 = await RustToken721.deploy();
-  await rustToken721.deployed();
+  const rustToken721 = await upgrades.deployProxy(
+    await ethers.getContractFactory("RustToken721", {}),
+    [],
+    {
+      initializer: "initialize",
+    }
+  );
   console.log("RustToken721 deployed to:", rustToken721.address);
 
-  const RustToken1155 = await ethers.getContractFactory("RustToken1155");
-  const rustToken1155 = await RustToken1155.deploy();
-  await rustToken1155.deployed();
+  const rustToken1155 = await upgrades.deployProxy(
+    await ethers.getContractFactory("RustToken1155", {}),
+    [],
+    {
+      initializer: "initialize",
+    }
+  );
   console.log("RustToken1155 deployed to:", rustToken1155.address);
 }
 

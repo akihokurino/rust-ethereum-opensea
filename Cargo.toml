@@ -1,8 +1,8 @@
 [package]
-name = "rust-opensea"
+name = "rust-ethereum-opensea"
 version = "0.1.0"
 authors = ["akiho <aki030402@mail.com>"]
-description = "OpenSea CLI"
+description = "Ethereum OpenSea CLI"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

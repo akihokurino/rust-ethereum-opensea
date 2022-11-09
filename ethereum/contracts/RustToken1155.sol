@@ -1,18 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 
-contract RustToken1155 is ERC1155, Ownable {
+contract RustToken1155 is ERC1155Upgradeable, OwnableUpgradeable {
     mapping(string => uint256) private _name2token;
     mapping(uint256 => string) private _token2name;
-    uint256 _localTokenId = 1;
+    uint256 _localTokenId;
 
-    string public name = "RustToken1155";
-    string public symbol = "RT";
+    string public name;
+    string public symbol;
 
-    constructor() ERC1155("") {}
+    function initialize() public initializer {
+        __ERC1155_init("");
+        __Ownable_init();
+        _localTokenId = 1;
+        name = "RustToken1155";
+        symbol = "RT";
+    }
 
     function mint(
         address to,

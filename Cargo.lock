@@ -1667,7 +1667,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust-opensea"
+name = "rust-ethereum-opensea"
 version = "0.1.0"
 dependencies = [
  "aws-config",

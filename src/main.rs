@@ -39,10 +39,10 @@ const ARGS_TO_ADDRESS: &str = "to-address";
 pub async fn main() {
     dotenv().ok();
 
-    let app = Command::new("rust-opensea")
+    let app = Command::new("rust-ethereum-opensea")
         .version("0.1.0")
         .author("akiho <aki030402@mail.com>")
-        .about("OpenSea CLI")
+        .about("Ethereum OpenSea CLI")
         .arg(
             Arg::new(COMMAND)
                 .long(COMMAND)

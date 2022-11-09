@@ -1,11 +1,15 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 
 describe("RustToken1155", function () {
   it("should mint and get token url", async () => {
-    const Contract = await ethers.getContractFactory("RustToken1155");
-    const contract = await Contract.deploy();
-    await contract.deployed();
+    const contract = await upgrades.deployProxy(
+      await ethers.getContractFactory("RustToken1155", {}),
+      [],
+      {
+        initializer: "initialize",
+      }
+    );
 
     const [owner, other] = await ethers.getSigners();
 
@@ -16,9 +20,13 @@ describe("RustToken1155", function () {
   });
 
   it("should mintBatch and get token url", async () => {
-    const Contract = await ethers.getContractFactory("RustToken1155");
-    const contract = await Contract.deploy();
-    await contract.deployed();
+    const contract = await upgrades.deployProxy(
+      await ethers.getContractFactory("RustToken1155", {}),
+      [],
+      {
+        initializer: "initialize",
+      }
+    );
 
     const [owner, other] = await ethers.getSigners();
 
@@ -29,9 +37,13 @@ describe("RustToken1155", function () {
   });
 
   it("should get name and symbol", async () => {
-    const Contract = await ethers.getContractFactory("RustToken1155");
-    const contract = await Contract.deploy();
-    await contract.deployed();
+    const contract = await upgrades.deployProxy(
+      await ethers.getContractFactory("RustToken1155", {}),
+      [],
+      {
+        initializer: "initialize",
+      }
+    );
 
     const [owner, other] = await ethers.getSigners();
 
@@ -40,9 +52,13 @@ describe("RustToken1155", function () {
   });
 
   it("should get currentSupply", async () => {
-    const Contract = await ethers.getContractFactory("RustToken1155");
-    const contract = await Contract.deploy();
-    await contract.deployed();
+    const contract = await upgrades.deployProxy(
+      await ethers.getContractFactory("RustToken1155", {}),
+      [],
+      {
+        initializer: "initialize",
+      }
+    );
 
     const [owner, other] = await ethers.getSigners();
 
@@ -54,9 +70,13 @@ describe("RustToken1155", function () {
   });
 
   it("should get usedTokenNames", async () => {
-    const Contract = await ethers.getContractFactory("RustToken1155");
-    const contract = await Contract.deploy();
-    await contract.deployed();
+    const contract = await upgrades.deployProxy(
+      await ethers.getContractFactory("RustToken1155", {}),
+      [],
+      {
+        initializer: "initialize",
+      }
+    );
 
     const [owner, other] = await ethers.getSigners();
 
@@ -67,5 +87,29 @@ describe("RustToken1155", function () {
     expect(names[0]).to.equal("A");
     expect(names[1]).to.equal("B");
     expect(names.length).to.equal(2);
+  });
+
+  it("should upgradable", async () => {
+    const contractV1 = await upgrades.deployProxy(
+      await ethers.getContractFactory("RustToken1155", {}),
+      [],
+      {
+        initializer: "initialize",
+      }
+    );
+
+    const [owner, other] = await ethers.getSigners();
+    await contractV1.mint(owner.address, "A", 10);
+
+    const contractV2 = await upgrades.upgradeProxy(
+      contractV1.address,
+      await ethers.getContractFactory("RustToken1155_V2")
+    );
+
+    expect(await contractV2.name()).to.equal("RustToken1155");
+    expect(await contractV2.uri(1)).to.equal(
+      "https://ipfs.moralis.io:2053/ipfs/A"
+    );
+    expect(await contractV2.hello()).to.equal("hello v2");
   });
 });
