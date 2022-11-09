@@ -17,17 +17,17 @@ deploy-local:
 deploy-goerli:
 	npx hardhat run scripts/deploy.ts --network goerli
 
-init-geth-net:
-	geth --datadir ./geth-net/ init ./geth-net/genesis.json
+init-private-net:
+	geth --datadir ./private-net/ init ./private-net/genesis.json
 
-console-geth-net:
-	geth --networkid "31337" --port 8545 --http --nodiscover --datadir ./geth-net/ --allow-insecure-unlock --unlock 0 --password ./geth-net/password console
+console-private-net:
+	geth --networkid "31337" --port 8545 --http --nodiscover --datadir ./private-net/ --allow-insecure-unlock --unlock 0 --password ./private-net/password console
 
-reset-geth-net:
-	rm -rf ./geth-net/geth/*
-	rm -rf ./geth-net/history
-	touch ./geth-net/history
-	geth --datadir ./geth-net/ init ./geth-net/genesis.json
+reset-private-net:
+	rm -rf ./private-net/geth/*
+	rm -rf ./private-net/history
+	touch ./private-net/history
+	geth --datadir ./private-net/ init ./private-net/genesis.json
 
-import-geth-net:
-	geth account import --datadir ./geth-net/ ./geth-net/key.prv
+import-private-net:
+	geth account import --datadir ./private-net/ ./private-net/key.prv
