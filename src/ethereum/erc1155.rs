@@ -98,6 +98,7 @@ impl Client {
 
     pub async fn deploy(&self) -> CliResult<()> {
         let prev_key = SecretKey::from_str(&self.wallet_secret).unwrap();
+        let chain_id = env::var("ETHEREUM_CHAIN_ID").expect("ETHEREUM_CHAIN_ID must be set");
 
         let contract = Contract::deploy(self.cli.eth(), include_bytes!("rust-token1155.abi.json"))?
             .confirmations(1)
@@ -110,11 +111,11 @@ impl Client {
                 include_str!("rust-token1155.bin").trim(),
                 (),
                 SecretKeyRef::from(&prev_key),
-                Some(5),
+                Some(chain_id.parse().unwrap()),
             )
             .await?;
 
-        println!("deployed erc1155 to: {}", contract.address());
+        println!("deployed erc1155 to: {:?}", contract.address());
 
         Ok(())
     }
