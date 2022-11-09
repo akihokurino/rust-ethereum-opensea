@@ -5,7 +5,11 @@ use crate::CliError;
 use std::fs::File;
 use std::io::Read;
 
-pub async fn erc721(name: String, description: String, image_filename: String) -> CliResult<()> {
+pub async fn mint_erc721(
+    name: String,
+    description: String,
+    image_filename: String,
+) -> CliResult<()> {
     if name.is_empty() || description.is_empty() {
         return Err(CliError::InvalidArgument(
             "parameter is invalid".to_string(),
@@ -46,7 +50,7 @@ pub async fn erc721(name: String, description: String, image_filename: String) -
     Ok(())
 }
 
-pub async fn erc1155(
+pub async fn mint_erc1155(
     name: String,
     description: String,
     image_filename: String,

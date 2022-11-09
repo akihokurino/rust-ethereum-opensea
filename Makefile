@@ -59,7 +59,8 @@ key-gen: build
 
 deploy-contract: build
 	./target/debug/rust-opensea \
-	--command deploy-contract
+	--command deploy-contract \
+	--schema $(SCHEMA)
 
 extract-abi:
 	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq '.abi' > src/open_sea/rust-token721.abi.json
