@@ -12,6 +12,7 @@
 - open zeppelin ( https://openzeppelin.com/ )
 
 ## Related
+
 - https://github.com/akihokurino/lambda-opensea
 
 ## Command
@@ -63,6 +64,12 @@ make transfer TOKEN_ID=1 TO_ADDRESS=0x00 SCHEMA=ERC721
 
 ```
 make key-gen
+```
+
+### deploy contract
+
+```
+make deploy-contract SCHEMA=ERC721
 ```
 
 ## Deployed Contract Address（Goerli）
