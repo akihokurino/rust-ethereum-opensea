@@ -4,9 +4,13 @@ pragma solidity ^0.8.17;
 import "./RustToken1155.sol";
 
 contract RustToken1155_V2 is RustToken1155 {
-    function initializeV2() public initializer {}
+    string private _version;
 
-    function hello() public pure returns (string memory) {
-        return "hello v2";
+    function initializeV2(string memory versionSuffix) public {
+        _version = string(abi.encodePacked("v2 ", versionSuffix));
+    }
+
+    function hello() public view virtual returns (string memory) {
+        return string(abi.encodePacked("hello ", _version));
     }
 }
