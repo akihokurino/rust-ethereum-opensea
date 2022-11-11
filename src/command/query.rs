@@ -1,11 +1,12 @@
 use crate::error::CliResult;
+use crate::ethereum::ethers_rs::sample_oracle;
 use crate::ethereum::rust_web3::{erc1155, erc721};
 use crate::open_sea::api::OrderSide;
 use crate::open_sea::{api, ApiClient};
 use crate::CliError;
 use std::env;
 
-pub async fn show_contract() -> CliResult<()> {
+pub async fn show_token_contract() -> CliResult<()> {
     let erc721_contract_address = env::var("ERC721_ADDRESS").expect("ERC721_ADDRESS must be set");
     let erc1155_contract_address = env::var("ERC1155_ADDRESS").expect("ERC721_ADDRESS must be set");
 
@@ -80,6 +81,13 @@ pub async fn show_order(
     }
 
     println!("{:?}", order.orders.first().unwrap());
+
+    Ok(())
+}
+
+pub async fn query_sample_oracle(query: &str) -> CliResult<()> {
+    let cli = sample_oracle::Client::new();
+    cli.query(query).await?;
 
     Ok(())
 }

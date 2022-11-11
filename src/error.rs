@@ -57,6 +57,24 @@ impl From<web3::contract::deploy::Error> for CliError {
     }
 }
 
+impl From<ethers::contract::AbiError> for CliError {
+    fn from(e: ethers::contract::AbiError) -> Self {
+        let msg = format!("ethers contract abi error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
+impl From<ethers::contract::ContractError<ethers::providers::Provider<ethers::providers::Http>>>
+    for CliError
+{
+    fn from(
+        e: ethers::contract::ContractError<ethers::providers::Provider<ethers::providers::Http>>,
+    ) -> Self {
+        let msg = format!("ethers contract call error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
 impl From<std::io::Error> for CliError {
     fn from(e: std::io::Error) -> Self {
         let msg = format!("io error: {:?}", e);

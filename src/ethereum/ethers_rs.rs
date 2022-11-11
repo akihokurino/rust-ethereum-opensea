@@ -1,1 +1,1 @@
-pub mod call_contract;
+pub mod sample_oracle;

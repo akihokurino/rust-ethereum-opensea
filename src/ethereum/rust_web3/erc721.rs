@@ -20,8 +20,8 @@ pub struct Client {
 
 impl Client {
     pub fn new(contract_address: String) -> Self {
-        let base_url = env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set");
-        let transport = Http::new(&base_url).ok().unwrap();
+        let chain_url = env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set");
+        let transport = Http::new(&chain_url).ok().unwrap();
         let cli = Web3::new(transport);
 
         let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");

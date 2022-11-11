@@ -1,11 +1,11 @@
 mod aws;
 mod command;
 mod error;
+mod ethereum;
 mod model;
 mod open_sea;
-mod ethereum;
 
-use crate::command::{deploy, info, key, mint, transaction};
+use crate::command::{deploy, key, query, transaction};
 use crate::error::CliError;
 use crate::model::Schema;
 use crate::open_sea::api::OrderSide;
@@ -24,6 +24,7 @@ const COMMAND_SELL: &str = "sell";
 const COMMAND_TRANSFER: &str = "transfer";
 const COMMAND_KEY_GEN: &str = "key-gen";
 const COMMAND_DEPLOY_CONTRACT: &str = "deploy-contract";
+const COMMAND_QUERY_SAMPLE_ORACLE: &str = "query-sample-oracle";
 
 const ARGS_NAME: &str = "name";
 const ARGS_DESCRIPTION: &str = "description";
@@ -34,6 +35,7 @@ const ARGS_CONTRACT_ADDRESS: &str = "contract-address";
 const ARGS_TOKEN_ID: &str = "token-id";
 const ARGS_SELL_ETHER: &str = "sell-ethers_rs";
 const ARGS_TO_ADDRESS: &str = "to-address";
+const ARGS_QUERY_NAME: &str = "query";
 
 #[tokio::main]
 pub async fn main() {
@@ -56,6 +58,7 @@ pub async fn main() {
                     COMMAND_TRANSFER,
                     COMMAND_KEY_GEN,
                     COMMAND_DEPLOY_CONTRACT,
+                    COMMAND_QUERY_SAMPLE_ORACLE,
                 ])
                 .required(true)
                 .takes_value(true),
@@ -114,6 +117,12 @@ pub async fn main() {
                 .long(ARGS_TO_ADDRESS)
                 .required(false)
                 .takes_value(true),
+        )
+        .arg(
+            Arg::new(ARGS_QUERY_NAME)
+                .long(ARGS_QUERY_NAME)
+                .required(false)
+                .takes_value(true),
         );
 
     let matches = app.get_matches();
@@ -154,24 +163,31 @@ pub async fn main() {
         .value_of(ARGS_TO_ADDRESS)
         .unwrap_or_default()
         .to_string();
+    let query: String = matches
+        .value_of(ARGS_QUERY_NAME)
+        .unwrap_or_default()
+        .to_string();
 
     let result = match matches.value_of(COMMAND).unwrap() {
         COMMAND_DEPLOY_CONTRACT => deploy::deploy_contract(schema).await,
         COMMAND_MINT => match schema {
-            Schema::ERC721 => mint::mint_erc721(name, description, image_filename).await,
-            Schema::ERC1155 => mint::mint_erc1155(name, description, image_filename, amount).await,
+            Schema::ERC721 => transaction::mint_erc721(name, description, image_filename).await,
+            Schema::ERC1155 => {
+                transaction::mint_erc1155(name, description, image_filename, amount).await
+            }
         },
-        COMMAND_CONTRACT_INFO => info::show_contract().await,
-        COMMAND_ASSET_INFO => info::show_asset(contract_address, token_id).await,
+        COMMAND_CONTRACT_INFO => query::show_token_contract().await,
+        COMMAND_ASSET_INFO => query::show_asset(contract_address, token_id).await,
         COMMAND_SELL_ORDER_INFO => {
-            info::show_order(contract_address, token_id, OrderSide::Sell).await
+            query::show_order(contract_address, token_id, OrderSide::Sell).await
         }
         COMMAND_BUY_ORDER_INFO => {
-            info::show_order(contract_address, token_id, OrderSide::Buy).await
+            query::show_order(contract_address, token_id, OrderSide::Buy).await
         }
         COMMAND_SELL => transaction::sell(token_id, schema, sell_ether).await,
         COMMAND_TRANSFER => transaction::transfer(token_id, schema, to_address).await,
         COMMAND_KEY_GEN => key::generate().await,
+        COMMAND_QUERY_SAMPLE_ORACLE => query::query_sample_oracle(&query).await,
         _ => Err(CliError::Internal("unknown command".to_string())),
     };
 
