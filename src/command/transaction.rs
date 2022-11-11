@@ -1,6 +1,6 @@
 use crate::aws::lambda;
 use crate::error::CliResult;
-use crate::ethereum::rust_web3::{erc1155, erc721};
+use crate::ethereum::rust_web3::{rust_token1155, rust_token721};
 use crate::model::Schema;
 use crate::CliError;
 use std::env;
@@ -47,7 +47,7 @@ pub async fn mint_erc721(
 
     println!("{}", "minting..........");
     let erc721_cli =
-        erc721::Client::new(env::var("ERC721_ADDRESS").expect("ERC721_ADDRESS must be set"));
+        rust_token721::Client::new(env::var("ERC721_ADDRESS").expect("ERC721_ADDRESS must be set"));
     erc721_cli.mint(ipfs_hash).await?;
 
     Ok(())
@@ -93,8 +93,9 @@ pub async fn mint_erc1155(
     println!("ipfs_url: {}", res.url);
 
     println!("{}", "minting..........");
-    let erc1155_cli =
-        erc1155::Client::new(env::var("ERC1155_ADDRESS").expect("ERC1155_ADDRESS must be set"));
+    let erc1155_cli = rust_token1155::Client::new(
+        env::var("ERC1155_ADDRESS").expect("ERC1155_ADDRESS must be set"),
+    );
     erc1155_cli.mint(ipfs_hash, amount).await?;
 
     Ok(())

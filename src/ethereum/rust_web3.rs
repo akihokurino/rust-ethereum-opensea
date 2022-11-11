@@ -1,5 +1,5 @@
-pub mod erc1155;
-pub mod erc721;
+pub mod rust_token1155;
+pub mod rust_token721;
 
 use web3::types::Address;
 

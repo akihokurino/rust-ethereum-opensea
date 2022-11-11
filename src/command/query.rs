@@ -1,6 +1,6 @@
 use crate::error::CliResult;
 use crate::ethereum::ethers_rs::sample_oracle;
-use crate::ethereum::rust_web3::{erc1155, erc721};
+use crate::ethereum::rust_web3::{rust_token1155, rust_token721};
 use crate::open_sea::api::OrderSide;
 use crate::open_sea::{api, ApiClient};
 use crate::CliError;
@@ -10,8 +10,8 @@ pub async fn show_token_contract() -> CliResult<()> {
     let erc721_contract_address = env::var("ERC721_ADDRESS").expect("ERC721_ADDRESS must be set");
     let erc1155_contract_address = env::var("ERC1155_ADDRESS").expect("ERC721_ADDRESS must be set");
 
-    let erc721_cli = erc721::Client::new(erc721_contract_address.clone());
-    let erc1155_cli = erc1155::Client::new(erc1155_contract_address.clone());
+    let erc721_cli = rust_token721::Client::new(erc721_contract_address.clone());
+    let erc1155_cli = rust_token1155::Client::new(erc1155_contract_address.clone());
 
     println!("------------------------------------------------------------");
     println!("ERC721 info: {}", erc721_contract_address);
