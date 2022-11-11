@@ -5,6 +5,7 @@
 - rust latest
 - rust-web3 ( https://github.com/tomusdrw/rust-web3 )
 - ethers-rs ( https://github.com/gakonst/ethers-rs )
+- rust-secp256k1 ( https://github.com/rust-bitcoin/rust-secp256k1 )
 - aws-sdk-rust ( https://github.com/awslabs/aws-sdk-rust )
 - infura ( https://infura.io/ )
 - hardhat ( https://hardhat.org/ )
