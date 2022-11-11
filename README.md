@@ -2,13 +2,13 @@
 
 ## Specs
 
-- rust
+- rust latest
 - rust-web3 ( https://github.com/tomusdrw/rust-web3 )
+- ethers-rs ( https://github.com/gakonst/ethers-rs )
 - aws-sdk-rust ( https://github.com/awslabs/aws-sdk-rust )
 - infura ( https://infura.io/ )
-- goerli
 - hardhat ( https://hardhat.org/ )
-- solidity
+- solidity v0.8.17
 - open zeppelin ( https://openzeppelin.com/ )
 
 ## Related
@@ -71,10 +71,3 @@ make key-gen
 ```
 make deploy-contract SCHEMA=ERC721
 ```
-
-## Deployed Contract Address（Goerli）
-
-- ERC721
-  `0x73d1bD8296570aD04E7C03b76Cd9b7AFAEc4f0df`
-- ERC1155
-  `0xBeC715357CC02653EaAE065BEc21d4B11092a5fC`
