@@ -1,5 +1,6 @@
 use crate::error::CliResult;
-use crate::ethereum::{parse_address, GAS_LIMIT, GAS_PRICE};
+use crate::ethereum::rust_web3::{parse_address};
+use crate::ethereum::{GAS_LIMIT, GAS_PRICE};
 use secp256k1::SecretKey;
 use std::str::FromStr;
 use std::{env, time};
@@ -14,18 +15,17 @@ pub struct Client {
     cli: Web3<Http>,
     wallet_address: String,
     wallet_secret: String,
-    pub contract_address: String,
+    contract_address: String,
 }
 
 impl Client {
-    pub fn new() -> Self {
+    pub fn new(contract_address: String) -> Self {
         let base_url = env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set");
         let transport = Http::new(&base_url).ok().unwrap();
         let cli = Web3::new(transport);
 
         let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");
         let wallet_secret = env::var("WALLET_SECRET").expect("WALLET_SECRET must be set");
-        let contract_address = env::var("ERC1155_ADDRESS").expect("ERC1155_ADDRESS must be set");
 
         Client {
             cli,
@@ -39,7 +39,7 @@ impl Client {
         let contract = Contract::from_json(
             self.cli.eth(),
             parse_address(self.contract_address.clone()).unwrap(),
-            include_bytes!("rust-token1155.abi.json"),
+            include_bytes!("rust-token721.abi.json"),
         )?;
         Ok(contract)
     }
@@ -68,18 +68,14 @@ impl Client {
         Ok(supply)
     }
 
-    pub async fn mint(&self, hash: String, amount: u128) -> CliResult<()> {
+    pub async fn mint(&self, hash: String) -> CliResult<()> {
         let prev_key = SecretKey::from_str(&self.wallet_secret).unwrap();
 
         let c = self.contract()?;
         let result = c
             .signed_call_with_confirmations(
                 "mint",
-                (
-                    parse_address(self.wallet_address.clone()).unwrap(),
-                    hash,
-                    amount,
-                ),
+                (parse_address(self.wallet_address.clone()).unwrap(), hash),
                 Options::with(|opt| {
                     opt.gas = Some(U256::from(GAS_LIMIT));
                     opt.gas_price = Some(U256::from(GAS_PRICE));
@@ -100,7 +96,7 @@ impl Client {
         let prev_key = SecretKey::from_str(&self.wallet_secret).unwrap();
         let chain_id = env::var("ETHEREUM_CHAIN_ID").expect("ETHEREUM_CHAIN_ID must be set");
 
-        let contract = Contract::deploy(self.cli.eth(), include_bytes!("rust-token1155.abi.json"))?
+        let contract = Contract::deploy(self.cli.eth(), include_bytes!("rust-token721.abi.json"))?
             .confirmations(1)
             .poll_interval(time::Duration::from_secs(10))
             .options(Options::with(|opt| {
@@ -108,14 +104,14 @@ impl Client {
                 opt.gas_price = Some(U256::from(GAS_PRICE));
             }))
             .sign_with_key_and_execute(
-                include_str!("rust-token1155.bin").trim(),
+                include_str!("rust-token721.bin").trim(),
                 (),
                 SecretKeyRef::from(&prev_key),
                 Some(chain_id.parse().unwrap()),
             )
             .await?;
 
-        println!("deployed erc1155 to: {:?}", contract.address());
+        println!("deployed erc721 to: {:?}", contract.address());
 
         Ok(())
     }

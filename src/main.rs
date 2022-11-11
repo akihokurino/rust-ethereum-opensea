@@ -1,9 +1,9 @@
 mod aws;
 mod command;
 mod error;
-mod ethereum;
 mod model;
 mod open_sea;
+mod ethereum;
 
 use crate::command::{deploy, info, key, mint, transaction};
 use crate::error::CliError;
@@ -32,14 +32,14 @@ const ARGS_AMOUNT: &str = "amount";
 const ARGS_SCHEMA: &str = "schema";
 const ARGS_CONTRACT_ADDRESS: &str = "contract-address";
 const ARGS_TOKEN_ID: &str = "token-id";
-const ARGS_SELL_ETHER: &str = "sell-ether";
+const ARGS_SELL_ETHER: &str = "sell-ethers_rs";
 const ARGS_TO_ADDRESS: &str = "to-address";
 
 #[tokio::main]
 pub async fn main() {
     dotenv().ok();
 
-    let app = Command::new("rust-ethereum-opensea")
+    let app = Command::new("rust-rust_web3-opensea")
         .version("0.1.0")
         .author("akiho <aki030402@mail.com>")
         .about("Ethereum OpenSea CLI")

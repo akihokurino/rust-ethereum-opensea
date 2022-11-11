@@ -1,15 +1,19 @@
 use crate::error::CliResult;
-use crate::ethereum::{erc1155, erc721};
+use crate::ethereum::rust_web3::{erc1155, erc721};
 use crate::open_sea::api::OrderSide;
 use crate::open_sea::{api, ApiClient};
 use crate::CliError;
+use std::env;
 
 pub async fn show_contract() -> CliResult<()> {
-    let erc721_cli = erc721::Client::new();
-    let erc1155_cli = erc1155::Client::new();
+    let erc721_contract_address = env::var("ERC721_ADDRESS").expect("ERC721_ADDRESS must be set");
+    let erc1155_contract_address = env::var("ERC1155_ADDRESS").expect("ERC721_ADDRESS must be set");
+
+    let erc721_cli = erc721::Client::new(erc721_contract_address.clone());
+    let erc1155_cli = erc1155::Client::new(erc1155_contract_address.clone());
 
     println!("------------------------------------------------------------");
-    println!("ERC721 info: {}", erc721_cli.contract_address);
+    println!("ERC721 info: {}", erc721_contract_address);
     let name = erc721_cli.get_name().await?;
     let supply_num = erc721_cli.get_current_supply().await?;
     let used_names = erc721_cli.get_already_used_names().await?;
@@ -19,7 +23,7 @@ pub async fn show_contract() -> CliResult<()> {
     println!("------------------------------------------------------------");
 
     println!("------------------------------------------------------------");
-    println!("ERC1155 info: {}", erc1155_cli.contract_address);
+    println!("ERC1155 info: {}", erc1155_contract_address);
     let name = erc1155_cli.get_name().await?;
     let supply_num = erc1155_cli.get_current_supply().await?;
     let used_names = erc1155_cli.get_already_used_names().await?;

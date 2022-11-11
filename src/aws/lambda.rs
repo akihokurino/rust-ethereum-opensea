@@ -67,7 +67,7 @@ pub mod invoke_open_sea_sdk {
         pub token_id: String,
         #[serde(rename(serialize = "schemaName"))]
         pub schema_name: String,
-        #[serde(rename(serialize = "ether"))]
+        #[serde(rename(serialize = "ethers_rs"))]
         pub ether: f64,
         #[serde(rename(serialize = "quantity"))]
         pub quantity: i32,
