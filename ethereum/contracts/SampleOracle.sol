@@ -11,9 +11,14 @@ contract SampleOracle is ChainlinkClient, Ownable {
     using Chainlink for Chainlink.Request;
 
     struct TimeResponse {
-        string raw;
+        string now;
+        int256 timestamp;
     }
     TimeResponse public timeResponse;
+
+    uint256 private fee;
+    address private oracleAddress;
+    bytes32 private getTimeJobId;
 
     /**
      * Network: Goerli
@@ -27,6 +32,9 @@ contract SampleOracle is ChainlinkClient, Ownable {
             0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e
         );
 
+        fee = 1 * 10**18;
+        oracleAddress = 0x326C977E6efc84E512bB9C30f76E30c160eD06FB; // TODO: Oracleのアドレスに変える
+        getTimeJobId = ""; // TODO: 実際のJobIDに変える
         setChainlinkToken(0x326C977E6efc84E512bB9C30f76E30c160eD06FB);
     }
 
@@ -40,39 +48,34 @@ contract SampleOracle is ChainlinkClient, Ownable {
         return price;
     }
 
-    function createTimeRequestTo(
-        address oracle,
-        bytes32 jobId,
-        uint256 payment
-    ) public onlyOwner returns (bytes32 requestId) {
+    function createGetTimeRequestTo()
+        public
+        onlyOwner
+        returns (bytes32 requestId)
+    {
         Chainlink.Request memory req = buildChainlinkRequest(
-            jobId,
+            getTimeJobId,
             address(this),
-            this.fulfillTimeRequest.selector
+            this.fulfillGetTimeRequest.selector
         );
         req.add("params", "sample time adapter");
-        requestId = sendChainlinkRequestTo(oracle, req, payment);
+        requestId = sendChainlinkRequestTo(oracleAddress, req, fee);
     }
 
-    function fulfillTimeRequest(bytes32 requestId, string calldata resp)
-        public
-        recordChainlinkFulfillment(requestId)
-    {
-        timeResponse = TimeResponse({raw: resp});
+    function fulfillGetTimeRequest(
+        bytes32 requestId,
+        string memory _now,
+        int256 _timestamp
+    ) public recordChainlinkFulfillment(requestId) {
+        timeResponse = TimeResponse({now: _now, timestamp: _timestamp});
     }
 
     function cancelRequest(
-        bytes32 _requestId,
-        uint256 _payment,
-        bytes4 _callbackFunctionId,
-        uint256 _expiration
+        bytes32 requestId,
+        bytes4 callbackFunctionId,
+        uint256 expiration
     ) public onlyOwner {
-        cancelChainlinkRequest(
-            _requestId,
-            _payment,
-            _callbackFunctionId,
-            _expiration
-        );
+        cancelChainlinkRequest(requestId, fee, callbackFunctionId, expiration);
     }
 
     function withdrawLink() public onlyOwner {
