@@ -16,7 +16,7 @@ build:
 	cargo build
 
 mint: build
-	./target/debug/rust-ethereum-opensea \
+	./target/debug/rust-ethereum \
 	--command mint \
 	--name $(NAME) \
 	--description $(DESCRIPTION) \
@@ -25,46 +25,46 @@ mint: build
 	--schema $(SCHEMA) \
 
 contract-info: build
-	./target/debug/rust-ethereum-opensea \
+	./target/debug/rust-ethereum \
 	--command contract-info
 
 asset-info: build
-	./target/debug/rust-ethereum-opensea \
+	./target/debug/rust-ethereum \
 	--command asset-info --contract-address $(CONTRACT_ADDRESS) --token-id $(TOKEN_ID)
 
 sell-order-info: build
-	./target/debug/rust-ethereum-opensea \
+	./target/debug/rust-ethereum \
 	--command sell-order-info --contract-address $(CONTRACT_ADDRESS) --token-id $(TOKEN_ID)
 
 buy-order-info: build
-	./target/debug/rust-ethereum-opensea \
+	./target/debug/rust-ethereum \
 	--command buy-order-info --contract-address $(CONTRACT_ADDRESS) --token-id $(TOKEN_ID)
 
 sell: build
-	./target/debug/rust-ethereum-opensea \
+	./target/debug/rust-ethereum \
 	--command sell \
 	--token-id $(TOKEN_ID) \
 	--schema $(SCHEMA) \
 	--sell-ether $(ETHER)
 
 transfer: build
-	./target/debug/rust-ethereum-opensea \
+	./target/debug/rust-ethereum \
 	--command transfer \
 	--token-id $(TOKEN_ID) \
 	--schema $(SCHEMA) \
 	--to-address $(TO_ADDRESS)
 
 key-gen: build
-	./target/debug/rust-ethereum-opensea \
+	./target/debug/rust-ethereum \
 	--command key-gen
 
 deploy-contract: build
-	./target/debug/rust-ethereum-opensea \
+	./target/debug/rust-ethereum \
 	--command deploy-contract \
 	--schema $(SCHEMA)
 
 query-sample-oracle: build
-	./target/debug/rust-ethereum-opensea \
+	./target/debug/rust-ethereum \
     --command query-sample-oracle \
     --query $(QUERY)
 

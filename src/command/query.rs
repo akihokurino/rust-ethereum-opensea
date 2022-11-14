@@ -87,7 +87,7 @@ pub async fn show_order(
 
 pub async fn query_sample_oracle(query: &str) -> CliResult<()> {
     let cli = sample_oracle::Client::new();
-    cli.query(query).await?;
+    cli.query::<u128>(query).await?;
 
     Ok(())
 }

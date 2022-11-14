@@ -31,14 +31,14 @@ impl Client {
         }
     }
 
-    pub async fn query(&self, method: &str) -> CliResult<()> {
+    pub async fn query<T: abi::Tokenizable + std::fmt::Debug>(&self, method: &str) -> CliResult<()> {
         let contract = Contract::new(
             self.address.clone(),
             self.abi.clone(),
             self.provider.clone(),
         );
 
-        let res = contract.method::<_, u128>(method, ())?.call().await?;
+        let res = contract.method::<_, T>(method, ())?.call().await?;
 
         println!("{}: {:?}", method, res);
 

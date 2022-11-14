@@ -41,7 +41,7 @@ const ARGS_QUERY_NAME: &str = "query";
 pub async fn main() {
     dotenv().ok();
 
-    let app = Command::new("rust-rust_web3-opensea")
+    let app = Command::new("rust-ethereum")
         .version("0.1.0")
         .author("akiho <aki030402@mail.com>")
         .about("Ethereum OpenSea CLI")

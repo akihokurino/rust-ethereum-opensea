@@ -1,5 +1,5 @@
 [package]
-name = "rust-ethereum-opensea"
+name = "rust-ethereum"
 version = "0.1.0"
 authors = ["akiho <aki030402@mail.com>"]
 description = "Ethereum OpenSea CLI"
