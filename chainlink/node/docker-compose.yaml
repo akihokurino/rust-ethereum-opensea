@@ -1,0 +1,48 @@
+version: "3.4"
+
+services:
+  postgresql:
+    image: postgres:14.2
+    container_name: postgresql
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres/init:/docker-entrypoint-initdb.d
+      - database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+      POSTGRES_HOST_AUTH_METHOD: password
+    hostname: postgres
+    restart: always
+    user: root
+
+  chainlink:
+    image: smartcontract/chainlink:1.9.0
+    container_name: chainlink
+    tty: true
+    ports:
+      - 6688:6688
+    env_file:
+      - ./chainlink/.env
+    volumes:
+      - ./chainlink/data:/chainlink
+    depends_on:
+      - postgresql
+    entrypoint: "/bin/bash -c 'chainlink local n -p /chainlink/.password -a /chainlink/.api'"
+    restart: on-failure
+
+  time_adapter:
+    container_name: time-adapter
+    ports:
+      - "8080:8080"
+    build:
+      context: ../time-adapter
+      dockerfile: ./Dockerfile
+    image: time-adapter
+    restart: on-failure
+
+volumes:
+  database:
+    driver: local
