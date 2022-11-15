@@ -8,6 +8,7 @@ use std::env;
 
 #[derive(Clone, Debug)]
 pub struct Client {
+    #[allow(dead_code)]
     wallet_address: String,
     wallet_secret: String,
     provider: Provider<Http>,
