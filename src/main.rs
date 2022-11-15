@@ -24,7 +24,8 @@ const COMMAND_SELL: &str = "sell";
 const COMMAND_TRANSFER: &str = "transfer";
 const COMMAND_KEY_GEN: &str = "key-gen";
 const COMMAND_DEPLOY_CONTRACT: &str = "deploy-contract";
-const COMMAND_QUERY_SAMPLE_ORACLE: &str = "query-sample-oracle";
+const COMMAND_SAMPLE_ORACLE_INFO: &str = "sample-oracle-info";
+const COMMAND_SAMPLE_ORACLE_GET_TIME_REQUEST: &str = "sample-oracle-get-time-request";
 
 const ARGS_NAME: &str = "name";
 const ARGS_DESCRIPTION: &str = "description";
@@ -35,7 +36,6 @@ const ARGS_CONTRACT_ADDRESS: &str = "contract-address";
 const ARGS_TOKEN_ID: &str = "token-id";
 const ARGS_SELL_ETHER: &str = "sell-ethers_rs";
 const ARGS_TO_ADDRESS: &str = "to-address";
-const ARGS_QUERY_NAME: &str = "query";
 
 #[tokio::main]
 pub async fn main() {
@@ -58,7 +58,8 @@ pub async fn main() {
                     COMMAND_TRANSFER,
                     COMMAND_KEY_GEN,
                     COMMAND_DEPLOY_CONTRACT,
-                    COMMAND_QUERY_SAMPLE_ORACLE,
+                    COMMAND_SAMPLE_ORACLE_INFO,
+                    COMMAND_SAMPLE_ORACLE_GET_TIME_REQUEST,
                 ])
                 .required(true)
                 .takes_value(true),
@@ -117,12 +118,6 @@ pub async fn main() {
                 .long(ARGS_TO_ADDRESS)
                 .required(false)
                 .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_QUERY_NAME)
-                .long(ARGS_QUERY_NAME)
-                .required(false)
-                .takes_value(true),
         );
 
     let matches = app.get_matches();
@@ -163,10 +158,6 @@ pub async fn main() {
         .value_of(ARGS_TO_ADDRESS)
         .unwrap_or_default()
         .to_string();
-    let query: String = matches
-        .value_of(ARGS_QUERY_NAME)
-        .unwrap_or_default()
-        .to_string();
 
     let result = match matches.value_of(COMMAND).unwrap() {
         COMMAND_DEPLOY_CONTRACT => deploy::deploy_contract(schema).await,
@@ -187,7 +178,8 @@ pub async fn main() {
         COMMAND_SELL => transaction::sell(token_id, schema, sell_ether).await,
         COMMAND_TRANSFER => transaction::transfer(token_id, schema, to_address).await,
         COMMAND_KEY_GEN => key::generate().await,
-        COMMAND_QUERY_SAMPLE_ORACLE => query::query_sample_oracle(&query).await,
+        COMMAND_SAMPLE_ORACLE_INFO => query::show_sample_oracle_contract().await,
+        COMMAND_SAMPLE_ORACLE_GET_TIME_REQUEST => transaction::create_get_time_request().await,
         _ => Err(CliError::Internal("unknown command".to_string())),
     };
 

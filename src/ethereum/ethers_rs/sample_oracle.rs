@@ -1,7 +1,9 @@
 use crate::error::CliResult;
+use crate::ethereum::{GAS_LIMIT, GAS_PRICE};
 use ethers::abi::Abi;
 use ethers::contract::Contract;
 use ethers::prelude::*;
+use ethers_signers::{LocalWallet, Signer};
 use std::env;
 
 #[derive(Clone, Debug)]
@@ -31,7 +33,10 @@ impl Client {
         }
     }
 
-    pub async fn query<T: abi::Tokenizable + std::fmt::Debug>(&self, method: &str) -> CliResult<()> {
+    pub async fn simple_query<T: abi::Tokenizable + std::fmt::Debug>(
+        &self,
+        method: &str,
+    ) -> CliResult<()> {
         let contract = Contract::new(
             self.address.clone(),
             self.abi.clone(),
@@ -41,6 +46,32 @@ impl Client {
         let res = contract.method::<_, T>(method, ())?.call().await?;
 
         println!("{}: {:?}", method, res);
+
+        Ok(())
+    }
+
+    pub async fn create_get_time_request(&self) -> CliResult<()> {
+        let wallet = self.wallet_secret.parse::<LocalWallet>()?;
+
+        let client = SignerMiddleware::new(
+            self.provider.clone(),
+            wallet.with_chain_id(
+                env::var("ETHEREUM_CHAIN_ID")
+                    .expect("ETHEREUM_CHAIN_ID must be set")
+                    .parse::<u64>()
+                    .unwrap(),
+            ),
+        );
+
+        let contract = Contract::new(self.address.clone(), self.abi.clone(), client);
+        let func = contract
+            .method::<_, H256>("createGetTimeRequestTo", ())?
+            .gas(GAS_LIMIT)
+            .gas_price(GAS_PRICE);
+        let tx = func.send().await?;
+        let receipt = tx.await.unwrap();
+
+        println!("createGetTimeRequestTo: {:?}", receipt);
 
         Ok(())
     }

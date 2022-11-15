@@ -11,10 +11,16 @@
 - hardhat ( https://hardhat.org/ )
 - solidity v0.8.17
 - open zeppelin ( https://openzeppelin.com/ )
+- chainlink ( https://docs.chain.link/ )
+- oracle
 
 ## Related
 
 - https://github.com/akihokurino/lambda-opensea
+
+## Chainlink Notes
+
+- https://zenn.dev/aki030402/articles/546c38c8b437f1
 
 ## Command
 

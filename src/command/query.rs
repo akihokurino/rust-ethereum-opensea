@@ -4,6 +4,7 @@ use crate::ethereum::rust_web3::{rust_token1155, rust_token721};
 use crate::open_sea::api::OrderSide;
 use crate::open_sea::{api, ApiClient};
 use crate::CliError;
+use ethers::abi::Address;
 use std::env;
 
 pub async fn show_token_contract() -> CliResult<()> {
@@ -85,9 +86,12 @@ pub async fn show_order(
     Ok(())
 }
 
-pub async fn query_sample_oracle(query: &str) -> CliResult<()> {
+pub async fn show_sample_oracle_contract() -> CliResult<()> {
     let cli = sample_oracle::Client::new();
-    cli.query::<u128>(query).await?;
+    cli.simple_query::<u128>("getLatestPrice").await?;
+    cli.simple_query::<ethers::abi::FixedBytes>("getTimeJobId")
+        .await?;
+    cli.simple_query::<Address>("oracleAddress").await?;
 
     Ok(())
 }

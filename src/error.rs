@@ -1,5 +1,6 @@
 use aws_sdk_lambda::error::InvokeError;
 use aws_sdk_lambda::types::SdkError;
+use ethers::signers::{Wallet, WalletError};
 use reqwest::StatusCode;
 use thiserror::Error as ThisErr;
 
@@ -71,6 +72,36 @@ impl From<ethers::contract::ContractError<ethers::providers::Provider<ethers::pr
         e: ethers::contract::ContractError<ethers::providers::Provider<ethers::providers::Http>>,
     ) -> Self {
         let msg = format!("ethers contract call error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
+impl From<WalletError> for CliError {
+    fn from(e: WalletError) -> Self {
+        let msg = format!("ethers contract wallet error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
+impl
+    From<
+        ethers::contract::ContractError<
+            ethers::middleware::SignerMiddleware<
+                ethers::providers::Provider<ethers::providers::Http>,
+                Wallet<ethers::core::k256::ecdsa::SigningKey>,
+            >,
+        >,
+    > for CliError
+{
+    fn from(
+        _e: ethers::contract::ContractError<
+            ethers::middleware::SignerMiddleware<
+                ethers::providers::Provider<ethers::providers::Http>,
+                Wallet<ethers::core::k256::ecdsa::SigningKey>,
+            >,
+        >,
+    ) -> Self {
+        let msg = format!("ethers contract sign error");
         Self::Internal(msg)
     }
 }

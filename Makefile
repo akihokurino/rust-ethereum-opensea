@@ -63,10 +63,13 @@ deploy-contract: build
 	--command deploy-contract \
 	--schema $(SCHEMA)
 
-query-sample-oracle: build
+sample-oracle-info: build
 	./target/debug/rust-ethereum \
-    --command query-sample-oracle \
-    --query $(QUERY)
+    --command sample-oracle-info
+
+sample-oracle-get-time-request: build
+	./target/debug/rust-ethereum \
+    --command sample-oracle-get-time-request
 
 extract-token-abi:
 	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq '.abi' > src/ethereum/rust_web3/rust-token721.abi.json
