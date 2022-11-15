@@ -87,6 +87,19 @@
   },
   {
     "inputs": [],
+    "name": "chainlinkFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "createGetTimeRequestTo",
     "outputs": [
       {
@@ -96,19 +109,6 @@
       }
     ],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "fee",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -162,37 +162,6 @@
   },
   {
     "inputs": [],
-    "name": "getTimeJobId",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getTimeResponse",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "now",
-        "type": "string"
-      },
-      {
-        "internalType": "int256",
-        "name": "timestamp",
-        "type": "int256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "oracleAddress",
     "outputs": [
       {
@@ -227,14 +196,71 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      }
+    ],
+    "name": "setChainlinkFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_address",
+        "type": "address"
+      }
+    ],
+    "name": "setOracleAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "id",
         "type": "bytes32"
       }
     ],
-    "name": "setGetTimeJobId",
+    "name": "setTimeJobId",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "timeJobId",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "timeResponse",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "now",
+        "type": "string"
+      },
+      {
+        "internalType": "int256",
+        "name": "timestamp",
+        "type": "int256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

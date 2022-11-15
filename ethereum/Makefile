@@ -13,8 +13,11 @@ node:
 
 deploy-local:
 	npx hardhat run scripts/deploy-tokens.ts --network hardhat
+	npx hardhat run scripts/deploy-sample-oracle.ts --network hardhat
+	npx hardhat run scripts/deploy-oracle.ts --network hardhat
+	npx hardhat run scripts/deploy-hello.ts --network hardhat
 
-deploy-goerli:
+deploy-tokens-goerli:
 	npx hardhat run scripts/deploy-tokens.ts --network goerli
 
 deploy-sample-oracle-goerli:
@@ -22,6 +25,9 @@ deploy-sample-oracle-goerli:
 
 deploy-oracle-goerli:
 	npx hardhat run scripts/deploy-oracle.ts --network goerli
+
+deploy-hello-goerli:
+	npx hardhat run scripts/deploy-hello.ts --network goerli
 
 init-private-net:
 	geth --datadir ./private-net/ init ./private-net/genesis.json

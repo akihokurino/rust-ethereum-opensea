@@ -1,5 +1,5 @@
 use crate::error::CliResult;
-use crate::ethereum::ethers_rs::sample_oracle;
+use crate::ethereum::ethers_rs::{hello, sample_oracle};
 use crate::ethereum::rust_web3::{rust_token1155, rust_token721};
 use crate::open_sea::api::OrderSide;
 use crate::open_sea::{api, ApiClient};
@@ -89,9 +89,18 @@ pub async fn show_order(
 pub async fn show_sample_oracle_contract() -> CliResult<()> {
     let cli = sample_oracle::Client::new();
     cli.simple_query::<u128>("getLatestPrice").await?;
-    cli.simple_query::<ethers::abi::FixedBytes>("getTimeJobId")
+    cli.simple_query::<Address>("getChainlinkToken").await?;
+    cli.simple_query::<u128>("chainlinkFee").await?;
+    cli.simple_query::<ethers::abi::FixedBytes>("timeJobId")
         .await?;
     cli.simple_query::<Address>("oracleAddress").await?;
+
+    Ok(())
+}
+
+pub async fn show_hello_contract() -> CliResult<()> {
+    let cli = hello::Client::new();
+    cli.simple_query::<String>("message").await?;
 
     Ok(())
 }

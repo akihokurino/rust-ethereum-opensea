@@ -1,6 +1,6 @@
 use crate::aws::lambda;
 use crate::error::CliResult;
-use crate::ethereum::ethers_rs::sample_oracle;
+use crate::ethereum::ethers_rs::{hello, sample_oracle};
 use crate::ethereum::rust_web3::{rust_token1155, rust_token721};
 use crate::model::Schema;
 use crate::CliError;
@@ -129,6 +129,13 @@ pub async fn transfer(token_id: String, schema: Schema, to_address: String) -> C
 pub async fn create_get_time_request() -> CliResult<()> {
     let cli = sample_oracle::Client::new();
     cli.create_get_time_request().await?;
+
+    Ok(())
+}
+
+pub async fn set_hello_message(message: String) -> CliResult<()> {
+    let cli = hello::Client::new();
+    cli.set_message(message).await?;
 
     Ok(())
 }

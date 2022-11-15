@@ -10,15 +10,15 @@ contract SampleOracle is ChainlinkClient, Ownable {
 
     using Chainlink for Chainlink.Request;
 
-    struct GetTimeResponse {
+    struct TimeResponse {
         string now;
         int256 timestamp;
     }
-    GetTimeResponse public getTimeResponse;
+    TimeResponse public timeResponse;
 
-    uint256 public fee;
+    uint256 public chainlinkFee;
     address public oracleAddress;
-    bytes32 public getTimeJobId;
+    bytes32 public timeJobId;
 
     /**
      * Network: Goerli
@@ -27,7 +27,7 @@ contract SampleOracle is ChainlinkClient, Ownable {
      *
      * Link Token: 0x326C977E6efc84E512bB9C30f76E30c160eD06FB
      * Oracle Address: 0x45585c78a16c62b510E6336fD8B95C61e88039B0
-     * GetTime JobId: b51574fb-06e3-4cba-9bb3-596de9f07a64
+     * Time JobId: b51574fb-06e3-4cba-9bb3-596de9f07a64
      */
     constructor() {
         priceFeed = AggregatorV3Interface(
@@ -36,9 +36,9 @@ contract SampleOracle is ChainlinkClient, Ownable {
 
         setChainlinkToken(0x326C977E6efc84E512bB9C30f76E30c160eD06FB);
 
-        fee = 1 * 10**18;
+        chainlinkFee = 1 * 10**18;
         oracleAddress = 0x45585c78a16c62b510E6336fD8B95C61e88039B0;
-        getTimeJobId = "b51574fb06e34cba9bb3596de9f07a64";
+        timeJobId = "b51574fb06e34cba9bb3596de9f07a64";
     }
 
     function getChainlinkToken() public view returns (address) {
@@ -51,8 +51,16 @@ contract SampleOracle is ChainlinkClient, Ownable {
         return price;
     }
 
-    function setGetTimeJobId(bytes32 id) public onlyOwner {
-        getTimeJobId = id;
+    function setChainlinkFee(uint256 fee) public onlyOwner {
+        chainlinkFee = fee;
+    }
+
+    function setOracleAddress(address _address) public onlyOwner {
+        oracleAddress = _address;
+    }
+
+    function setTimeJobId(bytes32 id) public onlyOwner {
+        timeJobId = id;
     }
 
     function createGetTimeRequestTo()
@@ -61,12 +69,12 @@ contract SampleOracle is ChainlinkClient, Ownable {
         returns (bytes32 requestId)
     {
         Chainlink.Request memory req = buildChainlinkRequest(
-            getTimeJobId,
+            timeJobId,
             address(this),
             this.fulfillGetTimeRequest.selector
         );
         req.add("params", "sample time adapter");
-        requestId = sendChainlinkRequestTo(oracleAddress, req, fee);
+        requestId = sendChainlinkRequestTo(oracleAddress, req, chainlinkFee);
     }
 
     function fulfillGetTimeRequest(
@@ -74,7 +82,7 @@ contract SampleOracle is ChainlinkClient, Ownable {
         string memory _now,
         int256 _timestamp
     ) public recordChainlinkFulfillment(requestId) {
-        getTimeResponse = GetTimeResponse({now: _now, timestamp: _timestamp});
+        timeResponse = TimeResponse({now: _now, timestamp: _timestamp});
     }
 
     function cancelRequest(
@@ -82,7 +90,12 @@ contract SampleOracle is ChainlinkClient, Ownable {
         bytes4 callbackFunctionId,
         uint256 expiration
     ) public onlyOwner {
-        cancelChainlinkRequest(requestId, fee, callbackFunctionId, expiration);
+        cancelChainlinkRequest(
+            requestId,
+            chainlinkFee,
+            callbackFunctionId,
+            expiration
+        );
     }
 
     function withdrawLink() public onlyOwner {
