@@ -9,6 +9,7 @@ dotenv.config();
 const chainIds = {
   goerli: 5,
   hardhat: 31337,
+  geth: 15,
 };
 
 const config: HardhatUserConfig = {
@@ -28,6 +29,10 @@ const config: HardhatUserConfig = {
         mnemonic: process.env.WALLET_MNEMONIC!,
       },
       chainId: chainIds.hardhat,
+    },
+    geth: {
+      url: "http://127.0.0.1:8545/",
+      chainId: chainIds.geth,
     },
     goerli: {
       url: process.env.CHAIN_URL!,

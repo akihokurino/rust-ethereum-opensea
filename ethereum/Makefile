@@ -11,11 +11,17 @@ test:
 node:
 	npx hardhat node
 
-deploy-local:
+deploy-hardhat:
 	npx hardhat run scripts/deploy-tokens.ts --network hardhat
 	npx hardhat run scripts/deploy-sample-oracle.ts --network hardhat
 	npx hardhat run scripts/deploy-oracle.ts --network hardhat
 	npx hardhat run scripts/deploy-hello.ts --network hardhat
+
+deploy-geth:
+	npx hardhat run scripts/deploy-tokens.ts --network geth
+	npx hardhat run scripts/deploy-sample-oracle.ts --network geth
+	npx hardhat run scripts/deploy-oracle.ts --network geth
+	npx hardhat run scripts/deploy-hello.ts --network geth
 
 deploy-tokens-goerli:
 	npx hardhat run scripts/deploy-tokens.ts --network goerli
