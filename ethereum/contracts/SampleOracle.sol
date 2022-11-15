@@ -10,15 +10,15 @@ contract SampleOracle is ChainlinkClient, Ownable {
 
     using Chainlink for Chainlink.Request;
 
-    struct TimeResponse {
+    struct GetTimeResponse {
         string now;
         int256 timestamp;
     }
-    TimeResponse public timeResponse;
+    GetTimeResponse public getTimeResponse;
 
-    uint256 private fee;
-    address private oracleAddress;
-    bytes32 private getTimeJobId;
+    uint256 public fee;
+    address public oracleAddress;
+    bytes32 public getTimeJobId;
 
     /**
      * Network: Goerli
@@ -26,16 +26,19 @@ contract SampleOracle is ChainlinkClient, Ownable {
      * Address: 0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e
      *
      * Link Token: 0x326C977E6efc84E512bB9C30f76E30c160eD06FB
+     * Oracle Address: 0x45585c78a16c62b510E6336fD8B95C61e88039B0
+     * GetTime JobId: b51574fb-06e3-4cba-9bb3-596de9f07a64
      */
     constructor() {
         priceFeed = AggregatorV3Interface(
             0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e
         );
 
-        fee = 1 * 10**18;
-        oracleAddress = 0x326C977E6efc84E512bB9C30f76E30c160eD06FB; // TODO: Oracleのアドレスに変える
-        getTimeJobId = ""; // TODO: 実際のJobIDに変える
         setChainlinkToken(0x326C977E6efc84E512bB9C30f76E30c160eD06FB);
+
+        fee = 1 * 10**18;
+        oracleAddress = 0x45585c78a16c62b510E6336fD8B95C61e88039B0;
+        getTimeJobId = "b51574fb06e34cba9bb3596de9f07a64";
     }
 
     function getChainlinkToken() public view returns (address) {
@@ -46,6 +49,10 @@ contract SampleOracle is ChainlinkClient, Ownable {
     function getLatestPrice() public view returns (int256) {
         (, int256 price, , , ) = priceFeed.latestRoundData();
         return price;
+    }
+
+    function setGetTimeJobId(bytes32 id) public onlyOwner {
+        getTimeJobId = id;
     }
 
     function createGetTimeRequestTo()
@@ -67,7 +74,7 @@ contract SampleOracle is ChainlinkClient, Ownable {
         string memory _now,
         int256 _timestamp
     ) public recordChainlinkFulfillment(requestId) {
-        timeResponse = TimeResponse({now: _now, timestamp: _timestamp});
+        getTimeResponse = GetTimeResponse({now: _now, timestamp: _timestamp});
     }
 
     function cancelRequest(

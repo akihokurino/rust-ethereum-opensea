@@ -1,4 +1,4 @@
-contractAddress = "<YOUR_ORACLE_ADDRESS>"
+contractAddress = "0x45585c78a16c62b510E6336fD8B95C61e88039B0"
 name = "Get Time"
 observationSource = """
   decode_log [
@@ -17,8 +17,8 @@ observationSource = """
 
   decode_log -> decode_cbor -> fetch
 
-  data_now [type="jsonparse" path="data.now" data="$(fetch)"]
-  data_timestamp [type="jsonparse" path="data.timestamp" data="$(fetch)"]
+  data_now [type="jsonparse" path="data,now" data="$(fetch)"]
+  data_timestamp [type="jsonparse" path="data,timestamp" data="$(fetch)"]
 
   fetch -> data_now
   fetch -> data_timestamp
@@ -38,7 +38,7 @@ observationSource = """
     data="{\\"requestId\\": $(decode_log.requestId), \\"payment\\": $(decode_log.payment), \\"callbackAddress\\": $(decode_log.callbackAddr), \\"callbackFunctionId\\": $(decode_log.callbackFunctionId), \\"expiration\\": $(decode_log.cancelExpiration), \\"data\\": $(encode_data)}"
   ]
   submit_tx [
-    type="ethtx" to="<YOUR_ORACLE_ADDRESS>"
+    type="ethtx" to="0x45585c78a16c62b510E6336fD8B95C61e88039B0"
     data="$(encode_tx)"
   ]
 
