@@ -1,11 +1,22 @@
 use crate::error::CliResult;
 use crate::ethereum::ethers_rs::{hello, sample_oracle};
 use crate::ethereum::rust_web3::{rust_token1155, rust_token721};
+use crate::ethereum::{ethers_rs, rust_web3};
 use crate::open_sea::api::OrderSide;
 use crate::open_sea::{api, ApiClient};
 use crate::CliError;
 use ethers::abi::Address;
 use std::env;
+
+pub async fn get_balance() -> CliResult<()> {
+    println!("{}", "use ethers-rs");
+    ethers_rs::get_balance().await?;
+
+    println!("{}", "use rust-web3");
+    rust_web3::get_balance().await?;
+
+    Ok(())
+}
 
 pub async fn show_token_contract() -> CliResult<()> {
     let erc721_contract_address = env::var("ERC721_ADDRESS").expect("ERC721_ADDRESS must be set");

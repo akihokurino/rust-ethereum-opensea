@@ -17,6 +17,16 @@ SIGNATURE := ""
 build:
 	cargo build
 
+balance: build
+	./target/debug/rust-ethereum \
+	--command balance
+
+send-eth: build
+	./target/debug/rust-ethereum \
+	--command send-eth \
+	--ether $(ETHER) \
+	--to-address $(TO_ADDRESS)
+
 mint: build
 	./target/debug/rust-ethereum \
 	--command mint \
@@ -47,7 +57,7 @@ opensea-sell: build
 	--command opensea-sell \
 	--token-id $(TOKEN_ID) \
 	--schema $(SCHEMA) \
-	--sell-ether $(ETHER)
+	--ether $(ETHER)
 
 opensea-transfer: build
 	./target/debug/rust-ethereum \

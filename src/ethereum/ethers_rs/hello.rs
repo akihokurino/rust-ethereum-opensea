@@ -77,7 +77,7 @@ impl Client {
             .gas(GAS_LIMIT)
             .gas_price(GAS_PRICE);
         let tx = call.send().await.unwrap();
-        let receipt = tx.await.unwrap();
+        let receipt = tx.confirmations(1).await.unwrap();
 
         println!("setMessage: {:?}", receipt);
 

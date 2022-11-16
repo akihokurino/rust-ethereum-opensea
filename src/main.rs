@@ -15,6 +15,8 @@ use std::str::FromStr;
 
 const COMMAND: &str = "command";
 
+const COMMAND_BALANCE: &str = "balance";
+const COMMAND_SEND_ETH: &str = "send-eth";
 const COMMAND_MINT: &str = "mint";
 const COMMAND_TOKEN_INFO: &str = "token-info";
 const COMMAND_OPENSEA_ASSET_INFO: &str = "opensea-asset-info";
@@ -39,7 +41,7 @@ const ARGS_AMOUNT: &str = "amount";
 const ARGS_SCHEMA: &str = "schema";
 const ARGS_CONTRACT_ADDRESS: &str = "contract-address";
 const ARGS_TOKEN_ID: &str = "token-id";
-const ARGS_SELL_ETHER: &str = "sell-ethers_rs";
+const ARGS_ETHER: &str = "ether";
 const ARGS_TO_ADDRESS: &str = "to-address";
 const ARGS_MESSAGE: &str = "message";
 const ARGS_SIGNATURE: &str = "signature";
@@ -56,6 +58,8 @@ pub async fn main() {
             Arg::new(COMMAND)
                 .long(COMMAND)
                 .possible_values(&[
+                    COMMAND_BALANCE,
+                    COMMAND_SEND_ETH,
                     COMMAND_MINT,
                     COMMAND_TOKEN_INFO,
                     COMMAND_OPENSEA_ASSET_INFO,
@@ -119,8 +123,8 @@ pub async fn main() {
                 .takes_value(true),
         )
         .arg(
-            Arg::new(ARGS_SELL_ETHER)
-                .long(ARGS_SELL_ETHER)
+            Arg::new(ARGS_ETHER)
+                .long(ARGS_ETHER)
                 .required(false)
                 .takes_value(true),
         )
@@ -172,8 +176,8 @@ pub async fn main() {
         .value_of(ARGS_TOKEN_ID)
         .unwrap_or_default()
         .to_string();
-    let sell_ether: f64 = matches
-        .value_of(ARGS_SELL_ETHER)
+    let ether: f64 = matches
+        .value_of(ARGS_ETHER)
         .unwrap_or_default()
         .parse()
         .unwrap_or(0.0);
@@ -191,6 +195,8 @@ pub async fn main() {
         .to_string();
 
     let result = match matches.value_of(COMMAND).unwrap() {
+        COMMAND_BALANCE => query::get_balance().await,
+        COMMAND_SEND_ETH => transaction::send_eth(ether, to_address).await,
         COMMAND_MINT => match schema {
             Schema::ERC721 => transaction::mint_erc721(name, description, image_filename).await,
             Schema::ERC1155 => {
@@ -205,7 +211,7 @@ pub async fn main() {
         COMMAND_OPENSEA_BUY_ORDER_INFO => {
             query::show_order(contract_address, token_id, OrderSide::Buy).await
         }
-        COMMAND_OPENSEA_SELL => transaction::sell(token_id, schema, sell_ether).await,
+        COMMAND_OPENSEA_SELL => transaction::sell(token_id, schema, ether).await,
         COMMAND_OPENSEA_TRANSFER => transaction::transfer(token_id, schema, to_address).await,
         COMMAND_KEY_GEN => key::generate().await,
         COMMAND_SIGN => key::sign(message).await,

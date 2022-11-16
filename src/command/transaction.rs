@@ -2,10 +2,25 @@ use crate::aws::lambda;
 use crate::error::CliResult;
 use crate::ethereum::ethers_rs::{hello, sample_oracle};
 use crate::ethereum::rust_web3::{rust_token1155, rust_token721};
+use crate::ethereum::{ethers_rs, rust_web3};
 use crate::model::Schema;
 use crate::CliError;
 use std::fs::File;
 use std::io::Read;
+
+pub async fn send_eth(ether: f64, address: String) -> CliResult<()> {
+    println!("{}", "use ethers-rs");
+    ethers_rs::send_eth(
+        ether,
+        address.clone().parse::<ethers::prelude::Address>().unwrap(),
+    )
+    .await?;
+
+    println!("{}", "use rust-web3");
+    rust_web3::send_eth(ether, rust_web3::parse_address(address.clone()).unwrap()).await?;
+
+    Ok(())
+}
 
 pub async fn mint_erc721(
     name: String,
