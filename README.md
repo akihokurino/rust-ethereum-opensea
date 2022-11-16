@@ -24,6 +24,18 @@
 
 ## Command
 
+### get balance
+
+```
+make balance
+```
+
+### send ether
+
+```
+make send-eth ETHER=10 TO_ADDRESS=0x00
+```
+
 ### mint erc721
 
 ```

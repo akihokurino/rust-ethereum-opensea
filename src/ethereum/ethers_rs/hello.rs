@@ -3,8 +3,10 @@ use crate::ethereum::{GAS_LIMIT, GAS_PRICE};
 use ethers::abi::Abi;
 use ethers::contract::Contract;
 use ethers::prelude::*;
+use ethers::types::transaction::eip2718::TypedTransaction;
 use ethers_signers::{LocalWallet, Signer};
 use std::env;
+use std::str::FromStr;
 use std::sync::Arc;
 
 #[derive(Clone, Debug)]
@@ -80,6 +82,46 @@ impl Client {
         let receipt = tx.confirmations(1).await.unwrap();
 
         println!("setMessage: {:?}", receipt);
+
+        Ok(())
+    }
+
+    pub async fn deploy(&self) -> CliResult<()> {
+        let wallet = self.wallet_secret.parse::<LocalWallet>()?.with_chain_id(
+            env::var("ETHEREUM_CHAIN_ID")
+                .expect("ETHEREUM_CHAIN_ID must be set")
+                .parse::<u64>()
+                .unwrap(),
+        );
+
+        let client = SignerMiddleware::new_with_provider_chain(self.provider.clone(), wallet)
+            .await
+            .unwrap();
+        let client = Arc::new(client);
+
+        let bytecode = include_str!("hello.bin").trim();
+        let factory = ContractFactory::new(
+            self.abi.clone(),
+            Bytes::from_str(bytecode).unwrap(),
+            client.clone(),
+        );
+
+        let mut deployer = factory.deploy(()).unwrap();
+        deployer.tx = TypedTransaction::Legacy(TransactionRequest {
+            to: None,
+            data: deployer.tx.data().cloned(),
+            gas: Some(U256::from(GAS_LIMIT)),
+            gas_price: Some(U256::from(GAS_PRICE)),
+            ..Default::default()
+        });
+        let contract = deployer
+            .confirmations(1 as usize)
+            .legacy()
+            .send()
+            .await
+            .unwrap();
+
+        println!("deployed hello to: {:?}", contract.address());
 
         Ok(())
     }

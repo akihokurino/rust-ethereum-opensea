@@ -1,4 +1,5 @@
 use crate::error::CliResult;
+use crate::ethereum::ethers_rs::hello;
 use crate::ethereum::rust_web3::{rust_token1155, rust_token721};
 use crate::model::Schema;
 
@@ -16,6 +17,13 @@ pub async fn deploy_token_contract(schema: Schema) -> CliResult<()> {
             erc1155_cli.deploy().await?
         }
     }
+
+    Ok(())
+}
+
+pub async fn deploy_hello_contract() -> CliResult<()> {
+    let cli = hello::Client::new();
+    cli.deploy().await?;
 
     Ok(())
 }

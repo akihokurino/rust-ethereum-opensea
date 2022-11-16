@@ -103,6 +103,10 @@ hello-set-message: build
     --command hello-set-message \
     --message $(MESSAGE)
 
+deploy-hello: build
+	./target/debug/rust-ethereum \
+	--command deploy-hello
+
 extract-abi:
 	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq '.abi' > src/ethereum/rust_web3/rust-token721.abi.json
 	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq '.abi' > src/ethereum/rust_web3/rust-token1155.abi.json
@@ -110,3 +114,4 @@ extract-abi:
 	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq -r '.bytecode' > src/ethereum/rust_web3/rust-token1155.bin
 	cat ethereum/artifacts/contracts/SampleOracle.sol/SampleOracle.json | jq '.abi' > src/ethereum/ethers_rs/sample-oracle.abi.json
 	cat ethereum/artifacts/contracts/Hello.sol/Hello.json | jq '.abi' > src/ethereum/ethers_rs/hello.abi.json
+	cat ethereum/artifacts/contracts/Hello.sol/Hello.json | jq -r '.bytecode' > src/ethereum/ethers_rs/hello.bin
