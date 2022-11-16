@@ -24,31 +24,31 @@
 
 ## Command
 
-### get balance
+### get balance（rust-web3 + ethers-rs）
 
 ```
 make balance
 ```
 
-### send ether
+### send ether（rust-web3 + ethers-rs）
 
 ```
 make send-eth ETHER=10 TO_ADDRESS=0x00
 ```
 
-### mint erc721
+### mint erc721（rust-web3）
 
 ```
 make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png SCHEMA=ERC721
 ```
 
-### mint erc1155
+### mint erc1155（rust-web3）
 
 ```
 make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png AMOUNT=10 SCHEMA=ERC1155
 ```
 
-### show token info
+### show token info（rust-web3）
 
 ```
 make token-info
@@ -97,8 +97,28 @@ make key-gen
  make verify SIGNATURE=2a30...
 ```
 
-### deploy token
+### deploy token（rust-web3）
 
 ```
 make deploy-token SCHEMA=ERC721
+```
+
+## call contract query（ethers-rs）
+
+```
+make sample-oracle-info
+make hello-info
+```
+
+## send contract tx（ethers-rs）
+
+```
+make sample-oracle-info
+make hello-set-message MESSAGE=rust
+```
+
+### deploy contract（ethers-rs）
+
+```
+make deploy-hello
 ```
