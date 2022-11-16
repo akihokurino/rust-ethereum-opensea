@@ -5,6 +5,7 @@ use ethers::contract::Contract;
 use ethers::prelude::*;
 use ethers_signers::{LocalWallet, Signer};
 use std::env;
+use std::sync::Arc;
 
 #[derive(Clone, Debug)]
 pub struct Client {
@@ -52,24 +53,30 @@ impl Client {
     }
 
     pub async fn create_get_time_request(&self) -> CliResult<()> {
-        let wallet = self.wallet_secret.parse::<LocalWallet>()?;
-
-        let client = SignerMiddleware::new(
-            self.provider.clone(),
-            wallet.with_chain_id(
-                env::var("ETHEREUM_CHAIN_ID")
-                    .expect("ETHEREUM_CHAIN_ID must be set")
-                    .parse::<u64>()
-                    .unwrap(),
-            ),
+        let wallet = self.wallet_secret.parse::<LocalWallet>()?.with_chain_id(
+            env::var("ETHEREUM_CHAIN_ID")
+                .expect("ETHEREUM_CHAIN_ID must be set")
+                .parse::<u64>()
+                .unwrap(),
         );
 
-        let contract = Contract::new(self.address.clone(), self.abi.clone(), client);
-        let func = contract
+        let client = SignerMiddleware::new_with_provider_chain(self.provider.clone(), wallet)
+            .await
+            .unwrap();
+        let client = Arc::new(client);
+
+        let contract =
+            Contract::<SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>>::new(
+                self.address.clone(),
+                self.abi.clone(),
+                client.clone(),
+            );
+
+        let call = contract
             .method::<_, H256>("createGetTimeRequestTo", ())?
             .gas(GAS_LIMIT)
             .gas_price(GAS_PRICE);
-        let tx = func.send().await?;
+        let tx = call.send().await?;
         let receipt = tx.await.unwrap();
 
         println!("createGetTimeRequestTo: {:?}", receipt);

@@ -24,7 +24,7 @@ strum = "0.24.1"
 strum_macros = "0.24.3"
 base64 = "0.13.1"
 web3 = "0.18.0"
-ethers = "1.0.0"
+ethers = { version = "1.0.0", features = ["legacy"] }
 ethers-signers = "1.0.0"
 secp256k1 = { version = "0.21.3", features = ["rand", "rand-std"] }
 clap = { version = "3.2.23", features = ["derive"] }

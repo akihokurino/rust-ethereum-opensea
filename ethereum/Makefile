@@ -18,9 +18,9 @@ deploy-hardhat:
 	npx hardhat run scripts/deploy-hello.ts --network hardhat
 
 deploy-geth:
-	npx hardhat run scripts/deploy-tokens.ts --network geth
-	npx hardhat run scripts/deploy-sample-oracle.ts --network geth
-	npx hardhat run scripts/deploy-oracle.ts --network geth
+	# npx hardhat run scripts/deploy-tokens.ts --network geth
+	# npx hardhat run scripts/deploy-sample-oracle.ts --network geth
+	# npx hardhat run scripts/deploy-oracle.ts --network geth
 	npx hardhat run scripts/deploy-hello.ts --network geth
 
 deploy-tokens-goerli:

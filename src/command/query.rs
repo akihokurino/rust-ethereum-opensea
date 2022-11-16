@@ -11,8 +11,8 @@ pub async fn show_token_contract() -> CliResult<()> {
     let erc721_contract_address = env::var("ERC721_ADDRESS").expect("ERC721_ADDRESS must be set");
     let erc1155_contract_address = env::var("ERC1155_ADDRESS").expect("ERC721_ADDRESS must be set");
 
-    let erc721_cli = rust_token721::Client::new(erc721_contract_address.clone());
-    let erc1155_cli = rust_token1155::Client::new(erc1155_contract_address.clone());
+    let erc721_cli = rust_token721::Client::new();
+    let erc1155_cli = rust_token1155::Client::new();
 
     println!("------------------------------------------------------------");
     println!("ERC721 info: {}", erc721_contract_address);

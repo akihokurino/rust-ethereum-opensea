@@ -36,35 +36,35 @@ make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png SCHEMA=ERC721
 make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png AMOUNT=10 SCHEMA=ERC1155
 ```
 
-### show contract info
+### show token info
 
 ```
-make contract-info
+make token-info
 ```
 
-### show asset info
+### show opensea asset info
 
 ```
-make asset-info CONTRACT_ADDRESS=0x00 TOKEN_ID=1
+make opensea-asset-info CONTRACT_ADDRESS=0x00 TOKEN_ID=1
 ```
 
-### show order info
+### show opensea order info
 
 ```
-make sell-order-info CONTRACT_ADDRESS=0x00 TOKEN_ID=1
-make buy-order-info CONTRACT_ADDRESS=0x00 TOKEN_ID=1
+make opensea-sell-order-info CONTRACT_ADDRESS=0x00 TOKEN_ID=1
+make opensea-buy-order-info CONTRACT_ADDRESS=0x00 TOKEN_ID=1
 ```
 
-### sell
+### sell in opensea
 
 ```
-make sell TOKEN_ID=1 ETHER=1 SCHEMA=ERC721
+make opensea-sell TOKEN_ID=1 ETHER=1 SCHEMA=ERC721
 ```
 
-### transfer
+### transfer in opensea
 
 ```
-make transfer TOKEN_ID=1 TO_ADDRESS=0x00 SCHEMA=ERC721
+make opensea-transfer TOKEN_ID=1 TO_ADDRESS=0x00 SCHEMA=ERC721
 ```
 
 ### generate private key and public key
@@ -73,8 +73,20 @@ make transfer TOKEN_ID=1 TO_ADDRESS=0x00 SCHEMA=ERC721
 make key-gen
 ```
 
-### deploy contract
+### generate signature by private key
 
 ```
-make deploy-contract SCHEMA=ERC721
+ make sign
+```
+
+### verify signature by public key
+
+```
+ make verify SIGNATURE=2a30...
+```
+
+### deploy token
+
+```
+make deploy-token SCHEMA=ERC721
 ```

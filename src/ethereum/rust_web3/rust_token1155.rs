@@ -13,19 +13,21 @@ use web3::Web3;
 #[derive(Clone, Debug)]
 pub struct Client {
     cli: Web3<Http>,
+    #[allow(dead_code)]
     wallet_address: String,
     wallet_secret: String,
     contract_address: String,
 }
 
 impl Client {
-    pub fn new(contract_address: String) -> Self {
+    pub fn new() -> Self {
         let chain_url = env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set");
         let transport = Http::new(&chain_url).ok().unwrap();
         let cli = Web3::new(transport);
 
         let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");
         let wallet_secret = env::var("WALLET_SECRET").expect("WALLET_SECRET must be set");
+        let contract_address = env::var("ERC1155_ADDRESS").expect("ERC1155_ADDRESS must be set");
 
         Client {
             cli,

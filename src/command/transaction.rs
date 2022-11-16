@@ -4,7 +4,6 @@ use crate::ethereum::ethers_rs::{hello, sample_oracle};
 use crate::ethereum::rust_web3::{rust_token1155, rust_token721};
 use crate::model::Schema;
 use crate::CliError;
-use std::env;
 use std::fs::File;
 use std::io::Read;
 
@@ -47,8 +46,7 @@ pub async fn mint_erc721(
     println!("ipfs_url: {}", res.url);
 
     println!("{}", "minting..........");
-    let erc721_cli =
-        rust_token721::Client::new(env::var("ERC721_ADDRESS").expect("ERC721_ADDRESS must be set"));
+    let erc721_cli = rust_token721::Client::new();
     erc721_cli.mint(ipfs_hash).await?;
 
     Ok(())
@@ -94,9 +92,7 @@ pub async fn mint_erc1155(
     println!("ipfs_url: {}", res.url);
 
     println!("{}", "minting..........");
-    let erc1155_cli = rust_token1155::Client::new(
-        env::var("ERC1155_ADDRESS").expect("ERC1155_ADDRESS must be set"),
-    );
+    let erc1155_cli = rust_token1155::Client::new();
     erc1155_cli.mint(ipfs_hash, amount).await?;
 
     Ok(())
