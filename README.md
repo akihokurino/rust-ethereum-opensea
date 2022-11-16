@@ -113,7 +113,7 @@ make hello-info
 ## send contract tx（ethers-rs）
 
 ```
-make sample-oracle-info
+make sample-oracle-get-time-request
 make hello-set-message MESSAGE=rust
 ```
 
