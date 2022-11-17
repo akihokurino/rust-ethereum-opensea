@@ -88,13 +88,13 @@ make key-gen
 ### generate signature by private key
 
 ```
- make sign
+make sign
 ```
 
 ### verify signature by public key
 
 ```
- make verify SIGNATURE=2a30...
+make verify SIGNATURE=2a30...
 ```
 
 ### deploy token（rust-web3）
