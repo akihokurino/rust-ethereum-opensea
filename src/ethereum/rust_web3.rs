@@ -53,7 +53,7 @@ pub async fn send_eth(eth: f64, to: Address) -> CliResult<()> {
     let wei = to_wei(eth.to_string().as_str(), "ether");
     let wei: u128 = wei.parse().unwrap();
     let wei = U256::from(wei);
-    println!("send wei: {}", wei.clone());
+    println!("send wei: {}", &wei);
 
     let tx = TransactionParameters {
         to: Some(to),

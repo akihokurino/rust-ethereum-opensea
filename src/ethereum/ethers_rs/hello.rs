@@ -41,11 +41,7 @@ impl Client {
         &self,
         method: &str,
     ) -> CliResult<()> {
-        let contract = Contract::new(
-            self.address.clone(),
-            self.abi.clone(),
-            self.provider.clone(),
-        );
+        let contract = Contract::new(self.address, self.abi.to_owned(), self.provider.to_owned());
 
         let res = contract.method::<_, T>(method, ())?.call().await?;
 
@@ -62,16 +58,16 @@ impl Client {
                 .unwrap(),
         );
 
-        let client = SignerMiddleware::new_with_provider_chain(self.provider.clone(), wallet)
+        let client = SignerMiddleware::new_with_provider_chain(self.provider.to_owned(), wallet)
             .await
             .unwrap();
         let client = Arc::new(client);
 
         let contract =
             Contract::<SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>>::new(
-                self.address.clone(),
-                self.abi.clone(),
-                client.clone(),
+                self.address,
+                self.abi.to_owned(),
+                client.to_owned(),
             );
 
         let call = contract
@@ -94,16 +90,16 @@ impl Client {
                 .unwrap(),
         );
 
-        let client = SignerMiddleware::new_with_provider_chain(self.provider.clone(), wallet)
+        let client = SignerMiddleware::new_with_provider_chain(self.provider.to_owned(), wallet)
             .await
             .unwrap();
         let client = Arc::new(client);
 
         let bytecode = include_str!("hello.bin").trim();
         let factory = ContractFactory::new(
-            self.abi.clone(),
+            self.abi.to_owned(),
             Bytes::from_str(bytecode).unwrap(),
-            client.clone(),
+            client,
         );
 
         let mut deployer = factory.deploy(()).unwrap();

@@ -12,12 +12,15 @@ pub async fn send_eth(ether: f64, address: String) -> CliResult<()> {
     println!("{}", "use ethers-rs");
     ethers_rs::send_eth(
         ether,
-        address.clone().parse::<ethers::prelude::Address>().unwrap(),
+        address
+            .to_owned()
+            .parse::<ethers::prelude::Address>()
+            .unwrap(),
     )
     .await?;
 
     println!("{}", "use rust-web3");
-    rust_web3::send_eth(ether, rust_web3::parse_address(address.clone()).unwrap()).await?;
+    rust_web3::send_eth(ether, rust_web3::parse_address(address.to_owned()).unwrap()).await?;
 
     Ok(())
 }
@@ -57,7 +60,7 @@ pub async fn mint_erc721(
     }
     let res = output.ipfs_response.unwrap();
     let ipfs_hash = res.hash;
-    println!("ipfs_hash: {}", ipfs_hash.clone());
+    println!("ipfs_hash: {}", &ipfs_hash);
     println!("ipfs_url: {}", res.url);
 
     println!("{}", "minting..........");
@@ -103,7 +106,7 @@ pub async fn mint_erc1155(
     }
     let res = output.ipfs_response.unwrap();
     let ipfs_hash = res.hash;
-    println!("ipfs_hash: {}", ipfs_hash.clone());
+    println!("ipfs_hash: {}", &ipfs_hash);
     println!("ipfs_url: {}", res.url);
 
     println!("{}", "minting..........");

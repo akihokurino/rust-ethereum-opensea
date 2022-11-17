@@ -20,7 +20,7 @@ impl ApiClient {
     }
 
     async fn call(&self, input: CallInput) -> CliResult<Response> {
-        let mut url = self.base_url.clone();
+        let mut url = self.base_url.to_owned();
         url.set_path(format!("{}", input.path).as_str());
         for q in input.query {
             url.query_pairs_mut()

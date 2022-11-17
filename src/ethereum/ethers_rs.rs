@@ -18,7 +18,7 @@ pub async fn get_balance() -> CliResult<()> {
             .unwrap(),
     );
 
-    let client = SignerMiddleware::new_with_provider_chain(provider, wallet.clone())
+    let client = SignerMiddleware::new_with_provider_chain(provider, wallet.to_owned())
         .await
         .unwrap();
 
@@ -52,7 +52,7 @@ pub async fn send_eth(eth: f64, to: Address) -> CliResult<()> {
     let wei = to_wei(eth.to_string().as_str(), "ether");
     let wei: u128 = wei.parse().unwrap();
     let wei = U256::from(wei);
-    println!("send wei: {}", wei.clone());
+    println!("send wei: {}", &wei);
 
     let tx = TransactionRequest::new()
         .to(to)

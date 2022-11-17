@@ -40,7 +40,7 @@ impl Client {
     fn contract(&self) -> CliResult<Contract<Http>> {
         let contract = Contract::from_json(
             self.cli.eth(),
-            parse_address(self.contract_address.clone()).unwrap(),
+            parse_address(self.contract_address.to_owned()).unwrap(),
             include_bytes!("rust-token721.abi.json"),
         )?;
         Ok(contract)
@@ -77,7 +77,7 @@ impl Client {
         let result = c
             .signed_call_with_confirmations(
                 "mint",
-                (parse_address(self.wallet_address.clone()).unwrap(), hash),
+                (parse_address(self.wallet_address.to_owned()).unwrap(), hash),
                 Options::with(|opt| {
                     opt.gas = Some(U256::from(GAS_LIMIT));
                     opt.gas_price = Some(U256::from(GAS_PRICE));
