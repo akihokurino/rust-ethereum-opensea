@@ -67,7 +67,7 @@ impl Client {
             Contract::<SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>>::new(
                 self.address,
                 self.abi.to_owned(),
-                client.to_owned(),
+                client.clone(),
             );
 
         let call = contract
@@ -99,7 +99,7 @@ impl Client {
         let factory = ContractFactory::new(
             self.abi.to_owned(),
             Bytes::from_str(bytecode).unwrap(),
-            client,
+            client.clone(),
         );
 
         let mut deployer = factory.deploy(()).unwrap();

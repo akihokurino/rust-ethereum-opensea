@@ -65,7 +65,7 @@ impl Client {
             Contract::<SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>>::new(
                 self.address,
                 self.abi.to_owned(),
-                client.to_owned(),
+                client.clone(),
             );
 
         let call = contract
