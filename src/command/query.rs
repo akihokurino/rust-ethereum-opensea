@@ -27,9 +27,11 @@ pub async fn show_token_contract() -> CliResult<()> {
 
     println!("------------------------------------------------------------");
     println!("ERC721 info: {}", erc721_contract_address);
-    let name = erc721_cli.get_name().await?;
-    let supply_num = erc721_cli.get_current_supply().await?;
-    let used_names = erc721_cli.get_already_used_names().await?;
+    let name = erc721_cli.simple_query::<String>("name").await?;
+    let supply_num = erc721_cli.simple_query::<u128>("currentSupply").await?;
+    let used_names = erc721_cli
+        .simple_query::<Vec<String>>("usedTokenNames")
+        .await?;
     println!("contract_name = {}", name);
     println!("supply_num = {}", supply_num);
     println!("used_names = {:?}", used_names);
@@ -37,9 +39,11 @@ pub async fn show_token_contract() -> CliResult<()> {
 
     println!("------------------------------------------------------------");
     println!("ERC1155 info: {}", erc1155_contract_address);
-    let name = erc1155_cli.get_name().await?;
-    let supply_num = erc1155_cli.get_current_supply().await?;
-    let used_names = erc1155_cli.get_already_used_names().await?;
+    let name = erc1155_cli.simple_query::<String>("name").await?;
+    let supply_num = erc1155_cli.simple_query::<u128>("currentSupply").await?;
+    let used_names = erc1155_cli
+        .simple_query::<Vec<String>>("usedTokenNames")
+        .await?;
     println!("contract_name = {}", name);
     println!("supply_num = {}", supply_num);
     println!("used_names = {:?}", used_names);

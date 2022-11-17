@@ -1,6 +1,6 @@
 use crate::error::CliResult;
 use crate::ethereum::{GAS_LIMIT, GAS_PRICE};
-use ethers::abi::Abi;
+use ethers::abi::{Abi, Tokenizable};
 use ethers::contract::Contract;
 use ethers::prelude::*;
 use ethers::types::transaction::eip2718::TypedTransaction;
@@ -37,7 +37,7 @@ impl Client {
         }
     }
 
-    pub async fn simple_query<T: abi::Tokenizable + std::fmt::Debug>(
+    pub async fn simple_query<T: Tokenizable + std::fmt::Debug>(
         &self,
         method: &str,
     ) -> CliResult<()> {

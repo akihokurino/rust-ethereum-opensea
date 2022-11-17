@@ -4,6 +4,7 @@ use crate::ethereum::{GAS_LIMIT, GAS_PRICE};
 use secp256k1::SecretKey;
 use std::str::FromStr;
 use std::{env, time};
+use web3::contract::tokens::Tokenizable;
 use web3::contract::{Contract, Options};
 use web3::signing::SecretKeyRef;
 use web3::transports::Http;
@@ -46,28 +47,15 @@ impl Client {
         Ok(contract)
     }
 
-    pub async fn get_name(&self) -> CliResult<String> {
+    pub async fn simple_query<T: Tokenizable + std::fmt::Debug>(
+        &self,
+        method: &str,
+    ) -> CliResult<T> {
         let c = self.contract()?;
-        let result = c.query("name", (), None, Options::default(), None);
-        let name: String = result.await?;
+        let result = c.query(method, (), None, Options::default(), None);
+        let result: T = result.await?;
 
-        Ok(name)
-    }
-
-    pub async fn get_already_used_names(&self) -> CliResult<Vec<String>> {
-        let c = self.contract()?;
-        let result = c.query("usedTokenNames", (), None, Options::default(), None);
-        let names: Vec<String> = result.await?;
-
-        Ok(names)
-    }
-
-    pub async fn get_current_supply(&self) -> CliResult<u128> {
-        let c = self.contract()?;
-        let result = c.query("currentSupply", (), None, Options::default(), None);
-        let supply: u128 = result.await?;
-
-        Ok(supply)
+        Ok(result)
     }
 
     pub async fn mint(&self, hash: String, amount: u128) -> CliResult<()> {
