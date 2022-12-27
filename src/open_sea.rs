@@ -5,6 +5,7 @@ use reqwest::{Body, Method, Response, Url};
 use std::env;
 
 pub mod api;
+pub mod metadata;
 
 #[derive(Clone, Debug)]
 pub struct ApiClient {

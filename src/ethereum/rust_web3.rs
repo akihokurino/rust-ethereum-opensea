@@ -3,6 +3,7 @@ pub mod rust_token721;
 
 use crate::error::CliResult;
 use crate::ethereum::{to_ether, to_wei, GAS_LIMIT, GAS_PRICE};
+use bigdecimal::BigDecimal;
 use secp256k1::SecretKey;
 use std::env;
 use std::str::FromStr;
@@ -17,7 +18,7 @@ pub fn parse_address(address: String) -> Option<Address> {
     }
 }
 
-pub async fn get_balance() -> CliResult<()> {
+pub async fn get_balance() -> CliResult<BigDecimal> {
     let chain_url = env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set");
     let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");
 
@@ -31,13 +32,7 @@ pub async fn get_balance() -> CliResult<()> {
         .balance(parse_address(wallet_address).unwrap(), None)
         .await?;
 
-    println!("balance wei: {}", balance);
-    println!(
-        "balance ether: {}",
-        to_ether(balance.to_string().as_str(), "wei")
-    );
-
-    Ok(())
+    Ok(to_ether(balance.to_string().as_str(), "wei"))
 }
 
 pub async fn send_eth(eth: f64, to: Address) -> CliResult<()> {

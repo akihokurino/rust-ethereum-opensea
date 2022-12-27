@@ -94,14 +94,50 @@ impl
     > for CliError
 {
     fn from(
-        _e: ethers::contract::ContractError<
+        e: ethers::contract::ContractError<
             ethers::middleware::SignerMiddleware<
                 ethers::providers::Provider<ethers::providers::Http>,
                 Wallet<ethers::core::k256::ecdsa::SigningKey>,
             >,
         >,
     ) -> Self {
-        let msg = format!("ethers contract sign error");
+        match e {
+            ethers::contract::ContractError::DecodingError(e) => {
+                let msg = format!("ethers contract sign error: {:?}", e);
+                Self::Internal(msg)
+            }
+            ethers::contract::ContractError::AbiError(e) => {
+                let msg = format!("ethers contract sign error: {:?}", e);
+                Self::Internal(msg)
+            }
+            ethers::contract::ContractError::DetokenizationError(e) => {
+                let msg = format!("ethers contract sign error: {:?}", e);
+                Self::Internal(msg)
+            }
+            ethers::contract::ContractError::MiddlewareError(e) => {
+                let msg = format!("ethers contract sign error: {:?}", e);
+                Self::Internal(msg)
+            }
+            ethers::contract::ContractError::ProviderError(e) => {
+                let msg = format!("ethers contract sign error: {:?}", e);
+                Self::Internal(msg)
+            }
+            ethers::contract::ContractError::ConstructorError => {
+                let msg =
+                    format!("ethers contract sign error: constructor is not defined in the ABI");
+                Self::Internal(msg)
+            }
+            ethers::contract::ContractError::ContractNotDeployed => {
+                let msg = format!("ethers contract sign error: Contract was not deployed");
+                Self::Internal(msg)
+            }
+        }
+    }
+}
+
+impl From<ethers::providers::ProviderError> for CliError {
+    fn from(e: ethers::providers::ProviderError) -> Self {
+        let msg = format!("ethers transaction error: {:?}", e);
         Self::Internal(msg)
     }
 }

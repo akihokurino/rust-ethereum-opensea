@@ -29,11 +29,11 @@ impl Client {
             wallet_address,
             wallet_secret,
             provider: Provider::<Http>::try_from(chain_url).unwrap(),
-            address: env::var("HELLO_ADDRESS")
-                .expect("HELLO_ADDRESS must be set")
+            address: env::var("ERC721_ADDRESS")
+                .expect("ERC721_ADDRESS must be set")
                 .parse::<Address>()
                 .unwrap(),
-            abi: serde_json::from_str(include_str!("hello.abi.json").trim()).unwrap(),
+            abi: serde_json::from_str(include_str!("rust-token721.abi.json").trim()).unwrap(),
         }
     }
 
@@ -50,7 +50,7 @@ impl Client {
         Ok(())
     }
 
-    pub async fn set_message(&self, message: String) -> CliResult<()> {
+    pub async fn mint(&self, hash: String) -> CliResult<()> {
         let wallet = self.wallet_secret.parse::<LocalWallet>()?.with_chain_id(
             env::var("ETHEREUM_CHAIN_ID")
                 .expect("ETHEREUM_CHAIN_ID must be set")
@@ -71,13 +71,13 @@ impl Client {
             );
 
         let call = contract
-            .method::<_, H256>("setMessage", message)?
+            .method::<_, H256>("mint", hash)?
             .gas(GAS_LIMIT)
             .gas_price(GAS_PRICE);
-        let tx = call.send().await.unwrap();
-        let receipt = tx.confirmations(1).await.unwrap();
+        let tx = call.send().await?;
+        let receipt = tx.await?;
 
-        println!("setMessage: {:?}", receipt);
+        println!("mint result: {:?}", receipt);
 
         Ok(())
     }
@@ -95,7 +95,7 @@ impl Client {
             .unwrap();
         let client = Arc::new(client);
 
-        let bytecode = include_str!("hello.bin").trim();
+        let bytecode = include_str!("rust-token721.bin").trim();
         let factory = ContractFactory::new(
             self.abi.to_owned(),
             Bytes::from_str(bytecode).unwrap(),
@@ -117,7 +117,7 @@ impl Client {
             .await
             .unwrap();
 
-        println!("deployed hello to: {:?}", contract.address());
+        println!("deployed erc721 to: {:?}", contract.address());
 
         Ok(())
     }

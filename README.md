@@ -18,7 +18,7 @@
 
 - https://github.com/akihokurino/lambda-opensea
 
-## Chainlink Notes
+## ChainLink Notes
 
 - https://zenn.dev/aki030402/articles/546c38c8b437f1
 
@@ -36,22 +36,47 @@ make balance
 make send-eth ETHER=10 TO_ADDRESS=0x00
 ```
 
-### mint erc721（rust-web3）
+### mint erc721（rust-web3 + ethers-rs）
 
 ```
 make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png SCHEMA=ERC721
 ```
 
-### mint erc1155（rust-web3）
+### mint erc1155（rust-web3 + ethers-rs）
 
 ```
 make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png AMOUNT=10 SCHEMA=ERC1155
 ```
 
-### show token info（rust-web3）
+### show token info（rust-web3 + ethers-rs）
 
 ```
 make token-info
+```
+
+### generate private key and public key
+
+```
+make key-gen
+```
+
+### generate signature by private key
+
+```
+make sign
+```
+
+### verify signature by public key
+
+```
+make verify SIGNATURE=2a30...
+```
+
+### deploy token（rust-web3 + ethers-rs）
+
+```
+make deploy-token SCHEMA=ERC721
+make deploy-token SCHEMA=ERC1155
 ```
 
 ### show opensea asset info
@@ -79,46 +104,3 @@ make opensea-sell TOKEN_ID=1 ETHER=1 SCHEMA=ERC721
 make opensea-transfer TOKEN_ID=1 TO_ADDRESS=0x00 SCHEMA=ERC721
 ```
 
-### generate private key and public key
-
-```
-make key-gen
-```
-
-### generate signature by private key
-
-```
-make sign
-```
-
-### verify signature by public key
-
-```
-make verify SIGNATURE=2a30...
-```
-
-### deploy token（rust-web3）
-
-```
-make deploy-token SCHEMA=ERC721
-```
-
-## call contract query（ethers-rs）
-
-```
-make sample-oracle-info
-make hello-info
-```
-
-## send contract tx（ethers-rs）
-
-```
-make sample-oracle-get-time-request
-make hello-set-message MESSAGE=rust
-```
-
-### deploy contract（ethers-rs）
-
-```
-make deploy-hello
-```

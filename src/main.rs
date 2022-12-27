@@ -1,7 +1,10 @@
+extern crate core;
+
 mod aws;
 mod command;
 mod error;
 mod ethereum;
+mod ipfs;
 mod model;
 mod open_sea;
 
@@ -31,9 +34,6 @@ const COMMAND_DEPLOY_TOKEN: &str = "deploy-token";
 
 const COMMAND_SAMPLE_ORACLE_INFO: &str = "sample-oracle-info";
 const COMMAND_SAMPLE_ORACLE_GET_TIME_REQUEST: &str = "sample-oracle-get-time-request";
-const COMMAND_HELLO_INFO: &str = "hello-info";
-const COMMAND_HELLO_SET_MESSAGE: &str = "hello-set-message";
-const COMMAND_DEPLOY_HELLO: &str = "deploy-hello";
 
 const ARGS_NAME: &str = "name";
 const ARGS_DESCRIPTION: &str = "description";
@@ -74,9 +74,6 @@ pub async fn main() {
                     COMMAND_DEPLOY_TOKEN,
                     COMMAND_SAMPLE_ORACLE_INFO,
                     COMMAND_SAMPLE_ORACLE_GET_TIME_REQUEST,
-                    COMMAND_HELLO_INFO,
-                    COMMAND_HELLO_SET_MESSAGE,
-                    COMMAND_DEPLOY_HELLO,
                 ])
                 .required(true)
                 .takes_value(true),
@@ -222,10 +219,6 @@ pub async fn main() {
 
         COMMAND_SAMPLE_ORACLE_INFO => query::show_sample_oracle_contract().await,
         COMMAND_SAMPLE_ORACLE_GET_TIME_REQUEST => transaction::create_get_time_request().await,
-        COMMAND_HELLO_INFO => query::show_hello_contract().await,
-        COMMAND_HELLO_SET_MESSAGE => transaction::set_hello_message(message).await,
-        COMMAND_DEPLOY_HELLO => deploy::deploy_hello_contract().await,
-
         _ => Err(CliError::Internal("unknown command".to_string())),
     };
 

@@ -47,8 +47,6 @@ pub mod invoke_open_sea_sdk {
         pub sell_payload: Option<SellPayload>,
         #[serde(rename(serialize = "transferPayload"))]
         pub transfer_payload: Option<TransferPayload>,
-        #[serde(rename(serialize = "createMetadataPayload"))]
-        pub create_metadata_payload: Option<CreateMetadataPayload>,
     }
 
     #[derive(Debug, Serialize)]
@@ -87,18 +85,6 @@ pub mod invoke_open_sea_sdk {
         pub quantity: i32,
     }
 
-    #[derive(Debug, Serialize)]
-    pub struct CreateMetadataPayload {
-        #[serde(rename(serialize = "name"))]
-        pub name: String,
-        #[serde(rename(serialize = "description"))]
-        pub description: String,
-        #[serde(rename(serialize = "externalUrl"))]
-        pub external_url: String,
-        #[serde(rename(serialize = "imageBase64"))]
-        pub image_base64: String,
-    }
-
     impl Input {
         pub fn sell(address: &String, token_id: &String, schema: &Schema, ether: f64) -> Self {
             let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");
@@ -117,7 +103,6 @@ pub mod invoke_open_sea_sdk {
                     quantity: 1,
                 }),
                 transfer_payload: None,
-                create_metadata_payload: None,
             }
         }
 
@@ -143,32 +128,6 @@ pub mod invoke_open_sea_sdk {
                     transfer_address: to_address.to_owned().to_string(),
                     quantity: 1,
                 }),
-                create_metadata_payload: None,
-            }
-        }
-
-        pub fn create_metadata(
-            name: &String,
-            description: &str,
-            external_url: &str,
-            image_base64: String,
-        ) -> Self {
-            let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");
-            let wallet_secret = env::var("WALLET_SECRET").expect("WALLET_SECRET must be set");
-
-            Self {
-                method: "createMetadata".to_string(),
-                wallet_address: wallet_address.to_owned(),
-                wallet_secret: wallet_secret.to_owned(),
-                buy_payload: None,
-                sell_payload: None,
-                transfer_payload: None,
-                create_metadata_payload: Some(CreateMetadataPayload {
-                    name: name.to_owned(),
-                    description: description.to_owned(),
-                    external_url: external_url.to_owned(),
-                    image_base64: image_base64.to_owned(),
-                }),
             }
         }
     }
@@ -179,15 +138,5 @@ pub mod invoke_open_sea_sdk {
         pub message: String,
         #[serde(rename(deserialize = "result"))]
         pub result: i32,
-        #[serde(rename(deserialize = "ipfsResponse"))]
-        pub ipfs_response: Option<OutputIPFS>,
-    }
-
-    #[derive(Debug, Deserialize)]
-    pub struct OutputIPFS {
-        #[serde(rename(deserialize = "hash"))]
-        pub hash: String,
-        #[serde(rename(deserialize = "url"))]
-        pub url: String,
     }
 }

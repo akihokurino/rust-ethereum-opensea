@@ -1,12 +1,14 @@
 use crate::error::CliResult;
 use crate::ethereum::{to_ether, to_wei, GAS_LIMIT, GAS_PRICE};
+use bigdecimal::BigDecimal;
 use ethers::prelude::*;
 use std::env;
 
-pub mod hello;
+pub mod rust_token1155;
+pub mod rust_token721;
 pub mod sample_oracle;
 
-pub async fn get_balance() -> CliResult<()> {
+pub async fn get_balance() -> CliResult<BigDecimal> {
     let chain_url = env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set");
     let wallet_secret = env::var("WALLET_SECRET").expect("WALLET_SECRET must be set");
 
@@ -24,13 +26,7 @@ pub async fn get_balance() -> CliResult<()> {
 
     let balance = client.get_balance(wallet.address(), None).await.unwrap();
 
-    println!("balance wei: {}", balance);
-    println!(
-        "balance ether: {}",
-        to_ether(balance.to_string().as_str(), "wei")
-    );
-
-    Ok(())
+    Ok(to_ether(balance.to_string().as_str(), "wei"))
 }
 
 pub async fn send_eth(eth: f64, to: Address) -> CliResult<()> {

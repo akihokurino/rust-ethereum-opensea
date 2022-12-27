@@ -3,13 +3,13 @@ import { ethers, upgrades } from "hardhat";
 async function main() {
   const rustToken721 = await upgrades.deployProxy(
     await ethers.getContractFactory("RustToken721", {}),
-    []
+    ["RustToken", "RT"]
   );
   console.log("RustToken721 deployed to:", rustToken721.address);
 
   const rustToken1155 = await upgrades.deployProxy(
     await ethers.getContractFactory("RustToken1155", {}),
-    []
+    ["RustToken", "RT"]
   );
   console.log("RustToken1155 deployed to:", rustToken1155.address);
 }

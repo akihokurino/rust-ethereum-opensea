@@ -1,5 +1,5 @@
 use crate::error::CliResult;
-use crate::ethereum::ethers_rs::{hello, sample_oracle};
+use crate::ethereum::ethers_rs::sample_oracle;
 use crate::ethereum::rust_web3::{rust_token1155, rust_token721};
 use crate::ethereum::{ethers_rs, rust_web3};
 use crate::open_sea::api::OrderSide;
@@ -9,11 +9,8 @@ use ethers::abi::Address;
 use std::env;
 
 pub async fn get_balance() -> CliResult<()> {
-    println!("{}", "use ethers-rs");
-    ethers_rs::get_balance().await?;
-
-    println!("{}", "use rust-web3");
-    rust_web3::get_balance().await?;
+    let ether = ethers_rs::get_balance().await?;
+    println!("balance ether: {}", ether);
 
     Ok(())
 }
@@ -27,26 +24,42 @@ pub async fn show_token_contract() -> CliResult<()> {
 
     println!("------------------------------------------------------------");
     println!("ERC721 info: {}", erc721_contract_address);
-    let name = erc721_cli.simple_query::<String>("name").await?;
-    let supply_num = erc721_cli.simple_query::<u128>("currentSupply").await?;
-    let used_names = erc721_cli
-        .simple_query::<Vec<String>>("usedTokenNames")
-        .await?;
-    println!("contract_name = {}", name);
-    println!("supply_num = {}", supply_num);
-    println!("used_names = {:?}", used_names);
+    println!(
+        "name = {}",
+        erc721_cli.simple_query::<String>("name").await?
+    );
+    println!(
+        "latestTokenId = {}",
+        erc721_cli.simple_query::<u128>("latestTokenId").await?
+    );
+    println!(
+        "totalSupply = {:?}",
+        erc721_cli.simple_query::<u128>("totalSupply").await?
+    );
+    println!(
+        "totalOwned = {:?}",
+        erc721_cli.simple_query::<u128>("totalOwned").await?
+    );
     println!("------------------------------------------------------------");
 
     println!("------------------------------------------------------------");
     println!("ERC1155 info: {}", erc1155_contract_address);
-    let name = erc1155_cli.simple_query::<String>("name").await?;
-    let supply_num = erc1155_cli.simple_query::<u128>("currentSupply").await?;
-    let used_names = erc1155_cli
-        .simple_query::<Vec<String>>("usedTokenNames")
-        .await?;
-    println!("contract_name = {}", name);
-    println!("supply_num = {}", supply_num);
-    println!("used_names = {:?}", used_names);
+    println!(
+        "name = {}",
+        erc1155_cli.simple_query::<String>("name").await?
+    );
+    println!(
+        "latestTokenId = {}",
+        erc1155_cli.simple_query::<u128>("latestTokenId").await?
+    );
+    println!(
+        "totalSupply = {:?}",
+        erc1155_cli.simple_query::<u128>("totalSupply").await?
+    );
+    println!(
+        "totalOwned = {:?}",
+        erc1155_cli.simple_query::<u128>("totalOwned").await?
+    );
     println!("------------------------------------------------------------");
 
     Ok(())
@@ -102,20 +115,34 @@ pub async fn show_order(
 }
 
 pub async fn show_sample_oracle_contract() -> CliResult<()> {
+    let sample_oracle_contract_address =
+        env::var("SAMPLE_ORACLE_ADDRESS").expect("SAMPLE_ORACLE_ADDRESS must be set");
+
     let cli = sample_oracle::Client::new();
-    cli.simple_query::<u128>("getLatestPrice").await?;
-    cli.simple_query::<Address>("getChainlinkToken").await?;
-    cli.simple_query::<u128>("chainlinkFee").await?;
-    cli.simple_query::<ethers::abi::FixedBytes>("timeJobId")
-        .await?;
-    cli.simple_query::<Address>("oracleAddress").await?;
-
-    Ok(())
-}
-
-pub async fn show_hello_contract() -> CliResult<()> {
-    let cli = hello::Client::new();
-    cli.simple_query::<String>("message").await?;
+    println!("------------------------------------------------------------");
+    println!("Sample Oracle info: {}", sample_oracle_contract_address);
+    println!(
+        "getLatestPrice = {}",
+        cli.simple_query::<u128>("getLatestPrice").await?
+    );
+    println!(
+        "getChainLinkToken = {}",
+        cli.simple_query::<Address>("getChainlinkToken").await?
+    );
+    println!(
+        "chainLinkFee = {:?}",
+        cli.simple_query::<u128>("chainlinkFee").await?
+    );
+    println!(
+        "timeJobId = {:?}",
+        cli.simple_query::<ethers::abi::FixedBytes>("timeJobId")
+            .await?
+    );
+    println!(
+        "oracleAddress = {:?}",
+        cli.simple_query::<Address>("oracleAddress").await?
+    );
+    println!("------------------------------------------------------------");
 
     Ok(())
 }
