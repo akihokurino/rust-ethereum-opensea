@@ -39,13 +39,13 @@ make send-eth ETHER=10 TO_ADDRESS=0x00
 ### mint erc721（rust-web3 + ethers-rs）
 
 ```
-make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png SCHEMA=ERC721
+make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=sample.png SCHEMA=ERC721
 ```
 
 ### mint erc1155（rust-web3 + ethers-rs）
 
 ```
-make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=test.png AMOUNT=10 SCHEMA=ERC1155
+make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=sample.png AMOUNT=10 SCHEMA=ERC1155
 ```
 
 ### show token info（rust-web3 + ethers-rs）

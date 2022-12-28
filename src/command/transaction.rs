@@ -1,8 +1,8 @@
 use crate::aws::lambda;
 use crate::error::CliResult;
+use crate::ethereum::ethers_rs;
 use crate::ethereum::ethers_rs::sample_oracle;
-use crate::ethereum::rust_web3::{rust_token1155, rust_token721};
-use crate::ethereum::{ethers_rs, rust_web3};
+use crate::ethereum::ethers_rs::{rust_token1155, rust_token721};
 use crate::model::Schema;
 use crate::open_sea::metadata::Metadata;
 use crate::{ipfs, CliError};
@@ -12,7 +12,6 @@ use std::fs::File;
 use std::io::Read;
 
 pub async fn send_eth(ether: f64, address: String) -> CliResult<()> {
-    println!("{}", "use ethers-rs");
     ethers_rs::send_eth(
         ether,
         address
@@ -21,9 +20,6 @@ pub async fn send_eth(ether: f64, address: String) -> CliResult<()> {
             .unwrap(),
     )
     .await?;
-
-    println!("{}", "use rust-web3");
-    rust_web3::send_eth(ether, rust_web3::parse_address(address.to_owned()).unwrap()).await?;
 
     Ok(())
 }
@@ -54,7 +50,7 @@ pub async fn mint_erc721(
     println!(
         "image url: {:?}",
         format!(
-            "{}/{}",
+            "{}/ipfs/{}",
             env::var("IPFS_GATEWAY").expect("should set IPFS_GATEWAY"),
             content_hash.hash.clone()
         )
@@ -63,7 +59,7 @@ pub async fn mint_erc721(
     let metadata = Metadata::new(
         &name,
         &format!(
-            "{}/{}",
+            "{}/ipfs/{}",
             env::var("IPFS_GATEWAY").expect("should set IPFS_GATEWAY"),
             content_hash.hash.clone()
         ),
@@ -74,7 +70,7 @@ pub async fn mint_erc721(
     println!(
         "metadata url: {:?}",
         format!(
-            "{}/{}",
+            "{}/ipfs/{}",
             env::var("IPFS_GATEWAY").expect("should set IPFS_GATEWAY"),
             content_hash.hash.clone()
         )
@@ -114,7 +110,7 @@ pub async fn mint_erc1155(
     println!(
         "image url: {:?}",
         format!(
-            "{}/{}",
+            "{}/ipfs/{}",
             env::var("IPFS_GATEWAY").expect("should set IPFS_GATEWAY"),
             content_hash.hash.clone()
         )
@@ -123,7 +119,7 @@ pub async fn mint_erc1155(
     let metadata = Metadata::new(
         &name,
         &format!(
-            "{}/{}",
+            "{}/ipfs/{}",
             env::var("IPFS_GATEWAY").expect("should set IPFS_GATEWAY"),
             content_hash.hash.clone()
         ),
@@ -134,7 +130,7 @@ pub async fn mint_erc1155(
     println!(
         "metadata url: {:?}",
         format!(
-            "{}/{}",
+            "{}/ipfs/{}",
             env::var("IPFS_GATEWAY").expect("should set IPFS_GATEWAY"),
             content_hash.hash.clone()
         )

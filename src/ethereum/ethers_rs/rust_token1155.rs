@@ -50,7 +50,7 @@ impl Client {
         Ok(())
     }
 
-    pub async fn mint(&self, hash: String, amount: u64) -> CliResult<()> {
+    pub async fn mint(&self, hash: String, amount: u128) -> CliResult<()> {
         let wallet = self.wallet_secret.parse::<LocalWallet>()?.with_chain_id(
             env::var("ETHEREUM_CHAIN_ID")
                 .expect("ETHEREUM_CHAIN_ID must be set")
