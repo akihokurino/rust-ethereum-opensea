@@ -1,5 +1,5 @@
 use crate::error::CliResult;
-use crate::ethereum::rust_web3::{rust_token1155, rust_token721};
+use crate::ethereum::ethers_rs::{rust_token1155, rust_token721};
 use crate::model::Schema;
 
 pub async fn deploy_token_contract(schema: Schema) -> CliResult<()> {

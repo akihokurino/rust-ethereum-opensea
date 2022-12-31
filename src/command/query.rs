@@ -1,7 +1,7 @@
 use crate::error::CliResult;
+use crate::ethereum::ethers_rs;
 use crate::ethereum::ethers_rs::sample_oracle;
-use crate::ethereum::rust_web3::{rust_token1155, rust_token721};
-use crate::ethereum::{ethers_rs, rust_web3};
+use crate::ethereum::ethers_rs::{rust_token1155, rust_token721};
 use crate::open_sea::api::OrderSide;
 use crate::open_sea::{api, ApiClient};
 use crate::CliError;

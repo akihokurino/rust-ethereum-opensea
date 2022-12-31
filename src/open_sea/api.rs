@@ -97,7 +97,6 @@ pub mod get_asset {
         pub address: String,
         pub asset_contract_type: String,
         pub name: String,
-        pub nft_version: String,
         pub schema_name: String,
     }
 

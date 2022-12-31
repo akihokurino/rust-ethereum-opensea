@@ -30,6 +30,9 @@ deploy-sample-oracle-goerli:
 deploy-oracle-goerli:
 	npx hardhat run scripts/deploy-oracle.ts --network goerli
 
+deploy-tokens-mumbai:
+	npx hardhat run scripts/deploy-tokens.ts --network mumbai
+
 init-private-net:
 	geth --datadir ./private-net/ init ./private-net/genesis.json
 

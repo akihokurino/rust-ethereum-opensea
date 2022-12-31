@@ -40,14 +40,10 @@ impl Client {
     pub async fn simple_query<T: Tokenizable + std::fmt::Debug>(
         &self,
         method: &str,
-    ) -> CliResult<()> {
+    ) -> CliResult<T> {
         let contract = Contract::new(self.address, self.abi.to_owned(), self.provider.to_owned());
-
         let res = contract.method::<_, T>(method, ())?.call().await?;
-
-        println!("{}: {:?}", method, res);
-
-        Ok(())
+        Ok(res)
     }
 
     pub async fn mint(&self, hash: String, amount: u128) -> CliResult<()> {

@@ -18,6 +18,7 @@ pub fn parse_address(address: String) -> Option<Address> {
     }
 }
 
+#[allow(unused)]
 pub async fn get_balance() -> CliResult<BigDecimal> {
     let chain_url = env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set");
     let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");
@@ -35,6 +36,7 @@ pub async fn get_balance() -> CliResult<BigDecimal> {
     Ok(to_ether(balance.to_string().as_str(), "wei"))
 }
 
+#[allow(unused)]
 pub async fn send_eth(eth: f64, to: Address) -> CliResult<()> {
     let chain_url = env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set");
     let wallet_secret = env::var("WALLET_SECRET").expect("WALLET_SECRET must be set");

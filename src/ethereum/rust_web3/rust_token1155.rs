@@ -21,6 +21,7 @@ pub struct Client {
 }
 
 impl Client {
+    #[allow(unused)]
     pub fn new() -> Self {
         let chain_url = env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set");
         let transport = Http::new(&chain_url).ok().unwrap();
@@ -47,6 +48,7 @@ impl Client {
         Ok(contract)
     }
 
+    #[allow(unused)]
     pub async fn simple_query<T: Tokenizable + std::fmt::Debug>(
         &self,
         method: &str,
@@ -58,6 +60,7 @@ impl Client {
         Ok(result)
     }
 
+    #[allow(unused)]
     pub async fn mint(&self, hash: String, amount: u128) -> CliResult<()> {
         let prev_key = SecretKey::from_str(&self.wallet_secret).unwrap();
 
@@ -86,6 +89,7 @@ impl Client {
         Ok(())
     }
 
+    #[allow(unused)]
     pub async fn deploy(&self) -> CliResult<()> {
         let prev_key = SecretKey::from_str(&self.wallet_secret).unwrap();
         let chain_id = env::var("ETHEREUM_CHAIN_ID").expect("ETHEREUM_CHAIN_ID must be set");

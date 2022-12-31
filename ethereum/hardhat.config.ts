@@ -8,6 +8,7 @@ dotenv.config();
 
 const chainIds = {
   goerli: 5,
+  mumbai: 80001,
   hardhat: 31337,
   geth: 15,
 };
@@ -35,9 +36,14 @@ const config: HardhatUserConfig = {
       chainId: chainIds.geth,
     },
     goerli: {
-      url: process.env.CHAIN_URL!,
+      url: process.env.GOERLI_CHAIN_URL!,
       accounts: [process.env.WALLET_SECRET!],
       chainId: chainIds.goerli,
+    },
+    mumbai: {
+      url: process.env.MUMBAI_CHAIN_URL!,
+      accounts: [process.env.WALLET_SECRET!],
+      chainId: chainIds.mumbai,
     },
   },
 };

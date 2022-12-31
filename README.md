@@ -8,11 +8,16 @@
 - rust-secp256k1 ( https://github.com/rust-bitcoin/rust-secp256k1 )
 - aws-sdk-rust ( https://github.com/awslabs/aws-sdk-rust )
 - infura ( https://infura.io/ )
-- hardhat ( https://hardhat.org/ )
+- alchemy ( https://www.alchemy.com/ )
 - solidity v0.8.17
+- hardhat ( https://hardhat.org/ )
 - open zeppelin ( https://openzeppelin.com/ )
-- chainlink ( https://docs.chain.link/ )
+- chain link ( https://docs.chain.link/ )
 - oracle
+
+## Support Network
+- Ethereum ( Goerli )
+- Polygon ( Mumbai )
 
 ## Related
 
@@ -24,34 +29,16 @@
 
 ## Command
 
-### get balance（rust-web3 + ethers-rs）
+### get balance
 
 ```
 make balance
 ```
 
-### send ether（rust-web3 + ethers-rs）
+### send ether
 
 ```
 make send-eth ETHER=10 TO_ADDRESS=0x00
-```
-
-### mint erc721（rust-web3 + ethers-rs）
-
-```
-make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=sample.png SCHEMA=ERC721
-```
-
-### mint erc1155（rust-web3 + ethers-rs）
-
-```
-make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=sample.png AMOUNT=10 SCHEMA=ERC1155
-```
-
-### show token info（rust-web3 + ethers-rs）
-
-```
-make token-info
 ```
 
 ### generate private key and public key
@@ -72,7 +59,25 @@ make sign
 make verify SIGNATURE=2a30...
 ```
 
-### deploy token（rust-web3 + ethers-rs）
+### mint erc721
+
+```
+make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=sample.png SCHEMA=ERC721
+```
+
+### mint erc1155
+
+```
+make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=sample.png AMOUNT=10 SCHEMA=ERC1155
+```
+
+### show token info
+
+```
+make token-info
+```
+
+### deploy token
 
 ```
 make deploy-token SCHEMA=ERC721
