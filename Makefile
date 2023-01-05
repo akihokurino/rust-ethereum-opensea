@@ -5,6 +5,7 @@ NAME := "RustToken Sample"
 DESCRIPTION := "RustToken Sample Generate"
 IMAGE_FILENAME := "sample.png"
 AMOUNT := "1"
+NETWORK := "Ethereum"
 SCHEMA := "ERC721"
 CONTRACT_ADDRESS := ""
 TOKEN_ID := ""
@@ -19,13 +20,15 @@ build:
 
 balance: build
 	./target/debug/rust-ethereum \
-	--command balance
+	--command balance \
+	--network $(NETWORK)
 
 send-eth: build
 	./target/debug/rust-ethereum \
 	--command send-eth \
 	--ether $(ETHER) \
-	--to-address $(TO_ADDRESS)
+	--to-address $(TO_ADDRESS) \
+	--network $(NETWORK)
 
 mint: build
 	./target/debug/rust-ethereum \
@@ -35,10 +38,12 @@ mint: build
 	--image-filename $(IMAGE_FILENAME) \
 	--amount $(AMOUNT) \
 	--schema $(SCHEMA) \
+	--network $(NETWORK)
 
 token-info: build
 	./target/debug/rust-ethereum \
-	--command token-info
+	--command token-info \
+	--network $(NETWORK)
 
 opensea-asset-info: build
 	./target/debug/rust-ethereum \
@@ -57,14 +62,16 @@ opensea-sell: build
 	--command opensea-sell \
 	--token-id $(TOKEN_ID) \
 	--schema $(SCHEMA) \
-	--ether $(ETHER)
+	--ether $(ETHER) \
+	--network $(NETWORK)
 
 opensea-transfer: build
 	./target/debug/rust-ethereum \
 	--command opensea-transfer \
 	--token-id $(TOKEN_ID) \
 	--schema $(SCHEMA) \
-	--to-address $(TO_ADDRESS)
+	--to-address $(TO_ADDRESS) \
+	--network $(NETWORK)
 
 key-gen: build
 	./target/debug/rust-ethereum \
@@ -84,15 +91,8 @@ verify: build
 deploy-token: build
 	./target/debug/rust-ethereum \
 	--command deploy-token \
-	--schema $(SCHEMA)
-
-sample-oracle-info: build
-	./target/debug/rust-ethereum \
-    --command sample-oracle-info
-
-sample-oracle-get-time-request: build
-	./target/debug/rust-ethereum \
-    --command sample-oracle-get-time-request
+	--schema $(SCHEMA) \
+	--network $(NETWORK)
 
 extract-abi:
 	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq '.abi' > src/ethereum/rust_web3/rust-token721.abi.json

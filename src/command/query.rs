@@ -1,29 +1,22 @@
 use crate::error::CliResult;
 use crate::ethereum::ethers_rs;
-use crate::ethereum::ethers_rs::sample_oracle;
 use crate::ethereum::ethers_rs::{rust_token1155, rust_token721};
+use crate::model::Network;
 use crate::open_sea::api::OrderSide;
 use crate::open_sea::{api, ApiClient};
 use crate::CliError;
-use ethers::abi::Address;
-use std::env;
 
-pub async fn get_balance() -> CliResult<()> {
-    let ether = ethers_rs::get_balance().await?;
+pub async fn get_balance(network: Network) -> CliResult<()> {
+    let ether = ethers_rs::get_balance(network).await?;
     println!("balance ether: {}", ether);
 
     Ok(())
 }
 
-pub async fn show_token_contract() -> CliResult<()> {
-    let erc721_contract_address = env::var("ERC721_ADDRESS").expect("ERC721_ADDRESS must be set");
-    let erc1155_contract_address = env::var("ERC1155_ADDRESS").expect("ERC721_ADDRESS must be set");
-
-    let erc721_cli = rust_token721::Client::new();
-    let erc1155_cli = rust_token1155::Client::new();
-
+pub async fn show_token_contract(network: Network) -> CliResult<()> {
+    let erc721_cli = rust_token721::Client::new(network);
     println!("------------------------------------------------------------");
-    println!("ERC721 info: {}", erc721_contract_address);
+    println!("ERC721 info: {}", network.erc721_address());
     println!(
         "name = {}",
         erc721_cli.simple_query::<String>("name").await?
@@ -42,8 +35,9 @@ pub async fn show_token_contract() -> CliResult<()> {
     );
     println!("------------------------------------------------------------");
 
+    let erc1155_cli = rust_token1155::Client::new(network);
     println!("------------------------------------------------------------");
-    println!("ERC1155 info: {}", erc1155_contract_address);
+    println!("ERC1155 info: {}", network.erc1155_address());
     println!(
         "name = {}",
         erc1155_cli.simple_query::<String>("name").await?
@@ -110,39 +104,6 @@ pub async fn show_order(
     }
 
     println!("{:?}", order.orders.first().unwrap());
-
-    Ok(())
-}
-
-pub async fn show_sample_oracle_contract() -> CliResult<()> {
-    let sample_oracle_contract_address =
-        env::var("SAMPLE_ORACLE_ADDRESS").expect("SAMPLE_ORACLE_ADDRESS must be set");
-
-    let cli = sample_oracle::Client::new();
-    println!("------------------------------------------------------------");
-    println!("Sample Oracle info: {}", sample_oracle_contract_address);
-    println!(
-        "getLatestPrice = {}",
-        cli.simple_query::<u128>("getLatestPrice").await?
-    );
-    println!(
-        "getChainLinkToken = {}",
-        cli.simple_query::<Address>("getChainlinkToken").await?
-    );
-    println!(
-        "chainLinkFee = {:?}",
-        cli.simple_query::<u128>("chainlinkFee").await?
-    );
-    println!(
-        "timeJobId = {:?}",
-        cli.simple_query::<ethers::abi::FixedBytes>("timeJobId")
-            .await?
-    );
-    println!(
-        "oracleAddress = {:?}",
-        cli.simple_query::<Address>("oracleAddress").await?
-    );
-    println!("------------------------------------------------------------");
 
     Ok(())
 }

@@ -3,6 +3,7 @@ pub mod rust_token721;
 
 use crate::error::CliResult;
 use crate::ethereum::{to_ether, to_wei, GAS_LIMIT, GAS_PRICE};
+use crate::model::Network;
 use bigdecimal::BigDecimal;
 use secp256k1::SecretKey;
 use std::env;
@@ -19,11 +20,10 @@ pub fn parse_address(address: String) -> Option<Address> {
 }
 
 #[allow(unused)]
-pub async fn get_balance() -> CliResult<BigDecimal> {
-    let chain_url = env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set");
+pub async fn get_balance(network: Network) -> CliResult<BigDecimal> {
     let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");
 
-    let transport = transports::Http::new(&chain_url)
+    let transport = transports::Http::new(&network.chain_url())
         .ok()
         .expect("should set ethereum url");
     let cli = Web3::new(transport);
@@ -37,12 +37,11 @@ pub async fn get_balance() -> CliResult<BigDecimal> {
 }
 
 #[allow(unused)]
-pub async fn send_eth(eth: f64, to: Address) -> CliResult<()> {
-    let chain_url = env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set");
+pub async fn send_eth(network: Network, eth: f64, to: Address) -> CliResult<()> {
     let wallet_secret = env::var("WALLET_SECRET").expect("WALLET_SECRET must be set");
     let prev_key = SecretKey::from_str(&wallet_secret).unwrap();
 
-    let transport = transports::Http::new(&chain_url)
+    let transport = transports::Http::new(&network.chain_url())
         .ok()
         .expect("should set ethereum url");
     let cli = Web3::new(transport);

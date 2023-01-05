@@ -1,9 +1,8 @@
 use crate::aws::lambda;
 use crate::error::CliResult;
 use crate::ethereum::ethers_rs;
-use crate::ethereum::ethers_rs::sample_oracle;
 use crate::ethereum::ethers_rs::{rust_token1155, rust_token721};
-use crate::model::Schema;
+use crate::model::{Network, Schema};
 use crate::open_sea::metadata::Metadata;
 use crate::{ipfs, CliError};
 use bytes::Bytes;
@@ -11,8 +10,9 @@ use std::env;
 use std::fs::File;
 use std::io::Read;
 
-pub async fn send_eth(ether: f64, address: String) -> CliResult<()> {
+pub async fn send_eth(network: Network, ether: f64, address: String) -> CliResult<()> {
     ethers_rs::send_eth(
+        network,
         ether,
         address
             .to_owned()
@@ -25,6 +25,7 @@ pub async fn send_eth(ether: f64, address: String) -> CliResult<()> {
 }
 
 pub async fn mint_erc721(
+    network: Network,
     name: String,
     description: String,
     image_filename: String,
@@ -77,13 +78,14 @@ pub async fn mint_erc721(
     );
 
     println!("{}", "minting..........");
-    let erc721_cli = rust_token721::Client::new();
+    let erc721_cli = rust_token721::Client::new(network);
     erc721_cli.mint(content_hash.hash).await?;
 
     Ok(())
 }
 
 pub async fn mint_erc1155(
+    network: Network,
     name: String,
     description: String,
     image_filename: String,
@@ -137,15 +139,15 @@ pub async fn mint_erc1155(
     );
 
     println!("{}", "minting..........");
-    let erc1155_cli = rust_token1155::Client::new();
+    let erc1155_cli = rust_token1155::Client::new(network);
     erc1155_cli.mint(content_hash.hash, amount).await?;
 
     Ok(())
 }
 
-pub async fn sell(token_id: String, schema: Schema, ether: f64) -> CliResult<()> {
+pub async fn sell(network: Network, token_id: String, schema: Schema, ether: f64) -> CliResult<()> {
     lambda::invoke_open_sea_sdk(lambda::invoke_open_sea_sdk::Input::sell(
-        &schema.address(),
+        &schema.address(network),
         &token_id,
         &schema,
         ether,
@@ -155,21 +157,19 @@ pub async fn sell(token_id: String, schema: Schema, ether: f64) -> CliResult<()>
     Ok(())
 }
 
-pub async fn transfer(token_id: String, schema: Schema, to_address: String) -> CliResult<()> {
+pub async fn transfer(
+    network: Network,
+    token_id: String,
+    schema: Schema,
+    to_address: String,
+) -> CliResult<()> {
     lambda::invoke_open_sea_sdk(lambda::invoke_open_sea_sdk::Input::transfer(
-        &schema.address(),
+        &schema.address(network),
         &token_id,
         &schema,
         &to_address,
     ))
     .await?;
-
-    Ok(())
-}
-
-pub async fn create_get_time_request() -> CliResult<()> {
-    let cli = sample_oracle::Client::new();
-    cli.create_get_time_request().await?;
 
     Ok(())
 }

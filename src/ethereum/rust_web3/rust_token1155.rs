@@ -1,6 +1,7 @@
 use crate::error::CliResult;
 use crate::ethereum::rust_web3::parse_address;
 use crate::ethereum::{GAS_LIMIT, GAS_PRICE};
+use crate::model::Network;
 use secp256k1::SecretKey;
 use std::str::FromStr;
 use std::{env, time};
@@ -18,24 +19,24 @@ pub struct Client {
     wallet_address: String,
     wallet_secret: String,
     contract_address: String,
+    network: Network,
 }
 
 impl Client {
     #[allow(unused)]
-    pub fn new() -> Self {
-        let chain_url = env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set");
-        let transport = Http::new(&chain_url).ok().unwrap();
+    pub fn new(network: Network) -> Self {
+        let transport = Http::new(&network.chain_url()).ok().unwrap();
         let cli = Web3::new(transport);
 
         let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");
         let wallet_secret = env::var("WALLET_SECRET").expect("WALLET_SECRET must be set");
-        let contract_address = env::var("ERC1155_ADDRESS").expect("ERC1155_ADDRESS must be set");
 
         Client {
             cli,
             wallet_address,
             wallet_secret,
-            contract_address,
+            contract_address: network.erc1155_address(),
+            network,
         }
     }
 
@@ -92,7 +93,6 @@ impl Client {
     #[allow(unused)]
     pub async fn deploy(&self) -> CliResult<()> {
         let prev_key = SecretKey::from_str(&self.wallet_secret).unwrap();
-        let chain_id = env::var("ETHEREUM_CHAIN_ID").expect("ETHEREUM_CHAIN_ID must be set");
 
         let contract = Contract::deploy(self.cli.eth(), include_bytes!("rust-token1155.abi.json"))?
             .confirmations(1)
@@ -105,7 +105,7 @@ impl Client {
                 include_str!("rust-token1155.bin").trim(),
                 (),
                 SecretKeyRef::from(&prev_key),
-                Some(chain_id.parse().unwrap()),
+                Some(self.network.chain_id()),
             )
             .await?;
 

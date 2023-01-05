@@ -10,7 +10,7 @@ mod open_sea;
 
 use crate::command::{deploy, key, query, transaction};
 use crate::error::CliError;
-use crate::model::Schema;
+use crate::model::{Network, Schema};
 use crate::open_sea::api::OrderSide;
 use clap::{Arg, Command};
 use dotenv::dotenv;
@@ -32,13 +32,11 @@ const COMMAND_SIGN: &str = "sign";
 const COMMAND_VERIFY: &str = "verify";
 const COMMAND_DEPLOY_TOKEN: &str = "deploy-token";
 
-const COMMAND_SAMPLE_ORACLE_INFO: &str = "sample-oracle-info";
-const COMMAND_SAMPLE_ORACLE_GET_TIME_REQUEST: &str = "sample-oracle-get-time-request";
-
 const ARGS_NAME: &str = "name";
 const ARGS_DESCRIPTION: &str = "description";
 const ARGS_IMAGE_FILENAME: &str = "image-filename";
 const ARGS_AMOUNT: &str = "amount";
+const ARGS_NETWORK: &str = "network";
 const ARGS_SCHEMA: &str = "schema";
 const ARGS_CONTRACT_ADDRESS: &str = "contract-address";
 const ARGS_TOKEN_ID: &str = "token-id";
@@ -72,8 +70,6 @@ pub async fn main() {
                     COMMAND_SIGN,
                     COMMAND_VERIFY,
                     COMMAND_DEPLOY_TOKEN,
-                    COMMAND_SAMPLE_ORACLE_INFO,
-                    COMMAND_SAMPLE_ORACLE_GET_TIME_REQUEST,
                 ])
                 .required(true)
                 .takes_value(true),
@@ -99,6 +95,13 @@ pub async fn main() {
         .arg(
             Arg::new(ARGS_AMOUNT)
                 .long(ARGS_AMOUNT)
+                .required(false)
+                .takes_value(true),
+        )
+        .arg(
+            Arg::new(ARGS_NETWORK)
+                .long(ARGS_NETWORK)
+                .possible_values(&["Ethereum", "Polygon"])
                 .required(false)
                 .takes_value(true),
         )
@@ -162,6 +165,11 @@ pub async fn main() {
         .unwrap_or_default()
         .parse()
         .unwrap_or(0);
+    let network: String = matches
+        .value_of(ARGS_NETWORK)
+        .unwrap_or("Ethereum")
+        .to_string();
+    let network = Network::from_str(&network).ok().unwrap();
     let schema: String = matches
         .value_of(ARGS_SCHEMA)
         .unwrap_or("ERC721")
@@ -194,15 +202,17 @@ pub async fn main() {
         .to_string();
 
     let result = match matches.value_of(COMMAND).unwrap() {
-        COMMAND_BALANCE => query::get_balance().await,
-        COMMAND_SEND_ETH => transaction::send_eth(ether, to_address).await,
+        COMMAND_BALANCE => query::get_balance(network).await,
+        COMMAND_SEND_ETH => transaction::send_eth(network, ether, to_address).await,
         COMMAND_MINT => match schema {
-            Schema::ERC721 => transaction::mint_erc721(name, description, image_filename).await,
+            Schema::ERC721 => {
+                transaction::mint_erc721(network, name, description, image_filename).await
+            }
             Schema::ERC1155 => {
-                transaction::mint_erc1155(name, description, image_filename, amount).await
+                transaction::mint_erc1155(network, name, description, image_filename, amount).await
             }
         },
-        COMMAND_TOKEN_INFO => query::show_token_contract().await,
+        COMMAND_TOKEN_INFO => query::show_token_contract(network).await,
         COMMAND_OPENSEA_ASSET_INFO => query::show_asset(contract_address, token_id).await,
         COMMAND_OPENSEA_SELL_ORDER_INFO => {
             query::show_order(contract_address, token_id, OrderSide::Sell).await
@@ -210,15 +220,14 @@ pub async fn main() {
         COMMAND_OPENSEA_BUY_ORDER_INFO => {
             query::show_order(contract_address, token_id, OrderSide::Buy).await
         }
-        COMMAND_OPENSEA_SELL => transaction::sell(token_id, schema, ether).await,
-        COMMAND_OPENSEA_TRANSFER => transaction::transfer(token_id, schema, to_address).await,
+        COMMAND_OPENSEA_SELL => transaction::sell(network, token_id, schema, ether).await,
+        COMMAND_OPENSEA_TRANSFER => {
+            transaction::transfer(network, token_id, schema, to_address).await
+        }
         COMMAND_KEY_GEN => key::generate().await,
         COMMAND_SIGN => key::sign(message).await,
         COMMAND_VERIFY => key::verify(signature, message).await,
-        COMMAND_DEPLOY_TOKEN => deploy::deploy_token_contract(schema).await,
-
-        COMMAND_SAMPLE_ORACLE_INFO => query::show_sample_oracle_contract().await,
-        COMMAND_SAMPLE_ORACLE_GET_TIME_REQUEST => transaction::create_get_time_request().await,
+        COMMAND_DEPLOY_TOKEN => deploy::deploy_token_contract(network, schema).await,
         _ => Err(CliError::Internal("unknown command".to_string())),
     };
 

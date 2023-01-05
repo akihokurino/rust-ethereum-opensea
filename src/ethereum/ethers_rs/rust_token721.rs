@@ -1,5 +1,6 @@
 use crate::error::CliResult;
 use crate::ethereum::{GAS_LIMIT, GAS_PRICE};
+use crate::model::Network;
 use ethers::abi::{Abi, Tokenizable};
 use ethers::contract::Contract;
 use ethers::prelude::*;
@@ -17,23 +18,21 @@ pub struct Client {
     provider: Provider<Http>,
     address: Address,
     abi: Abi,
+    network: Network,
 }
 
 impl Client {
-    pub fn new() -> Self {
-        let chain_url = env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set");
+    pub fn new(network: Network) -> Self {
         let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");
         let wallet_secret = env::var("WALLET_SECRET").expect("WALLET_SECRET must be set");
 
         Client {
             wallet_address,
             wallet_secret,
-            provider: Provider::<Http>::try_from(chain_url).unwrap(),
-            address: env::var("ERC721_ADDRESS")
-                .expect("ERC721_ADDRESS must be set")
-                .parse::<Address>()
-                .unwrap(),
+            provider: Provider::<Http>::try_from(network.chain_url()).unwrap(),
+            address: network.erc721_address().parse::<Address>().unwrap(),
             abi: serde_json::from_str(include_str!("rust-token721.abi.json").trim()).unwrap(),
+            network,
         }
     }
 
@@ -47,12 +46,10 @@ impl Client {
     }
 
     pub async fn mint(&self, hash: String) -> CliResult<()> {
-        let wallet = self.wallet_secret.parse::<LocalWallet>()?.with_chain_id(
-            env::var("ETHEREUM_CHAIN_ID")
-                .expect("ETHEREUM_CHAIN_ID must be set")
-                .parse::<u64>()
-                .unwrap(),
-        );
+        let wallet = self
+            .wallet_secret
+            .parse::<LocalWallet>()?
+            .with_chain_id(self.network.chain_id());
 
         let client = SignerMiddleware::new_with_provider_chain(self.provider.to_owned(), wallet)
             .await
@@ -79,12 +76,10 @@ impl Client {
     }
 
     pub async fn deploy(&self) -> CliResult<()> {
-        let wallet = self.wallet_secret.parse::<LocalWallet>()?.with_chain_id(
-            env::var("ETHEREUM_CHAIN_ID")
-                .expect("ETHEREUM_CHAIN_ID must be set")
-                .parse::<u64>()
-                .unwrap(),
-        );
+        let wallet = self
+            .wallet_secret
+            .parse::<LocalWallet>()?
+            .with_chain_id(self.network.chain_id());
 
         let client = SignerMiddleware::new_with_provider_chain(self.provider.to_owned(), wallet)
             .await
