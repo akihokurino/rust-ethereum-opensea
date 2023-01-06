@@ -217,7 +217,9 @@ pub async fn main() {
     let result = match matches.value_of(COMMAND).unwrap() {
         COMMAND_BALANCE => query::get_balance(network).await,
         COMMAND_SEND_ETH => transaction::send_eth(network, ether, to_address).await,
-        COMMAND_MAKE_METADATA => transaction::make_metadata(name, description, image_url).await,
+        COMMAND_MAKE_METADATA => {
+            transaction::make_metadata_from_url(name, description, image_url).await
+        }
         COMMAND_MINT => match schema {
             Schema::ERC721 => {
                 transaction::mint_erc721(network, name, description, image_filename).await

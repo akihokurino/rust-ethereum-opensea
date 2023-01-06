@@ -1,6 +1,6 @@
 use crate::error::CliResult;
 use crate::ethereum::ethers_rs;
-use crate::ethereum::ethers_rs::{rust_token1155, rust_token721};
+use crate::ethereum::ethers_rs::{reveal_token721, rust_token1155, rust_token721};
 use crate::model::Network;
 use crate::open_sea::api::OrderSide;
 use crate::open_sea::{api, ApiClient};
@@ -14,45 +14,76 @@ pub async fn get_balance(network: Network) -> CliResult<()> {
 }
 
 pub async fn show_token_contract(network: Network) -> CliResult<()> {
-    let erc721_cli = rust_token721::Client::new(network);
+    let rust_token721_cli = rust_token721::Client::new(network);
     println!("------------------------------------------------------------");
-    println!("ERC721 info: {}", network.erc721_address());
+    println!("RustToken721 info: {}", network.rust_token721_address());
     println!(
         "name = {}",
-        erc721_cli.simple_query::<String>("name").await?
+        rust_token721_cli.simple_query::<String>("name").await?
     );
     println!(
         "latestTokenId = {}",
-        erc721_cli.simple_query::<u128>("latestTokenId").await?
+        rust_token721_cli
+            .simple_query::<u128>("latestTokenId")
+            .await?
     );
     println!(
         "totalSupply = {:?}",
-        erc721_cli.simple_query::<u128>("totalSupply").await?
+        rust_token721_cli
+            .simple_query::<u128>("totalSupply")
+            .await?
     );
     println!(
         "totalOwned = {:?}",
-        erc721_cli.simple_query::<u128>("totalOwned").await?
+        rust_token721_cli.simple_query::<u128>("totalOwned").await?
     );
     println!("------------------------------------------------------------");
 
-    let erc1155_cli = rust_token1155::Client::new(network);
+    let rust_token1155_cli = rust_token1155::Client::new(network);
     println!("------------------------------------------------------------");
-    println!("ERC1155 info: {}", network.erc1155_address());
+    println!("RustToken1155 info: {}", network.rust_token1155_address());
     println!(
         "name = {}",
-        erc1155_cli.simple_query::<String>("name").await?
+        rust_token1155_cli.simple_query::<String>("name").await?
     );
     println!(
         "latestTokenId = {}",
-        erc1155_cli.simple_query::<u128>("latestTokenId").await?
+        rust_token1155_cli
+            .simple_query::<u128>("latestTokenId")
+            .await?
     );
     println!(
         "totalSupply = {:?}",
-        erc1155_cli.simple_query::<u128>("totalSupply").await?
+        rust_token1155_cli
+            .simple_query::<u128>("totalSupply")
+            .await?
     );
     println!(
         "totalOwned = {:?}",
-        erc1155_cli.simple_query::<u128>("totalOwned").await?
+        rust_token1155_cli
+            .simple_query::<u128>("totalOwned")
+            .await?
+    );
+    println!("------------------------------------------------------------");
+
+    let reveal_token721_cli = reveal_token721::Client::new(network);
+    println!("------------------------------------------------------------");
+    println!("RevealToken721 info: {}", network.reveal_token721_address());
+    println!(
+        "name = {}",
+        reveal_token721_cli.simple_query::<String>("name").await?
+    );
+    println!(
+        "totalSupply = {:?}",
+        reveal_token721_cli
+            .simple_query::<u128>("totalSupply")
+            .await?
+    );
+    println!(
+        "getCurrentHour = {}",
+        reveal_token721_cli
+            .simple_query::<u128>("getCurrentHour")
+            .await?
     );
     println!("------------------------------------------------------------");
 

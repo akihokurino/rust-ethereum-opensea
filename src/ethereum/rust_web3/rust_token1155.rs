@@ -35,7 +35,7 @@ impl Client {
             cli,
             wallet_address,
             wallet_secret,
-            contract_address: network.erc1155_address(),
+            contract_address: network.rust_token1155_address(),
             network,
         }
     }

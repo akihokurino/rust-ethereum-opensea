@@ -99,7 +99,7 @@ contract RevealToken721 is ERC721Enumerable, Ownable, ChainlinkClient {
     {
         if (timeAdapterResponse.timestamp > 0) {
             uint256 hour = DateTime.getHour(timeAdapterResponse.timestamp);
-            if (hour >= 3) {
+            if (3 <= hour && hour < 10) {
                 string memory contentHash = _token2hash[tokenId];
                 return string(abi.encodePacked(_baseUrl, contentHash));
             }

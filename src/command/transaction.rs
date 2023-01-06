@@ -1,7 +1,7 @@
 use crate::aws::lambda;
 use crate::error::CliResult;
 use crate::ethereum::ethers_rs;
-use crate::ethereum::ethers_rs::{rust_token1155, rust_token721};
+use crate::ethereum::ethers_rs::{reveal_token721, rust_token1155, rust_token721};
 use crate::model::{Network, Schema};
 use crate::open_sea::metadata::Metadata;
 use crate::{ipfs, CliError};
@@ -24,7 +24,11 @@ pub async fn send_eth(network: Network, ether: f64, address: String) -> CliResul
     Ok(())
 }
 
-pub async fn make_metadata(name: String, description: String, image_url: String) -> CliResult<()> {
+pub async fn make_metadata_from_url(
+    name: String,
+    description: String,
+    image_url: String,
+) -> CliResult<()> {
     let ipfs = ipfs::Adapter::new();
 
     if name.is_empty() || description.is_empty() {
@@ -52,12 +56,11 @@ pub async fn make_metadata(name: String, description: String, image_url: String)
     Ok(())
 }
 
-pub async fn mint_erc721(
-    network: Network,
+async fn make_metadata_from_file(
     name: String,
     description: String,
     image_filename: String,
-) -> CliResult<()> {
+) -> CliResult<String> {
     let ipfs = ipfs::Adapter::new();
 
     if name.is_empty() || description.is_empty() {
@@ -76,15 +79,6 @@ pub async fn mint_erc721(
     let _ = file.read_to_end(&mut buf)?;
 
     let content_hash = ipfs.upload(Bytes::from(buf), name.clone()).await?;
-    println!(
-        "image url: {:?}",
-        format!(
-            "{}/ipfs/{}",
-            env::var("IPFS_GATEWAY").expect("should set IPFS_GATEWAY"),
-            content_hash.hash.clone()
-        )
-    );
-
     let metadata = Metadata::new(
         &name,
         &format!(
@@ -105,9 +99,22 @@ pub async fn mint_erc721(
         )
     );
 
+    Ok(content_hash.hash)
+}
+
+pub async fn mint_erc721(
+    network: Network,
+    name: String,
+    description: String,
+    image_filename: String,
+) -> CliResult<()> {
+    let hash = make_metadata_from_file(name, description, image_filename).await?;
+
     println!("{}", "minting..........");
-    let erc721_cli = rust_token721::Client::new(network);
-    erc721_cli.mint(content_hash.hash).await?;
+    let rust_token721_cli = rust_token721::Client::new(network);
+    rust_token721_cli.mint(hash.clone()).await?;
+    let reveal_token721_cli = reveal_token721::Client::new(network);
+    reveal_token721_cli.mint(hash).await?;
 
     Ok(())
 }
@@ -119,56 +126,11 @@ pub async fn mint_erc1155(
     image_filename: String,
     amount: u128,
 ) -> CliResult<()> {
-    let ipfs = ipfs::Adapter::new();
-
-    if name.is_empty() || description.is_empty() || amount <= 0 {
-        return Err(CliError::InvalidArgument(
-            "parameter is invalid".to_string(),
-        ));
-    }
-    if image_filename.is_empty() {
-        return Err(CliError::InvalidArgument(
-            "parameter is invalid".to_string(),
-        ));
-    }
-
-    let mut file = File::open(format!("asset/{}", image_filename))?;
-    let mut buf = Vec::new();
-    let _ = file.read_to_end(&mut buf)?;
-
-    let content_hash = ipfs.upload(Bytes::from(buf), name.clone()).await?;
-    println!(
-        "image url: {:?}",
-        format!(
-            "{}/ipfs/{}",
-            env::var("IPFS_GATEWAY").expect("should set IPFS_GATEWAY"),
-            content_hash.hash.clone()
-        )
-    );
-
-    let metadata = Metadata::new(
-        &name,
-        &format!(
-            "{}/ipfs/{}",
-            env::var("IPFS_GATEWAY").expect("should set IPFS_GATEWAY"),
-            content_hash.hash.clone()
-        ),
-        &description,
-    );
-    let metadata = serde_json::to_string(&metadata).map_err(CliError::from)?;
-    let content_hash = ipfs.upload(Bytes::from(metadata), name.clone()).await?;
-    println!(
-        "metadata url: {:?}",
-        format!(
-            "{}/ipfs/{}",
-            env::var("IPFS_GATEWAY").expect("should set IPFS_GATEWAY"),
-            content_hash.hash.clone()
-        )
-    );
+    let hash = make_metadata_from_file(name, description, image_filename).await?;
 
     println!("{}", "minting..........");
-    let erc1155_cli = rust_token1155::Client::new(network);
-    erc1155_cli.mint(content_hash.hash, amount).await?;
+    let rust_token1155_cli = rust_token1155::Client::new(network);
+    rust_token1155_cli.mint(hash, amount).await?;
 
     Ok(())
 }

@@ -30,7 +30,7 @@ impl Client {
             wallet_address,
             wallet_secret,
             provider: Provider::<Http>::try_from(network.chain_url()).unwrap(),
-            address: network.erc721_address().parse::<Address>().unwrap(),
+            address: network.rust_token721_address().parse::<Address>().unwrap(),
             abi: serde_json::from_str(include_str!("rust-token721.abi.json").trim()).unwrap(),
             network,
         }

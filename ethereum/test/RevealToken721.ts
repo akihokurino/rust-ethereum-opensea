@@ -30,5 +30,17 @@ describe("RevealToken721", function () {
     expect(await contract.tokenURI(1)).to.equal(
       "https://akiho-playground.infura-ipfs.io/ipfs/A"
     );
+
+    await contract.setTimestampForDebug(Math.floor(1675677600000 / 1000));
+    expect(await contract.getCurrentHour()).to.equal(10);
+    expect(await contract.tokenURI(1)).to.equal(
+      "https://akiho-playground.infura-ipfs.io/ipfs/QmbJswgamjqeuLoH8eFEaGSCehLNqE4C4E4PRUo5ymLzgg"
+    );
+
+    await contract.setTimestampForDebug(Math.floor(1675695600000 / 1000));
+    expect(await contract.getCurrentHour()).to.equal(15);
+    expect(await contract.tokenURI(1)).to.equal(
+      "https://akiho-playground.infura-ipfs.io/ipfs/QmbJswgamjqeuLoH8eFEaGSCehLNqE4C4E4PRUo5ymLzgg"
+    );
   });
 });
