@@ -7,10 +7,10 @@ import { HardhatUserConfig } from "hardhat/config";
 dotenv.config();
 
 const chainIds = {
-  goerli: 5,
-  mumbai: 80001,
   hardhat: 31337,
   geth: 15,
+  goerli: 5,
+  mumbai: 80001,
 };
 
 const config: HardhatUserConfig = {

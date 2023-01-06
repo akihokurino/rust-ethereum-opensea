@@ -1,5 +1,5 @@
-contractAddress = "0x45585c78a16c62b510E6336fD8B95C61e88039B0"
-name = "Get Time"
+contractAddress = "0x45585c78a16c62b510E6336fD8B95C61e88039B0" # Oracle Address
+name = "TimeAdapter" 
 observationSource = """
   decode_log [
     type="ethabidecodelog"
@@ -25,7 +25,7 @@ observationSource = """
 
   encode_data [
     type="ethabiencode"
-    abi="(bytes32 requestId, string now, int256 timestamp)"
+    abi="(bytes32 requestId, string now, uint256 timestamp)"
     data="{\\"requestId\\": $(decode_log.requestId), \\"now\\": $(data_now), \\"timestamp\\": $(data_timestamp)}"
   ]
   
@@ -43,6 +43,6 @@ observationSource = """
   ]
 
   encode_data -> encode_tx -> submit_tx
-"""
-schemaVersion = 1
+""" 
+schemaVersion = 1 
 type = "directrequest"

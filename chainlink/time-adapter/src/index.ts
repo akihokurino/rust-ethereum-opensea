@@ -12,7 +12,7 @@ app.post("/", (req: express.Request, res: express.Response) => {
       data: {
         jobRunID: req.body.id ?? 0,
         now: now.toISOString(),
-        timestamp: now.getTime(),
+        timestamp: Math.floor(now.getTime() / 1000),
       },
     })
   );

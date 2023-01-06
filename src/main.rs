@@ -20,6 +20,7 @@ const COMMAND: &str = "command";
 
 const COMMAND_BALANCE: &str = "balance";
 const COMMAND_SEND_ETH: &str = "send-eth";
+const COMMAND_MAKE_METADATA: &str = "make-metadata";
 const COMMAND_MINT: &str = "mint";
 const COMMAND_TOKEN_INFO: &str = "token-info";
 const COMMAND_OPENSEA_ASSET_INFO: &str = "opensea-asset-info";
@@ -35,6 +36,7 @@ const COMMAND_DEPLOY_TOKEN: &str = "deploy-token";
 const ARGS_NAME: &str = "name";
 const ARGS_DESCRIPTION: &str = "description";
 const ARGS_IMAGE_FILENAME: &str = "image-filename";
+const ARGS_IMAGE_URL: &str = "image-url";
 const ARGS_AMOUNT: &str = "amount";
 const ARGS_NETWORK: &str = "network";
 const ARGS_SCHEMA: &str = "schema";
@@ -59,6 +61,7 @@ pub async fn main() {
                 .possible_values(&[
                     COMMAND_BALANCE,
                     COMMAND_SEND_ETH,
+                    COMMAND_MAKE_METADATA,
                     COMMAND_MINT,
                     COMMAND_TOKEN_INFO,
                     COMMAND_OPENSEA_ASSET_INFO,
@@ -89,6 +92,12 @@ pub async fn main() {
         .arg(
             Arg::new(ARGS_IMAGE_FILENAME)
                 .long(ARGS_IMAGE_FILENAME)
+                .required(false)
+                .takes_value(true),
+        )
+        .arg(
+            Arg::new(ARGS_IMAGE_URL)
+                .long(ARGS_IMAGE_URL)
                 .required(false)
                 .takes_value(true),
         )
@@ -160,6 +169,10 @@ pub async fn main() {
         .value_of(ARGS_IMAGE_FILENAME)
         .unwrap_or_default()
         .to_string();
+    let image_url: String = matches
+        .value_of(ARGS_IMAGE_URL)
+        .unwrap_or_default()
+        .to_string();
     let amount: u128 = matches
         .value_of(ARGS_AMOUNT)
         .unwrap_or_default()
@@ -204,6 +217,7 @@ pub async fn main() {
     let result = match matches.value_of(COMMAND).unwrap() {
         COMMAND_BALANCE => query::get_balance(network).await,
         COMMAND_SEND_ETH => transaction::send_eth(network, ether, to_address).await,
+        COMMAND_MAKE_METADATA => transaction::make_metadata(name, description, image_url).await,
         COMMAND_MINT => match schema {
             Schema::ERC721 => {
                 transaction::mint_erc721(network, name, description, image_filename).await

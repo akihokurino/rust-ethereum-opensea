@@ -4,6 +4,7 @@ ROOT := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 NAME := "RustToken Sample"
 DESCRIPTION := "RustToken Sample Generate"
 IMAGE_FILENAME := "sample.png"
+IMAGE_URL := "https://placehold.jp/3d4070/ffffff/500x500.png?text=Reveal"
 AMOUNT := "1"
 NETWORK := "Ethereum"
 SCHEMA := "ERC721"
@@ -29,6 +30,13 @@ send-eth: build
 	--ether $(ETHER) \
 	--to-address $(TO_ADDRESS) \
 	--network $(NETWORK)
+
+make-metadata: build
+	./target/debug/rust-ethereum \
+    --command make-metadata \
+  	--name $(NAME) \
+    --description $(DESCRIPTION) \
+    --image-url $(IMAGE_URL)
 
 mint: build
 	./target/debug/rust-ethereum \
@@ -103,4 +111,5 @@ extract-abi:
 	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq '.abi' > src/ethereum/ethers_rs/rust-token1155.abi.json
 	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq -r '.bytecode' > src/ethereum/ethers_rs/rust-token721.bin
 	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq -r '.bytecode' > src/ethereum/ethers_rs/rust-token1155.bin
-	cat ethereum/artifacts/contracts/SampleOracle.sol/SampleOracle.json | jq '.abi' > src/ethereum/ethers_rs/sample-oracle.abi.json
+	cat ethereum/artifacts/contracts/RevealToken721.sol/RevealToken721.json | jq '.abi' > src/ethereum/ethers_rs/reveal-token721.abi.json
+	cat ethereum/artifacts/contracts/RevealToken721.sol/RevealToken721.json | jq '.bytecode' > src/ethereum/ethers_rs/reveal-token721.bin

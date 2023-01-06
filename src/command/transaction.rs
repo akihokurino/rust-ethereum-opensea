@@ -24,6 +24,34 @@ pub async fn send_eth(network: Network, ether: f64, address: String) -> CliResul
     Ok(())
 }
 
+pub async fn make_metadata(name: String, description: String, image_url: String) -> CliResult<()> {
+    let ipfs = ipfs::Adapter::new();
+
+    if name.is_empty() || description.is_empty() {
+        return Err(CliError::InvalidArgument(
+            "parameter is invalid".to_string(),
+        ));
+    }
+    if image_url.is_empty() {
+        return Err(CliError::InvalidArgument(
+            "parameter is invalid".to_string(),
+        ));
+    }
+
+    let metadata = Metadata::new(&name, &image_url, &description);
+    let metadata = serde_json::to_string(&metadata).map_err(CliError::from)?;
+    let content_hash = ipfs.upload(Bytes::from(metadata), name.clone()).await?;
+    println!(
+        "metadata url: {:?}",
+        format!(
+            "{}/ipfs/{}",
+            env::var("IPFS_GATEWAY").expect("should set IPFS_GATEWAY"),
+            content_hash.hash.clone()
+        )
+    );
+    Ok(())
+}
+
 pub async fn mint_erc721(
     network: Network,
     name: String,
