@@ -59,15 +59,10 @@ make sign
 make verify SIGNATURE=2a30...
 ```
 
-### mint erc721
+### mint
 
 ```
 make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=sample.png SCHEMA=ERC721
-```
-
-### mint erc1155
-
-```
 make mint NAME=name DESCRIPTION=desc IMAGE_FILENAME=sample.png AMOUNT=10 SCHEMA=ERC1155
 ```
 
@@ -101,11 +96,13 @@ make opensea-buy-order-info CONTRACT_ADDRESS=0x00 TOKEN_ID=1
 
 ```
 make opensea-sell TOKEN_ID=1 ETHER=1 SCHEMA=ERC721
+make opensea-sell TOKEN_ID=1 ETHER=1 SCHEMA=ERC1155
 ```
 
 ### transfer in opensea
 
 ```
 make opensea-transfer TOKEN_ID=1 TO_ADDRESS=0x00 SCHEMA=ERC721
+make opensea-transfer TOKEN_ID=1 TO_ADDRESS=0x00 SCHEMA=ERC1155
 ```
 
