@@ -12,7 +12,7 @@
 - solidity v0.8.17
 - hardhat ( https://hardhat.org/ )
 - open zeppelin ( https://openzeppelin.com/ )
-- chain link ( https://docs.chain.link/ )
+- chainlink ( https://docs.chain.link/ )
 - oracle
 
 ## Support Network
