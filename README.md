@@ -18,6 +18,7 @@
 ## Support Network
 - Ethereum ( Goerli )
 - Polygon ( Mumbai )
+- Avalanche ( Fuji )
 
 ## Related
 

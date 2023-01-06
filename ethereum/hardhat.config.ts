@@ -11,6 +11,7 @@ const chainIds = {
   geth: 15,
   goerli: 5,
   mumbai: 80001,
+  fuji: 43113,
 };
 
 const config: HardhatUserConfig = {
@@ -44,6 +45,11 @@ const config: HardhatUserConfig = {
       url: process.env.MUMBAI_CHAIN_URL!,
       accounts: [process.env.WALLET_SECRET!],
       chainId: chainIds.mumbai,
+    },
+    fuji: {
+      url: process.env.FUJI_CHAIN_URL!,
+      accounts: [process.env.WALLET_SECRET!],
+      chainId: chainIds.fuji,
     },
   },
 };

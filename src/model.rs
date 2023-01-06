@@ -19,6 +19,7 @@ impl Schema {
 pub enum Network {
     Ethereum,
     Polygon,
+    Avalanche,
 }
 
 impl Network {
@@ -26,6 +27,7 @@ impl Network {
         match self {
             Network::Ethereum => env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set"),
             Network::Polygon => env::var("POLYGON_URL").expect("POLYGON_URL must be set"),
+            Network::Avalanche => env::var("AVALANCHE_URL").expect("AVALANCHE_URL must be set"),
         }
     }
 
@@ -39,6 +41,10 @@ impl Network {
                 .expect("POLYGON_CHAIN_ID must be set")
                 .parse::<u64>()
                 .unwrap(),
+            Network::Avalanche => env::var("AVALANCHE_CHAIN_ID")
+                .expect("AVALANCHE_CHAIN_ID must be set")
+                .parse::<u64>()
+                .unwrap(),
         }
     }
 
@@ -48,6 +54,8 @@ impl Network {
                 .expect("ETHEREUM_RUST_TOKEN_721_ADDRESS must be set"),
             Network::Polygon => env::var("POLYGON_RUST_TOKEN_721_ADDRESS")
                 .expect("POLYGON_RUST_TOKEN_721_ADDRESS must be set"),
+            Network::Avalanche => env::var("AVALANCHE_RUST_TOKEN_721_ADDRESS")
+                .expect("AVALANCHE_RUST_TOKEN_721_ADDRESS must be set"),
         }
     }
 
@@ -57,6 +65,8 @@ impl Network {
                 .expect("ETHEREUM_RUST_TOKEN_1155_ADDRESS must be set"),
             Network::Polygon => env::var("POLYGON_RUST_TOKEN_1155_ADDRESS")
                 .expect("POLYGON_RUST_TOKEN_1155_ADDRESS must be set"),
+            Network::Avalanche => env::var("AVALANCHE_RUST_TOKEN_1155_ADDRESS")
+                .expect("AVALANCHE_RUST_TOKEN_1155_ADDRESS must be set"),
         }
     }
 
@@ -65,6 +75,7 @@ impl Network {
             Network::Ethereum => env::var("ETHEREUM_REVEAL_TOKEN_721_ADDRESS")
                 .expect("ETHEREUM_REVEAL_TOKEN_721_ADDRESS must be set"),
             Network::Polygon => unimplemented!(),
+            Network::Avalanche => unimplemented!(),
         }
     }
 }

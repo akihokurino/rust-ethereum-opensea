@@ -28,6 +28,9 @@ deploy-oracle-goerli:
 deploy-tokens-mumbai:
 	npx hardhat run scripts/deploy-tokens.ts --network mumbai
 
+deploy-tokens-fuji:
+	npx hardhat run scripts/deploy-tokens.ts --network fuji
+
 init-private-net:
 	geth --datadir ./private-net/ init ./private-net/genesis.json
 

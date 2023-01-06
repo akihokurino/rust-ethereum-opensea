@@ -32,6 +32,7 @@ const COMMAND_KEY_GEN: &str = "key-gen";
 const COMMAND_SIGN: &str = "sign";
 const COMMAND_VERIFY: &str = "verify";
 const COMMAND_DEPLOY_TOKEN: &str = "deploy-token";
+const COMMAND_UPDATE_TIME: &str = "update-time";
 
 const ARGS_NAME: &str = "name";
 const ARGS_DESCRIPTION: &str = "description";
@@ -73,6 +74,7 @@ pub async fn main() {
                     COMMAND_SIGN,
                     COMMAND_VERIFY,
                     COMMAND_DEPLOY_TOKEN,
+                    COMMAND_UPDATE_TIME,
                 ])
                 .required(true)
                 .takes_value(true),
@@ -110,7 +112,7 @@ pub async fn main() {
         .arg(
             Arg::new(ARGS_NETWORK)
                 .long(ARGS_NETWORK)
-                .possible_values(&["Ethereum", "Polygon"])
+                .possible_values(&["Ethereum", "Polygon", "Avalanche"])
                 .required(false)
                 .takes_value(true),
         )
@@ -244,6 +246,7 @@ pub async fn main() {
         COMMAND_SIGN => key::sign(message).await,
         COMMAND_VERIFY => key::verify(signature, message).await,
         COMMAND_DEPLOY_TOKEN => deploy::deploy_token_contract(network, schema).await,
+        COMMAND_UPDATE_TIME => transaction::update_time(network).await,
         _ => Err(CliError::Internal("unknown command".to_string())),
     };
 

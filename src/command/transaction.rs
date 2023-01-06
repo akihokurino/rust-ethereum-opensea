@@ -113,8 +113,11 @@ pub async fn mint_erc721(
     println!("{}", "minting..........");
     let rust_token721_cli = rust_token721::Client::new(network);
     rust_token721_cli.mint(hash.clone()).await?;
-    let reveal_token721_cli = reveal_token721::Client::new(network);
-    reveal_token721_cli.mint(hash).await?;
+
+    if network == Network::Ethereum {
+        let reveal_token721_cli = reveal_token721::Client::new(network);
+        reveal_token721_cli.mint(hash).await?;
+    }
 
     Ok(())
 }
@@ -160,6 +163,15 @@ pub async fn transfer(
         &to_address,
     ))
     .await?;
+
+    Ok(())
+}
+
+pub async fn update_time(network: Network) -> CliResult<()> {
+    if network == Network::Ethereum {
+        let reveal_token721_cli = reveal_token721::Client::new(network);
+        reveal_token721_cli.update_time().await?;
+    }
 
     Ok(())
 }

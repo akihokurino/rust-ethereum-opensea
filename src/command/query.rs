@@ -66,26 +66,28 @@ pub async fn show_token_contract(network: Network) -> CliResult<()> {
     );
     println!("------------------------------------------------------------");
 
-    let reveal_token721_cli = reveal_token721::Client::new(network);
-    println!("------------------------------------------------------------");
-    println!("RevealToken721 info: {}", network.reveal_token721_address());
-    println!(
-        "name = {}",
-        reveal_token721_cli.simple_query::<String>("name").await?
-    );
-    println!(
-        "totalSupply = {:?}",
-        reveal_token721_cli
-            .simple_query::<u128>("totalSupply")
-            .await?
-    );
-    println!(
-        "getCurrentHour = {}",
-        reveal_token721_cli
-            .simple_query::<u128>("getCurrentHour")
-            .await?
-    );
-    println!("------------------------------------------------------------");
+    if network == Network::Ethereum {
+        let reveal_token721_cli = reveal_token721::Client::new(network);
+        println!("------------------------------------------------------------");
+        println!("RevealToken721 info: {}", network.reveal_token721_address());
+        println!(
+            "name = {}",
+            reveal_token721_cli.simple_query::<String>("name").await?
+        );
+        println!(
+            "totalSupply = {:?}",
+            reveal_token721_cli
+                .simple_query::<u128>("totalSupply")
+                .await?
+        );
+        println!(
+            "getCurrentHour = {}",
+            reveal_token721_cli
+                .simple_query::<u128>("getCurrentHour")
+                .await?
+        );
+        println!("------------------------------------------------------------");
+    }
 
     Ok(())
 }

@@ -7,8 +7,8 @@ use std::str::FromStr;
 pub mod ethers_rs;
 pub mod rust_web3;
 
-const GAS_LIMIT: i64 = 8500000;
-const GAS_PRICE: i64 = 40000000000;
+const GAS_LIMIT: i64 = 8000000;
+const GAS_PRICE: i64 = 25000000000; // 40000000000
 
 #[allow(unused)]
 fn convert<'a>(value: &str, unit: &'a str) -> HashMap<&'a str, String> {

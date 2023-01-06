@@ -5,12 +5,12 @@ NAME := "RustToken Sample"
 DESCRIPTION := "RustToken Sample Generate"
 IMAGE_FILENAME := "sample.png"
 IMAGE_URL := "https://placehold.jp/3d4070/ffffff/500x500.png?text=Reveal"
-AMOUNT := "1"
+AMOUNT := "10"
 NETWORK := "Ethereum"
 SCHEMA := "ERC721"
 CONTRACT_ADDRESS := ""
 TOKEN_ID := ""
-ETHER := ""
+ETHER := "0.01"
 TO_ADDRESS := ""
 QUERY := "getLatestPrice"
 MESSAGE := "world"
@@ -101,6 +101,11 @@ deploy-token: build
 	--command deploy-token \
 	--schema $(SCHEMA) \
 	--network $(NETWORK)
+
+update-time: build
+	./target/debug/rust-ethereum \
+    --command update-time \
+    --network $(NETWORK)
 
 extract-abi:
 	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq '.abi' > src/ethereum/rust_web3/rust-token721.abi.json

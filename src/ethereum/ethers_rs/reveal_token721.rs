@@ -78,6 +78,36 @@ impl Client {
         Ok(())
     }
 
+    pub async fn update_time(&self) -> CliResult<()> {
+        let wallet = self
+            .wallet_secret
+            .parse::<LocalWallet>()?
+            .with_chain_id(self.network.chain_id());
+
+        let client = SignerMiddleware::new_with_provider_chain(self.provider.to_owned(), wallet)
+            .await
+            .unwrap();
+        let client = Arc::new(client);
+
+        let contract =
+            Contract::<SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>>::new(
+                self.address,
+                self.abi.to_owned(),
+                client.clone(),
+            );
+
+        let call = contract
+            .method::<_, H256>("updateTime", ())?
+            .gas(GAS_LIMIT)
+            .gas_price(GAS_PRICE);
+        let tx = call.send().await?;
+        let receipt = tx.await?;
+
+        println!("updateTime result: {:?}", receipt);
+
+        Ok(())
+    }
+
     pub async fn deploy(&self) -> CliResult<()> {
         let wallet = self
             .wallet_secret
