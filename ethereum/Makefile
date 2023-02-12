@@ -12,24 +12,34 @@ node:
 	npx hardhat node
 
 deploy-hardhat:
-	npx hardhat run scripts/deploy-tokens.ts --network hardhat
+	npx hardhat run scripts/deploy-nft.ts --network hardhat
 	npx hardhat run scripts/deploy-oracle.ts --network hardhat
+	npx hardhat run scripts/deploy-reveal-token.ts --network hardhat
+	npx hardhat run scripts/deploy-sbt.ts --network hardhat
 
 deploy-geth:
-	npx hardhat run scripts/deploy-tokens.ts --network geth
+	npx hardhat run scripts/deploy-nft.ts --network geth
 	npx hardhat run scripts/deploy-oracle.ts --network geth
+	npx hardhat run scripts/deploy-reveal-token.ts --network geth
+	npx hardhat run scripts/deploy-sbt.ts --network geth
 
-deploy-tokens-goerli:
-	npx hardhat run scripts/deploy-tokens.ts --network goerli
+deploy-nft-goerli:
+	npx hardhat run scripts/deploy-nft.ts --network goerli
 
 deploy-oracle-goerli:
 	npx hardhat run scripts/deploy-oracle.ts --network goerli
 
-deploy-tokens-mumbai:
-	npx hardhat run scripts/deploy-tokens.ts --network mumbai
+deploy-reveal-token-goerli:
+	npx hardhat run scripts/deploy-reveal-token.ts --network goerli
 
-deploy-tokens-fuji:
-	npx hardhat run scripts/deploy-tokens.ts --network fuji
+deploy-sbt-goerli:
+	npx hardhat run scripts/deploy-sbt.ts --network goerli
+
+deploy-nft-mumbai:
+	npx hardhat run scripts/deploy-nft.ts --network mumbai
+
+deploy-nft-fuji:
+	npx hardhat run scripts/deploy-nft.ts --network fuji
 
 init-private-net:
 	geth --datadir ./private-net/ init ./private-net/genesis.json

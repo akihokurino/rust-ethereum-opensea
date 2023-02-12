@@ -78,4 +78,13 @@ impl Network {
             Network::Avalanche => unimplemented!(),
         }
     }
+
+    pub fn rust_sbt721_address(&self) -> String {
+        match self {
+            Network::Ethereum => env::var("ETHEREUM_RUST_SBT_721_ADDRESS")
+                .expect("ETHEREUM_RUST_SBT_721_ADDRESS must be set"),
+            Network::Polygon => unimplemented!(),
+            Network::Avalanche => unimplemented!(),
+        }
+    }
 }

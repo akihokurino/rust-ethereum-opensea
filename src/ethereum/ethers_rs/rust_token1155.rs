@@ -36,6 +36,7 @@ impl Client {
         }
     }
 
+    #[allow(unused)]
     pub async fn simple_query<T: Tokenizable + std::fmt::Debug>(
         &self,
         method: &str,
@@ -45,6 +46,7 @@ impl Client {
         Ok(res)
     }
 
+    #[allow(unused)]
     pub async fn mint(&self, hash: String, amount: u128) -> CliResult<()> {
         let wallet = self
             .wallet_secret
@@ -75,6 +77,7 @@ impl Client {
         Ok(())
     }
 
+    #[allow(unused)]
     pub async fn deploy(&self) -> CliResult<()> {
         let wallet = self
             .wallet_secret

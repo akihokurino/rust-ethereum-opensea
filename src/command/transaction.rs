@@ -1,7 +1,7 @@
 use crate::aws::lambda;
 use crate::error::CliResult;
 use crate::ethereum::ethers_rs;
-use crate::ethereum::ethers_rs::{reveal_token721, rust_token1155, rust_token721};
+use crate::ethereum::ethers_rs::{reveal_token721, rust_sbt721, rust_token1155, rust_token721};
 use crate::model::{Network, Schema};
 use crate::open_sea::metadata::Metadata;
 use crate::{ipfs, CliError};
@@ -116,7 +116,10 @@ pub async fn mint_erc721(
 
     if network == Network::Ethereum {
         let reveal_token721_cli = reveal_token721::Client::new(network);
-        reveal_token721_cli.mint(hash).await?;
+        reveal_token721_cli.mint(hash.clone()).await?;
+
+        let rust_sbt721_cli = rust_sbt721::Client::new(network);
+        rust_sbt721_cli.mint(hash.clone()).await?;
     }
 
     Ok(())

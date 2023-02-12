@@ -149,6 +149,7 @@ describe("RustToken721", function () {
       }
     );
 
+    expect(contractV1.address).to.equal(contractV2.address);
     expect(await contractV2.name()).to.equal("RustToken");
     expect(await contractV2.tokenURI(1)).to.equal(
       "https://akiho-playground.infura-ipfs.io/ipfs/A"

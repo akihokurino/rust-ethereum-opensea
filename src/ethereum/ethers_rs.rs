@@ -6,6 +6,7 @@ use ethers::prelude::*;
 use std::env;
 
 pub mod reveal_token721;
+pub mod rust_sbt721;
 pub mod rust_token1155;
 pub mod rust_token721;
 

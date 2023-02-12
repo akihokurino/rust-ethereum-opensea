@@ -118,3 +118,5 @@ extract-abi:
 	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq -r '.bytecode' > src/ethereum/ethers_rs/rust-token1155.bin
 	cat ethereum/artifacts/contracts/RevealToken721.sol/RevealToken721.json | jq '.abi' > src/ethereum/ethers_rs/reveal-token721.abi.json
 	cat ethereum/artifacts/contracts/RevealToken721.sol/RevealToken721.json | jq '.bytecode' > src/ethereum/ethers_rs/reveal-token721.bin
+	cat ethereum/artifacts/contracts/RustSbt721.sol/RustSbt721.json | jq '.abi' > src/ethereum/ethers_rs/rust-sbt721.abi.json
+	cat ethereum/artifacts/contracts/RustSbt721.sol/RustSbt721.json | jq '.bytecode' > src/ethereum/ethers_rs/rust-sbt721.bin

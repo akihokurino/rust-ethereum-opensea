@@ -30,11 +30,8 @@ impl Client {
             wallet_address,
             wallet_secret,
             provider: Provider::<Http>::try_from(network.chain_url()).unwrap(),
-            address: network
-                .reveal_token721_address()
-                .parse::<Address>()
-                .unwrap(),
-            abi: serde_json::from_str(include_str!("reveal-token721.abi.json").trim()).unwrap(),
+            address: network.rust_sbt721_address().parse::<Address>().unwrap(),
+            abi: serde_json::from_str(include_str!("rust-sbt721.abi.json").trim()).unwrap(),
             network,
         }
     }
@@ -81,37 +78,6 @@ impl Client {
     }
 
     #[allow(unused)]
-    pub async fn update_time(&self) -> CliResult<()> {
-        let wallet = self
-            .wallet_secret
-            .parse::<LocalWallet>()?
-            .with_chain_id(self.network.chain_id());
-
-        let client = SignerMiddleware::new_with_provider_chain(self.provider.to_owned(), wallet)
-            .await
-            .unwrap();
-        let client = Arc::new(client);
-
-        let contract =
-            Contract::<SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>>::new(
-                self.address,
-                self.abi.to_owned(),
-                client.clone(),
-            );
-
-        let call = contract
-            .method::<_, H256>("updateTime", ())?
-            .gas(GAS_LIMIT)
-            .gas_price(GAS_PRICE);
-        let tx = call.send().await?;
-        let receipt = tx.await?;
-
-        println!("updateTime result: {:?}", receipt);
-
-        Ok(())
-    }
-
-    #[allow(unused)]
     pub async fn deploy(&self) -> CliResult<()> {
         let wallet = self
             .wallet_secret
@@ -123,7 +89,7 @@ impl Client {
             .unwrap();
         let client = Arc::new(client);
 
-        let bytecode = include_str!("reveal-token721.bin").trim();
+        let bytecode = include_str!("rust-sbt721.bin").trim();
         let factory = ContractFactory::new(
             self.abi.to_owned(),
             Bytes::from_str(bytecode).unwrap(),

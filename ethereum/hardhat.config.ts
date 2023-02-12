@@ -1,5 +1,5 @@
+import "@nomicfoundation/hardhat-chai-matchers";
 import "@nomiclabs/hardhat-etherscan";
-import "@nomiclabs/hardhat-waffle";
 import "@openzeppelin/hardhat-upgrades";
 import dotenv from "dotenv";
 import { HardhatUserConfig } from "hardhat/config";
