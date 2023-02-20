@@ -242,7 +242,7 @@ pub async fn main() {
         COMMAND_OPENSEA_TRANSFER => {
             transaction::transfer(network, token_id, schema, to_address).await
         }
-        COMMAND_KEY_GEN => key::generate().await,
+        COMMAND_KEY_GEN => key::generate_by_ethers_rs().await,
         COMMAND_SIGN => key::sign(message).await,
         COMMAND_VERIFY => key::verify(signature, message).await,
         COMMAND_DEPLOY_TOKEN => deploy::deploy_token_contract(network, schema).await,
