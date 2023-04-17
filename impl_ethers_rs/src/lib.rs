@@ -157,26 +157,21 @@ pub async fn show_token_info(target: Contract, network: Network) -> EthersResult
         Contract::RustSbt721 => {
             let cli = rust_sbt_721::client::Client::new(network);
             println!("------------------------------------------------------------");
-            println!("RustToken1155 info: {}", network.rust_sbt_721_address());
+            println!("RustSbt721 info: {}", network.rust_sbt_721_address());
             println!("name = {}", cli.simple_query::<String>("name").await?);
-            println!(
-                "latestTokenId = {}",
-                cli.simple_query::<u128>("latestTokenId").await?
-            );
             println!(
                 "totalSupply = {:?}",
                 cli.simple_query::<u128>("totalSupply").await?
-            );
-            println!(
-                "totalOwned = {:?}",
-                cli.simple_query::<u128>("totalOwned").await?
             );
             println!("------------------------------------------------------------");
         }
         Contract::RevealToken721 => {
             let cli = reveal_token_721::client::Client::new(network);
             println!("------------------------------------------------------------");
-            println!("RevealToken info: {}", network.reveal_token_721_address());
+            println!(
+                "RevealToken721 info: {}",
+                network.reveal_token_721_address()
+            );
             println!("name = {}", cli.simple_query::<String>("name").await?);
             println!(
                 "totalSupply = {:?}",
@@ -230,7 +225,7 @@ pub async fn sign(message: String) -> EthersResult<()> {
 
     let signature = wallet.sign_message(message).await?;
 
-    println!("result: {}", signature.to_string());
+    println!("signature: {}", signature.to_string());
 
     Ok(())
 }
@@ -242,8 +237,8 @@ pub async fn verify(signature: String, message: String) -> EthersResult<()> {
     let sig = Signature::from_str(&signature).unwrap();
 
     match sig.verify(message, wallet.address()) {
-        Ok(_) => println!("verified by {:?}!", wallet.address()),
-        Err(_) => println!("cannot verified by {:?}!", wallet.address()),
+        Ok(_) => println!("verified by {:?}", wallet.address()),
+        Err(_) => println!("cannot verified by {:?}", wallet.address()),
     }
 
     Ok(())

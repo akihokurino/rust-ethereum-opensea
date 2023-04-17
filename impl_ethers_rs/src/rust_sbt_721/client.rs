@@ -88,7 +88,7 @@ impl Client {
             client.clone(),
         );
 
-        let mut deployer = factory.deploy(()).unwrap();
+        let mut deployer = factory.deploy(())?;
         deployer.tx = TypedTransaction::Legacy(TransactionRequest {
             to: None,
             data: deployer.tx.data().cloned(),
@@ -103,7 +103,7 @@ impl Client {
             .await
             .unwrap();
 
-        println!("deployed erc721 to: {:?}", contract.address());
+        println!("deployed to: {:?}", contract.address());
 
         Ok(())
     }

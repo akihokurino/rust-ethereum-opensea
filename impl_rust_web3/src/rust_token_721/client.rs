@@ -95,7 +95,7 @@ impl Client {
             )
             .await?;
 
-        println!("deployed erc721 to: {:?}", contract.address());
+        println!("deployed to: {:?}", contract.address());
 
         Ok(())
     }

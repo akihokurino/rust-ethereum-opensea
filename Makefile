@@ -1,20 +1,23 @@
 MAKEFLAGS=--no-builtin-rules --no-builtin-variables --always-make
 ROOT := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 
-NAME := "RustToken Sample"
-DESCRIPTION := "RustToken Sample Generate"
+NAME := "Rust Sample"
+DESCRIPTION := "Generate token by rust"
 IMAGE_FILENAME := "sample.png"
 IMAGE_URL := "https://placehold.jp/3d4070/ffffff/500x500.png?text=Reveal"
 AMOUNT := "10"
-NETWORK := "Ethereum"
+NETWORK := "Polygon"
 SCHEMA := "ERC721"
 CONTRACT_ADDRESS := ""
 TOKEN_ID := ""
 ETHER := "0.01"
-TO_ADDRESS := ""
+TO_ADDRESS := "0x0E91D6613a84d7C8b72a289D8b275AF7717C3d2E"
 QUERY := "getLatestPrice"
 MESSAGE := "world"
-SIGNATURE := ""
+SIGNATURE := "2a30afb5d5b476a505422d931c5b98a10d6ac6b6fb3a56a27c658a9fa36911f10b079fe392893e684881813e7d07a3fd14048ba902c20eb56eb9f0e7f8c2a1131b"
+PACKAGE := "EthersRs"
+CONTRACT := "RustToken721"
+CONTENT_HASH := "QmPDE4pXnFvNtqJ2889HgEQUEft8KCdyMaKKt5zzw3NuMS"
 
 build:
 	cargo build
@@ -28,35 +31,43 @@ build-impl-rust-web3:
 balance: build
 	./target/debug/rust-ethereum \
 	--command balance \
-	--network $(NETWORK)
+	--network $(NETWORK) \
+	--package $(PACKAGE)
 
 send-eth: build
 	./target/debug/rust-ethereum \
 	--command send-eth \
 	--ether $(ETHER) \
 	--to-address $(TO_ADDRESS) \
-	--network $(NETWORK)
+	--network $(NETWORK) \
+	--package $(PACKAGE)
+
+token-info: build
+	./target/debug/rust-ethereum \
+	--command token-info \
+	--network $(NETWORK) \
+	--package $(PACKAGE) \
+	--contract $(CONTRACT)
 
 make-metadata: build
 	./target/debug/rust-ethereum \
     --command make-metadata \
   	--name $(NAME) \
     --description $(DESCRIPTION) \
-    --image-url $(IMAGE_URL)
+    --image-filename $(IMAGE_FILENAME)
 
 mint: build
 	./target/debug/rust-ethereum \
 	--command mint \
-	--name $(NAME) \
-	--description $(DESCRIPTION) \
-	--image-filename $(IMAGE_FILENAME) \
-	--amount $(AMOUNT) \
-	--schema $(SCHEMA) \
-	--network $(NETWORK)
+	--contract $(CONTRACT) \
+	--network $(NETWORK) \
+	--content-hash $(CONTENT_HASH) \
+	--amount $(AMOUNT)
 
-token-info: build
+deploy-token: build
 	./target/debug/rust-ethereum \
-	--command token-info \
+	--command deploy-token \
+	--contract $(CONTRACT) \
 	--network $(NETWORK)
 
 opensea-asset-info: build
@@ -101,12 +112,6 @@ verify: build
 	--command verify \
 	--message $(MESSAGE) \
 	--signature $(SIGNATURE)
-
-deploy-token: build
-	./target/debug/rust-ethereum \
-	--command deploy-token \
-	--schema $(SCHEMA) \
-	--network $(NETWORK)
 
 update-time: build
 	./target/debug/rust-ethereum \

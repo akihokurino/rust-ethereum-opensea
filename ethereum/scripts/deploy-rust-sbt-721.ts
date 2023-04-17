@@ -11,6 +11,7 @@ async function main(hre: HardhatRuntimeEnvironment) {
   await ethers.provider.waitForTransaction(receipt.transactionHash, 5);
   await hre.run("verify:verify", {
     address: contract.address,
+    constructorArguments: ["RustSbt", "RS"],
   });
 }
 

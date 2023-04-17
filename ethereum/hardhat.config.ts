@@ -1,7 +1,6 @@
 import "@nomicfoundation/hardhat-chai-matchers";
 import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-etherscan";
-import "@openzeppelin/hardhat-upgrades";
 import dotenv from "dotenv";
 import "hardhat-gas-reporter";
 import { HardhatUserConfig } from "hardhat/config";
