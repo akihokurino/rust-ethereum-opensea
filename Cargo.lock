@@ -824,6 +824,8 @@ version = "0.1.0"
 dependencies = [
  "bigdecimal",
  "regex",
+ "strum",
+ "strum_macros",
 ]
 
 [[package]]
@@ -2850,6 +2852,7 @@ dependencies = [
  "bigdecimal",
  "bytes",
  "clap",
+ "common",
  "dotenv",
  "hex-literal",
  "impl_ethers_rs",

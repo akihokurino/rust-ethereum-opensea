@@ -395,6 +395,8 @@ version = "0.1.0"
 dependencies = [
  "bigdecimal",
  "regex",
+ "strum",
+ "strum_macros",
 ]
 
 [[package]]

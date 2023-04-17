@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 bigdecimal = "0.3.0"
 regex = "1"
+strum = "0.24.1"
+strum_macros = "0.24.3"

@@ -1,3 +1,4 @@
+use common::*;
 use secp256k1::SecretKey;
 use std::env;
 use std::str::FromStr;
@@ -8,77 +9,6 @@ use web3::{transports, Web3};
 
 pub mod rust_token_1155;
 pub mod rust_token_721;
-
-const GAS_LIMIT: i64 = 8000000;
-const GAS_PRICE: i64 = 25000000000; // 40000000000
-
-#[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
-pub enum Contract {
-    RustToken721,
-    RustToken1155,
-}
-
-#[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
-pub enum Schema {
-    ERC721,
-    ERC1155,
-}
-
-#[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
-pub enum Network {
-    Ethereum,
-    Polygon,
-    Avalanche,
-}
-
-impl Network {
-    pub fn chain_url(&self) -> String {
-        match self {
-            Network::Ethereum => env::var("ETHEREUM_URL").expect("ETHEREUM_URL must be set"),
-            Network::Polygon => env::var("POLYGON_URL").expect("POLYGON_URL must be set"),
-            Network::Avalanche => env::var("AVALANCHE_URL").expect("AVALANCHE_URL must be set"),
-        }
-    }
-
-    pub fn chain_id(&self) -> u64 {
-        match self {
-            Network::Ethereum => env::var("ETHEREUM_CHAIN_ID")
-                .expect("ETHEREUM_CHAIN_ID must be set")
-                .parse::<u64>()
-                .unwrap(),
-            Network::Polygon => env::var("POLYGON_CHAIN_ID")
-                .expect("POLYGON_CHAIN_ID must be set")
-                .parse::<u64>()
-                .unwrap(),
-            Network::Avalanche => env::var("AVALANCHE_CHAIN_ID")
-                .expect("AVALANCHE_CHAIN_ID must be set")
-                .parse::<u64>()
-                .unwrap(),
-        }
-    }
-
-    pub fn rust_token_721_address(&self) -> String {
-        match self {
-            Network::Ethereum => env::var("ETHEREUM_RUST_TOKEN_721_ADDRESS")
-                .expect("ETHEREUM_RUST_TOKEN_721_ADDRESS must be set"),
-            Network::Polygon => env::var("POLYGON_RUST_TOKEN_721_ADDRESS")
-                .expect("POLYGON_RUST_TOKEN_721_ADDRESS must be set"),
-            Network::Avalanche => env::var("AVALANCHE_RUST_TOKEN_721_ADDRESS")
-                .expect("AVALANCHE_RUST_TOKEN_721_ADDRESS must be set"),
-        }
-    }
-
-    pub fn rust_token_1155_address(&self) -> String {
-        match self {
-            Network::Ethereum => env::var("ETHEREUM_RUST_TOKEN_1155_ADDRESS")
-                .expect("ETHEREUM_RUST_TOKEN_1155_ADDRESS must be set"),
-            Network::Polygon => env::var("POLYGON_RUST_TOKEN_1155_ADDRESS")
-                .expect("POLYGON_RUST_TOKEN_1155_ADDRESS must be set"),
-            Network::Avalanche => env::var("AVALANCHE_RUST_TOKEN_1155_ADDRESS")
-                .expect("AVALANCHE_RUST_TOKEN_1155_ADDRESS must be set"),
-        }
-    }
-}
 
 fn parse_address(address: String) -> Option<Address> {
     match address.trim_start_matches("0x").parse() {
@@ -160,6 +90,7 @@ pub async fn mint(
             let cli = rust_token_1155::client::Client::new(network);
             cli.mint(hash.clone(), amount).await
         }
+        _ => return Err(Error::Internal("invalid params".to_string())),
     }?;
     Ok(())
 }
@@ -174,6 +105,7 @@ pub async fn deploy(target: Contract, network: Network) -> Web3Result<()> {
             let cli = rust_token_1155::client::Client::new(network);
             cli.deploy().await
         }
+        _ => return Err(Error::Internal("invalid params".to_string())),
     }?;
     Ok(())
 }
@@ -218,6 +150,7 @@ pub async fn show_token_info(target: Contract, network: Network) -> Web3Result<(
             );
             println!("------------------------------------------------------------");
         }
+        _ => return Err(Error::Internal("invalid params".to_string())),
     }
 
     Ok(())

@@ -5,6 +5,7 @@ use crate::open_sea::api::OrderSide;
 use aws_sdk_lambda::error::InvokeError;
 use aws_sdk_lambda::types::SdkError;
 use clap::{Arg, Command};
+use common::*;
 use dotenv::dotenv;
 use reqwest::StatusCode;
 use std::str::FromStr;
@@ -254,18 +255,18 @@ pub async fn main() {
 
     let result: CliResult<()> = match matches.value_of(COMMAND).unwrap() {
         COMMAND_BALANCE => match package {
-            Package::EthersRs => impl_ethers_rs::get_balance(network.into())
+            Package::EthersRs => impl_ethers_rs::get_balance(network)
                 .await
                 .map_err(Error::from),
-            Package::RustWeb3 => impl_rust_web3::get_balance(network.into())
+            Package::RustWeb3 => impl_rust_web3::get_balance(network)
                 .await
                 .map_err(Error::from),
         },
         COMMAND_SEND_ETH => match package {
-            Package::EthersRs => impl_ethers_rs::send_eth(network.into(), ether, to_address)
+            Package::EthersRs => impl_ethers_rs::send_eth(network, ether, to_address)
                 .await
                 .map_err(Error::from),
-            Package::RustWeb3 => impl_rust_web3::send_eth(network.into(), ether, to_address)
+            Package::RustWeb3 => impl_rust_web3::send_eth(network, ether, to_address)
                 .await
                 .map_err(Error::from),
         },
@@ -281,22 +282,18 @@ pub async fn main() {
             }
         }
         COMMAND_MINT => match package {
-            Package::EthersRs => {
-                impl_ethers_rs::mint(contract.into(), network.into(), content_hash, amount)
-                    .await
-                    .map_err(Error::from)
-            }
-            Package::RustWeb3 => {
-                impl_rust_web3::mint(contract.into(), network.into(), content_hash, amount)
-                    .await
-                    .map_err(Error::from)
-            }
-        },
-        COMMAND_TOKEN_INFO => match package {
-            Package::EthersRs => impl_ethers_rs::show_token_info(contract.into(), network.into())
+            Package::EthersRs => impl_ethers_rs::mint(contract, network, content_hash, amount)
                 .await
                 .map_err(Error::from),
-            Package::RustWeb3 => impl_rust_web3::show_token_info(contract.into(), network.into())
+            Package::RustWeb3 => impl_rust_web3::mint(contract, network, content_hash, amount)
+                .await
+                .map_err(Error::from),
+        },
+        COMMAND_TOKEN_INFO => match package {
+            Package::EthersRs => impl_ethers_rs::show_token_info(contract, network)
+                .await
+                .map_err(Error::from),
+            Package::RustWeb3 => impl_rust_web3::show_token_info(contract, network)
                 .await
                 .map_err(Error::from),
         },
@@ -319,14 +316,14 @@ pub async fn main() {
             .await
             .map_err(Error::from),
         COMMAND_DEPLOY_TOKEN => match package {
-            Package::EthersRs => impl_ethers_rs::deploy(contract.into(), network.into())
+            Package::EthersRs => impl_ethers_rs::deploy(contract, network)
                 .await
                 .map_err(Error::from),
-            Package::RustWeb3 => impl_rust_web3::deploy(contract.into(), network.into())
+            Package::RustWeb3 => impl_rust_web3::deploy(contract, network)
                 .await
                 .map_err(Error::from),
         },
-        COMMAND_UPDATE_TIME => impl_ethers_rs::update_time(network.into())
+        COMMAND_UPDATE_TIME => impl_ethers_rs::update_time(network)
             .await
             .map_err(Error::from),
         _ => Err(Error::Internal("unknown command".to_string())),
@@ -339,90 +336,9 @@ pub async fn main() {
 }
 
 #[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
-pub enum Contract {
-    RustToken721,
-    RustToken1155,
-    RustSbt721,
-    RevealToken721,
-}
-
-impl Into<impl_ethers_rs::Contract> for Contract {
-    fn into(self) -> impl_ethers_rs::Contract {
-        match self {
-            Contract::RustToken721 => impl_ethers_rs::Contract::RustToken721,
-            Contract::RustToken1155 => impl_ethers_rs::Contract::RustToken1155,
-            Contract::RustSbt721 => impl_ethers_rs::Contract::RustSbt721,
-            Contract::RevealToken721 => impl_ethers_rs::Contract::RevealToken721,
-        }
-    }
-}
-
-impl Into<impl_rust_web3::Contract> for Contract {
-    fn into(self) -> impl_rust_web3::Contract {
-        match self {
-            Contract::RustToken721 => impl_rust_web3::Contract::RustToken721,
-            Contract::RustToken1155 => impl_rust_web3::Contract::RustToken1155,
-            Contract::RustSbt721 => unimplemented!(),
-            Contract::RevealToken721 => unimplemented!(),
-        }
-    }
-}
-
-#[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
 pub enum Package {
     EthersRs,
     RustWeb3,
-}
-
-#[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
-pub enum Schema {
-    ERC721,
-    ERC1155,
-}
-
-impl Into<impl_ethers_rs::Schema> for Schema {
-    fn into(self) -> impl_ethers_rs::Schema {
-        match self {
-            Schema::ERC721 => impl_ethers_rs::Schema::ERC721,
-            Schema::ERC1155 => impl_ethers_rs::Schema::ERC1155,
-        }
-    }
-}
-
-impl Into<impl_rust_web3::Schema> for Schema {
-    fn into(self) -> impl_rust_web3::Schema {
-        match self {
-            Schema::ERC721 => impl_rust_web3::Schema::ERC721,
-            Schema::ERC1155 => impl_rust_web3::Schema::ERC1155,
-        }
-    }
-}
-
-#[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
-pub enum Network {
-    Ethereum,
-    Polygon,
-    Avalanche,
-}
-
-impl Into<impl_ethers_rs::Network> for Network {
-    fn into(self) -> impl_ethers_rs::Network {
-        match self {
-            Network::Ethereum => impl_ethers_rs::Network::Ethereum,
-            Network::Polygon => impl_ethers_rs::Network::Polygon,
-            Network::Avalanche => impl_ethers_rs::Network::Avalanche,
-        }
-    }
-}
-
-impl Into<impl_rust_web3::Network> for Network {
-    fn into(self) -> impl_rust_web3::Network {
-        match self {
-            Network::Ethereum => impl_rust_web3::Network::Ethereum,
-            Network::Polygon => impl_rust_web3::Network::Polygon,
-            Network::Avalanche => impl_rust_web3::Network::Avalanche,
-        }
-    }
 }
 
 pub type CliResult<T> = Result<T, Error>;

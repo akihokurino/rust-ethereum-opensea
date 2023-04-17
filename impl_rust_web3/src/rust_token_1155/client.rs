@@ -1,4 +1,5 @@
-use crate::{parse_address, Network, Web3Result, GAS_LIMIT, GAS_PRICE};
+use crate::{parse_address, Web3Result};
+use common::*;
 use secp256k1::SecretKey;
 use std::str::FromStr;
 use std::{env, time};

@@ -8,6 +8,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+common = { path = "common" }
 impl_ethers_rs = { path = "impl_ethers_rs" }
 impl_rust_web3 = { path = "impl_rust_web3" }
 tokio = { version = "1", features = ["full"] }

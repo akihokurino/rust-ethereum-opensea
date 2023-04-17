@@ -1,4 +1,5 @@
-use crate::{EthersResult, Network, GAS_LIMIT, GAS_PRICE};
+use crate::EthersResult;
+use common::*;
 use ethers::abi::{Abi, Tokenizable};
 use ethers::contract::Contract;
 use ethers::prelude::*;
