@@ -80,25 +80,13 @@ opensea-sell-order-info: build
 	./target/debug/rust-ethereum \
 	--command opensea-sell-order-info --contract-address $(CONTRACT_ADDRESS) --token-id $(TOKEN_ID)
 
-opensea-buy-order-info: build
-	./target/debug/rust-ethereum \
-	--command opensea-buy-order-info --contract-address $(CONTRACT_ADDRESS) --token-id $(TOKEN_ID)
-
 opensea-sell: build
 	./target/debug/rust-ethereum \
 	--command opensea-sell \
+	--contract-address $(CONTRACT_ADDRESS) \
 	--token-id $(TOKEN_ID) \
 	--schema $(SCHEMA) \
-	--ether $(ETHER) \
-	--network $(NETWORK)
-
-opensea-transfer: build
-	./target/debug/rust-ethereum \
-	--command opensea-transfer \
-	--token-id $(TOKEN_ID) \
-	--schema $(SCHEMA) \
-	--to-address $(TO_ADDRESS) \
-	--network $(NETWORK)
+	--ether $(ETHER)
 
 key-gen: build
 	./target/debug/rust-ethereum \
