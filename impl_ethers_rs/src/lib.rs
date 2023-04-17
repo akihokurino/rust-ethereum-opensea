@@ -4,7 +4,6 @@ use ethers::prelude::*;
 use ethers_signers::{LocalWallet, Signer, Wallet, WalletError};
 use std::env;
 use std::str::FromStr;
-use thiserror::Error as ThisErr;
 
 pub mod reveal_token_721;
 pub mod rust_sbt_721;
@@ -246,7 +245,7 @@ pub async fn verify(signature: String, message: String) -> EthersResult<()> {
 
 pub type EthersResult<T> = Result<T, Error>;
 
-#[derive(ThisErr, Debug, PartialOrd, PartialEq, Clone)]
+#[derive(thiserror::Error, Debug, PartialOrd, PartialEq, Clone)]
 pub enum Error {
     #[error("internal error: {0}")]
     Internal(String),

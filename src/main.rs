@@ -1,30 +1,21 @@
 extern crate core;
 
-use crate::aws::lambda;
-use crate::open_sea::api::OrderSide;
-use aws_sdk_lambda::error::InvokeError;
-use aws_sdk_lambda::types::SdkError;
 use clap::{Arg, Command};
 use common::*;
 use dotenv::dotenv;
 use reqwest::StatusCode;
 use std::str::FromStr;
-use thiserror::Error as ThisErr;
 
-mod aws;
 mod ipfs;
-mod open_sea;
+pub mod metadata;
 
 const COMMAND: &str = "command";
 
 const COMMAND_BALANCE: &str = "balance";
 const COMMAND_SEND_ETH: &str = "send-eth";
-const COMMAND_MAKE_METADATA: &str = "make-metadata";
+const COMMAND_CREATE_METADATA: &str = "create-metadata";
 const COMMAND_MINT: &str = "mint";
 const COMMAND_TOKEN_INFO: &str = "token-info";
-const COMMAND_OPENSEA_ASSET_INFO: &str = "opensea-asset-info";
-const COMMAND_OPENSEA_SELL_ORDER_INFO: &str = "opensea-sell-order-info";
-const COMMAND_OPENSEA_SELL: &str = "opensea-sell";
 const COMMAND_KEY_GEN: &str = "key-gen";
 const COMMAND_SIGN: &str = "sign";
 const COMMAND_VERIFY: &str = "verify";
@@ -40,9 +31,6 @@ const ARGS_CONTENT_HASH: &str = "content-hash";
 const ARGS_PACKAGE: &str = "package";
 const ARGS_NETWORK: &str = "network";
 const ARGS_CONTRACT: &str = "contract";
-const ARGS_SCHEMA: &str = "schema";
-const ARGS_CONTRACT_ADDRESS: &str = "contract-address";
-const ARGS_TOKEN_ID: &str = "token-id";
 const ARGS_ETHER: &str = "ether";
 const ARGS_TO_ADDRESS: &str = "to-address";
 const ARGS_MESSAGE: &str = "message";
@@ -62,12 +50,9 @@ pub async fn main() {
                 .possible_values(&[
                     COMMAND_BALANCE,
                     COMMAND_SEND_ETH,
-                    COMMAND_MAKE_METADATA,
+                    COMMAND_CREATE_METADATA,
                     COMMAND_MINT,
                     COMMAND_TOKEN_INFO,
-                    COMMAND_OPENSEA_ASSET_INFO,
-                    COMMAND_OPENSEA_SELL_ORDER_INFO,
-                    COMMAND_OPENSEA_SELL,
                     COMMAND_KEY_GEN,
                     COMMAND_SIGN,
                     COMMAND_VERIFY,
@@ -140,25 +125,6 @@ pub async fn main() {
                 .takes_value(true),
         )
         .arg(
-            Arg::new(ARGS_SCHEMA)
-                .long(ARGS_SCHEMA)
-                .possible_values(&["ERC721", "ERC1155"])
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_CONTRACT_ADDRESS)
-                .long(ARGS_CONTRACT_ADDRESS)
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_TOKEN_ID)
-                .long(ARGS_TOKEN_ID)
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
             Arg::new(ARGS_ETHER)
                 .long(ARGS_ETHER)
                 .required(false)
@@ -222,19 +188,6 @@ pub async fn main() {
         .unwrap_or("RustToken721")
         .to_string();
     let contract = Contract::from_str(&contract).ok().unwrap();
-    let schema: String = matches
-        .value_of(ARGS_SCHEMA)
-        .unwrap_or("ERC721")
-        .to_string();
-    let schema = Schema::from_str(&schema).ok().unwrap();
-    let contract_address: String = matches
-        .value_of(ARGS_CONTRACT_ADDRESS)
-        .unwrap_or_default()
-        .to_string();
-    let token_id: String = matches
-        .value_of(ARGS_TOKEN_ID)
-        .unwrap_or_default()
-        .to_string();
     let ether: f64 = matches
         .value_of(ARGS_ETHER)
         .unwrap_or_default()
@@ -270,13 +223,13 @@ pub async fn main() {
                 .await
                 .map_err(Error::from),
         },
-        COMMAND_MAKE_METADATA => {
+        COMMAND_CREATE_METADATA => {
             if !image_url.is_empty() {
-                ipfs::make_metadata_from_url(name, description, image_url)
+                ipfs::create_metadata_from_url(name, description, image_url)
                     .await
                     .map_err(Error::from)
             } else {
-                ipfs::make_metadata_from_file(name, description, image_filename)
+                ipfs::create_metadata_from_file(name, description, image_filename)
                     .await
                     .map_err(Error::from)
             }
@@ -297,19 +250,6 @@ pub async fn main() {
                 .await
                 .map_err(Error::from),
         },
-        COMMAND_OPENSEA_ASSET_INFO => open_sea::show_asset(contract_address, token_id).await,
-        COMMAND_OPENSEA_SELL_ORDER_INFO => {
-            open_sea::show_order(contract_address, token_id, OrderSide::Sell).await
-        }
-        COMMAND_OPENSEA_SELL => {
-            lambda::invoke_open_sea_sdk(lambda::invoke_open_sea_sdk::Input::sell(
-                contract_address,
-                token_id,
-                schema,
-                ether,
-            ))
-            .await
-        }
         COMMAND_KEY_GEN => impl_ethers_rs::generate_keys().await.map_err(Error::from),
         COMMAND_SIGN => impl_ethers_rs::sign(message).await.map_err(Error::from),
         COMMAND_VERIFY => impl_ethers_rs::verify(signature, message)
@@ -343,7 +283,7 @@ pub enum Package {
 
 pub type CliResult<T> = Result<T, Error>;
 
-#[derive(ThisErr, Debug, PartialOrd, PartialEq, Clone)]
+#[derive(thiserror::Error, Debug, PartialOrd, PartialEq, Clone)]
 pub enum Error {
     #[error("invalid parameter error: {0}")]
     InvalidArgument(String),
@@ -351,13 +291,6 @@ pub enum Error {
     NotFound,
     #[error("internal error: {0}")]
     Internal(String),
-}
-
-impl From<SdkError<InvokeError>> for Error {
-    fn from(e: SdkError<InvokeError>) -> Self {
-        let msg = format!("lambda invoke error: {:?}", e);
-        Self::Internal(msg)
-    }
 }
 
 impl From<serde_json::Error> for Error {

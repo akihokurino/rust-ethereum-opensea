@@ -1,4 +1,4 @@
-use crate::open_sea::metadata::Metadata;
+use crate::metadata::Metadata;
 use crate::{CliResult, Error};
 use bytes::Bytes;
 use reqwest::multipart;
@@ -58,7 +58,7 @@ pub struct IpfsOutput {
     pub hash: String,
 }
 
-pub async fn make_metadata_from_url(
+pub async fn create_metadata_from_url(
     name: String,
     description: String,
     image_url: String,
@@ -82,7 +82,7 @@ pub async fn make_metadata_from_url(
     Ok(())
 }
 
-pub async fn make_metadata_from_file(
+pub async fn create_metadata_from_file(
     name: String,
     description: String,
     image_filename: String,

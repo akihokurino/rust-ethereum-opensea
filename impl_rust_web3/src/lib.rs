@@ -2,7 +2,6 @@ use common::*;
 use secp256k1::SecretKey;
 use std::env;
 use std::str::FromStr;
-use thiserror::Error as ThisErr;
 use web3::signing::SecretKeyRef;
 use web3::types::{Address, TransactionParameters, U256};
 use web3::{transports, Web3};
@@ -158,7 +157,7 @@ pub async fn show_token_info(target: Contract, network: Network) -> Web3Result<(
 
 pub type Web3Result<T> = Result<T, Error>;
 
-#[derive(ThisErr, Debug, PartialOrd, PartialEq, Clone)]
+#[derive(thiserror::Error, Debug, PartialOrd, PartialEq, Clone)]
 pub enum Error {
     #[error("internal error: {0}")]
     Internal(String),

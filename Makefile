@@ -7,12 +7,8 @@ IMAGE_FILENAME := "sample.png"
 IMAGE_URL := "https://placehold.jp/3d4070/ffffff/500x500.png?text=Reveal"
 AMOUNT := "10"
 NETWORK := "Polygon"
-SCHEMA := "ERC721"
-CONTRACT_ADDRESS := ""
-TOKEN_ID := ""
 ETHER := "0.01"
 TO_ADDRESS := "0x0E91D6613a84d7C8b72a289D8b275AF7717C3d2E"
-QUERY := "getLatestPrice"
 MESSAGE := "world"
 SIGNATURE := "2a30afb5d5b476a505422d931c5b98a10d6ac6b6fb3a56a27c658a9fa36911f10b079fe392893e684881813e7d07a3fd14048ba902c20eb56eb9f0e7f8c2a1131b"
 PACKAGE := "EthersRs"
@@ -49,9 +45,9 @@ token-info: build
 	--package $(PACKAGE) \
 	--contract $(CONTRACT)
 
-make-metadata: build
+create-metadata: build
 	./target/debug/rust-ethereum \
-    --command make-metadata \
+    --command create-metadata \
   	--name $(NAME) \
     --description $(DESCRIPTION) \
     --image-filename $(IMAGE_FILENAME)
@@ -71,22 +67,6 @@ deploy-token: build
 	--contract $(CONTRACT) \
 	--network $(NETWORK) \
 	--package $(PACKAGE)
-
-opensea-asset-info: build
-	./target/debug/rust-ethereum \
-	--command opensea-asset-info --contract-address $(CONTRACT_ADDRESS) --token-id $(TOKEN_ID)
-
-opensea-sell-order-info: build
-	./target/debug/rust-ethereum \
-	--command opensea-sell-order-info --contract-address $(CONTRACT_ADDRESS) --token-id $(TOKEN_ID)
-
-opensea-sell: build
-	./target/debug/rust-ethereum \
-	--command opensea-sell \
-	--contract-address $(CONTRACT_ADDRESS) \
-	--token-id $(TOKEN_ID) \
-	--schema $(SCHEMA) \
-	--ether $(ETHER)
 
 key-gen: build
 	./target/debug/rust-ethereum \
