@@ -127,6 +127,26 @@ pub async fn mint(
     Ok(())
 }
 
+pub async fn transfer(
+    target: TargetContract,
+    network: Network,
+    to: String,
+    token_id: u64,
+) -> Web3Result<()> {
+    match target {
+        TargetContract::RustToken721 => {
+            let cli = rust_token_721::client::Client::new(network);
+            cli.transfer(parse_address(to).unwrap(), token_id).await
+        }
+        TargetContract::RustToken1155 => {
+            let cli = rust_token_1155::client::Client::new(network);
+            cli.transfer(parse_address(to).unwrap(), token_id).await
+        }
+        _ => return Err(Error::Internal("invalid params".to_string())),
+    }?;
+    Ok(())
+}
+
 pub async fn deploy(target: TargetContract, network: Network) -> Web3Result<()> {
     match target {
         TargetContract::RustToken721 => {

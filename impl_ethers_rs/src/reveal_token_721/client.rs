@@ -6,6 +6,7 @@ use std::env;
 
 #[derive(Clone, Debug)]
 pub struct Client {
+    wallet_address: Address,
     wallet_secret: String,
     address: Address,
     abi: Abi,
@@ -14,9 +15,11 @@ pub struct Client {
 
 impl Client {
     pub fn new(network: Network) -> Self {
+        let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");
         let wallet_secret = env::var("WALLET_SECRET").expect("WALLET_SECRET must be set");
 
         Client {
+            wallet_address: wallet_address.parse::<Address>().unwrap(),
             wallet_secret,
             address: network
                 .reveal_token_721_address()
@@ -91,6 +94,25 @@ impl Client {
         )
         .await
         .method::<_, H256>("updateTime", ())?
+        .gas(GAS_LIMIT)
+        .gas_price(GAS_PRICE);
+        let tx = call.send().await?;
+        let receipt = tx.await?;
+
+        println!("{:?}", receipt);
+
+        Ok(())
+    }
+
+    pub async fn transfer(&self, to: Address, token_id: u64) -> EthersResult<()> {
+        let call = transaction_contract(
+            self.wallet_secret.to_owned(),
+            self.address.to_owned(),
+            self.abi.to_owned(),
+            self.network.to_owned(),
+        )
+        .await
+        .method::<_, H256>("safeTransferFrom", (self.wallet_address, to, token_id))?
         .gas(GAS_LIMIT)
         .gas_price(GAS_PRICE);
         let tx = call.send().await?;

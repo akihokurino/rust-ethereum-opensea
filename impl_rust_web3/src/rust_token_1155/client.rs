@@ -5,10 +5,11 @@ use std::env;
 use std::str::FromStr;
 use web3::contract::Options;
 use web3::signing::SecretKeyRef;
-use web3::types::{Address, U256};
+use web3::types::{Address, Bytes, U256};
 
 #[derive(Clone, Debug)]
 pub struct Client {
+    wallet_address: Address,
     wallet_secret: String,
     contract_address: Address,
     network: Network,
@@ -17,9 +18,11 @@ pub struct Client {
 impl Client {
     #[allow(unused)]
     pub fn new(network: Network) -> Self {
+        let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");
         let wallet_secret = env::var("WALLET_SECRET").expect("WALLET_SECRET must be set");
 
         Client {
+            wallet_address: parse_address(wallet_address).unwrap(),
             wallet_secret,
             contract_address: parse_address(network.rust_token_721_address().to_owned()).unwrap(),
             network,
@@ -85,6 +88,39 @@ impl Client {
             .signed_call_with_confirmations(
                 "mint",
                 (hash, amount),
+                Options::with(|opt| {
+                    opt.gas = Some(U256::from(GAS_LIMIT));
+                    opt.gas_price = Some(U256::from(GAS_PRICE));
+                }),
+                1,
+                SecretKeyRef::from(&secret_key),
+            )
+            .await?;
+
+        println!("tx id: {:?}", result.transaction_hash);
+        println!("gas used: {:?}", result.gas_used.unwrap_or_default());
+        println!("status: {:?}", result.status.unwrap_or_default());
+
+        Ok(())
+    }
+
+    pub async fn transfer(&self, to: Address, token_id: u64) -> Web3Result<()> {
+        let secret_key = SecretKey::from_str(&self.wallet_secret).unwrap();
+        let contract = contract(
+            self.contract_address.to_owned(),
+            include_bytes!("abi.json"),
+            self.network.to_owned(),
+        );
+        let result = contract
+            .signed_call_with_confirmations(
+                "safeTransferFrom",
+                (
+                    self.wallet_address,
+                    to,
+                    token_id,
+                    1 as u64,
+                    Bytes::default(),
+                ),
                 Options::with(|opt| {
                     opt.gas = Some(U256::from(GAS_LIMIT));
                     opt.gas_price = Some(U256::from(GAS_PRICE));

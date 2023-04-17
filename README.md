@@ -54,10 +54,16 @@ make create-metadata NAME="Rust Sample" DESCRIPTION="Generate by Rust" IMAGE_FIL
 make mint CONTRACT=RustToken721 NETWORK=Polygon CONTENT_HASH=QmPDE AMOUNT=1 PACKAGE=EthersRs
 ```
 
-### deploy token
+### transfer token
 
 ```
-make deploy-token CONTRACT=RustToken721 NETWORK=Polygon PACKAGE=EthersRs
+make transfer CONTRACT=RustToken721 NETWORK=Polygon TO_ADDRESS=0x00 TOKEN_ID=1 PACKAGE=EthersRs
+```
+
+### deploy contract
+
+```
+make deploy-contract CONTRACT=RustToken721 NETWORK=Polygon PACKAGE=EthersRs
 ```
 
 ### generate private key and public key, address

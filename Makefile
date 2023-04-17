@@ -9,6 +9,7 @@ AMOUNT := "10"
 NETWORK := "Polygon"
 ETHER := "0.01"
 TO_ADDRESS := "0x0E91D6613a84d7C8b72a289D8b275AF7717C3d2E"
+TOKEN_ID := "1"
 MESSAGE := "world"
 SIGNATURE := "2a30afb5d5b476a505422d931c5b98a10d6ac6b6fb3a56a27c658a9fa36911f10b079fe392893e684881813e7d07a3fd14048ba902c20eb56eb9f0e7f8c2a1131b"
 PACKAGE := "EthersRs"
@@ -64,9 +65,18 @@ mint: build
 	--amount $(AMOUNT) \
 	--package $(PACKAGE)
 
-deploy-token: build
+transfer: build
 	./target/debug/rust-ethereum \
-	--command deploy-token \
+	--command transfer \
+	--contract $(CONTRACT) \
+	--network $(NETWORK) \
+	--to-address $(TO_ADDRESS) \
+	--token-id $(TOKEN_ID) \
+	--package $(PACKAGE)
+
+deploy-contract: build
+	./target/debug/rust-ethereum \
+	--command deploy-contract \
 	--contract $(CONTRACT) \
 	--network $(NETWORK) \
 	--package $(PACKAGE)

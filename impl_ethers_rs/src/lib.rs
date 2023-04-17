@@ -163,6 +163,32 @@ pub async fn mint(
     Ok(())
 }
 
+pub async fn transfer(
+    target: TargetContract,
+    network: Network,
+    to: String,
+    token_id: u64,
+) -> EthersResult<()> {
+    match target {
+        TargetContract::RustToken721 => {
+            let cli = rust_token_721::client::Client::new(network);
+            cli.transfer(to.parse::<Address>().unwrap(), token_id).await
+        }
+        TargetContract::RustToken1155 => {
+            let cli = rust_token_1155::client::Client::new(network);
+            cli.transfer(to.parse::<Address>().unwrap(), token_id).await
+        }
+        TargetContract::RustSbt721 => {
+            unimplemented!()
+        }
+        TargetContract::RevealToken721 => {
+            let cli = reveal_token_721::client::Client::new(network);
+            cli.transfer(to.parse::<Address>().unwrap(), token_id).await
+        }
+    }?;
+    Ok(())
+}
+
 pub async fn deploy(target: TargetContract, network: Network) -> EthersResult<()> {
     match target {
         TargetContract::RustToken721 => {

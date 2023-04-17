@@ -11,11 +11,12 @@ const COMMAND_BALANCE: &str = "balance";
 const COMMAND_SEND_ETH: &str = "send-eth";
 const COMMAND_CREATE_METADATA: &str = "create-metadata";
 const COMMAND_MINT: &str = "mint";
+const COMMAND_TRANSFER: &str = "transfer";
 const COMMAND_TOKEN_INFO: &str = "token-info";
 const COMMAND_KEY_GEN: &str = "key-gen";
 const COMMAND_SIGN: &str = "sign";
 const COMMAND_VERIFY: &str = "verify";
-const COMMAND_DEPLOY_TOKEN: &str = "deploy-token";
+const COMMAND_DEPLOY_CONTRACT: &str = "deploy-contract";
 const COMMAND_UPDATE_TIME: &str = "update-time";
 
 const ARGS_NAME: &str = "name";
@@ -29,6 +30,7 @@ const ARGS_NETWORK: &str = "network";
 const ARGS_CONTRACT: &str = "contract";
 const ARGS_ETHER: &str = "ether";
 const ARGS_TO_ADDRESS: &str = "to-address";
+const ARGS_TOKEN_ID: &str = "token-id";
 const ARGS_MESSAGE: &str = "message";
 const ARGS_SIGNATURE: &str = "signature";
 
@@ -48,11 +50,12 @@ pub async fn main() {
                     COMMAND_SEND_ETH,
                     COMMAND_CREATE_METADATA,
                     COMMAND_MINT,
+                    COMMAND_TRANSFER,
                     COMMAND_TOKEN_INFO,
                     COMMAND_KEY_GEN,
                     COMMAND_SIGN,
                     COMMAND_VERIFY,
-                    COMMAND_DEPLOY_TOKEN,
+                    COMMAND_DEPLOY_CONTRACT,
                     COMMAND_UPDATE_TIME,
                 ])
                 .required(true)
@@ -133,6 +136,12 @@ pub async fn main() {
                 .takes_value(true),
         )
         .arg(
+            Arg::new(ARGS_TOKEN_ID)
+                .long(ARGS_TOKEN_ID)
+                .required(false)
+                .takes_value(true),
+        )
+        .arg(
             Arg::new(ARGS_MESSAGE)
                 .long(ARGS_MESSAGE)
                 .required(false)
@@ -193,6 +202,11 @@ pub async fn main() {
         .value_of(ARGS_TO_ADDRESS)
         .unwrap_or_default()
         .to_string();
+    let token_id: u64 = matches
+        .value_of(ARGS_TOKEN_ID)
+        .unwrap_or_default()
+        .parse()
+        .unwrap_or(0);
     let message: String = matches
         .value_of(ARGS_MESSAGE)
         .unwrap_or_default()
@@ -238,6 +252,14 @@ pub async fn main() {
                 .await
                 .map_err(Error::from),
         },
+        COMMAND_TRANSFER => match package {
+            Package::EthersRs => impl_ethers_rs::transfer(contract, network, to_address, token_id)
+                .await
+                .map_err(Error::from),
+            Package::RustWeb3 => impl_rust_web3::transfer(contract, network, to_address, token_id)
+                .await
+                .map_err(Error::from),
+        },
         COMMAND_TOKEN_INFO => match package {
             Package::EthersRs => impl_ethers_rs::show_token_info(contract, network)
                 .await
@@ -251,7 +273,7 @@ pub async fn main() {
         COMMAND_VERIFY => impl_ethers_rs::verify(signature, message)
             .await
             .map_err(Error::from),
-        COMMAND_DEPLOY_TOKEN => match package {
+        COMMAND_DEPLOY_CONTRACT => match package {
             Package::EthersRs => impl_ethers_rs::deploy(contract, network)
                 .await
                 .map_err(Error::from),
