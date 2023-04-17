@@ -7,7 +7,6 @@
 - ethers-rs ( https://github.com/gakonst/ethers-rs )
 - rust-secp256k1 ( https://github.com/rust-bitcoin/rust-secp256k1 )
 - infura ( https://infura.io/ )
-- alchemy ( https://www.alchemy.com/ )
 - solidity v0.8.17
 - hardhat ( https://hardhat.org/ )
 - open zeppelin ( https://openzeppelin.com/ )
@@ -28,16 +27,40 @@
 ### get balance
 
 ```
-make balance
+make balance NETWORK=mumbai PACKAGE=EthersRs
 ```
 
 ### send ether
 
 ```
-make send-eth ETHER=10 TO_ADDRESS=0x00
+make send-eth ETHER=10 TO_ADDRESS=0x00 NETWORK=Polygon PACKAGE=EthersRs
 ```
 
-### generate private key and public key
+### show token info
+
+```
+make token-info NETWORK=Polygon PACKAGE=EthersRs CONTRACT=RustToken721
+```
+
+### create metadata in ipfs
+
+```
+make create-metadata NAME="Rust Sample" DESCRIPTION="Generate by Rust" IMAGE_FILENAME=sample.png
+```
+
+### mint token
+
+```
+make mint CONTRACT=RustToken721 NETWORK=Polygon CONTENT_HASH=QmPDE AMOUNT=1 PACKAGE=EthersRs
+```
+
+### deploy token
+
+```
+make deploy-token CONTRACT=RustToken721 NETWORK=Polygon PACKAGE=EthersRs
+```
+
+### generate private key and public key, address
 
 ```
 make key-gen
@@ -46,29 +69,11 @@ make key-gen
 ### generate signature by private key
 
 ```
-make sign
+make sign MESSAGE=hello
 ```
 
 ### verify signature by public key
 
 ```
-make verify SIGNATURE=2a30...
-```
-
-### mint
-
-```
-make mint
-```
-
-### show token info
-
-```
-make token-info
-```
-
-### deploy token
-
-```
-make deploy-token
+make verify MESSAGE=hello SIGNATURE=2a30...
 ```
