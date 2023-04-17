@@ -1,4 +1,4 @@
-use common::*;
+use prelude::*;
 use ethers::core::k256::elliptic_curve::sec1::ToEncodedPoint;
 use ethers::prelude::*;
 use ethers_signers::{LocalWallet, Signer, Wallet, WalletError};

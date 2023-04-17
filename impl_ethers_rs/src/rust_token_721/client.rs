@@ -1,5 +1,5 @@
 use crate::EthersResult;
-use common::*;
+use prelude::*;
 use ethers::abi::{Abi, Tokenizable};
 use ethers::contract::Contract;
 use ethers::prelude::*;

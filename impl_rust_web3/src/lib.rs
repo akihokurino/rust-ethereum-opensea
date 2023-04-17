@@ -1,4 +1,4 @@
-use common::*;
+use prelude::*;
 use secp256k1::SecretKey;
 use std::env;
 use std::str::FromStr;

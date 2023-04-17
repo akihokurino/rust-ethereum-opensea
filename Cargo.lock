@@ -486,16 +486,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "common"
-version = "0.1.0"
-dependencies = [
- "bigdecimal",
- "regex",
- "strum",
- "strum_macros",
-]
-
-[[package]]
 name = "const-oid"
 version = "0.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1568,9 +1558,9 @@ dependencies = [
 name = "impl_ethers_rs"
 version = "0.1.0"
 dependencies = [
- "common",
  "ethers",
  "ethers-signers",
+ "prelude",
  "serde_json",
  "thiserror",
 ]
@@ -1579,7 +1569,7 @@ dependencies = [
 name = "impl_rust_web3"
 version = "0.1.0"
 dependencies = [
- "common",
+ "prelude",
  "secp256k1",
  "thiserror",
  "web3",
@@ -2127,6 +2117,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5b40af805b3121feab8a3c29f04d8ad262fa8e0561883e7653e024ae4479e6de"
 
 [[package]]
+name = "prelude"
+version = "0.1.0"
+dependencies = [
+ "bigdecimal",
+ "regex",
+ "strum",
+ "strum_macros",
+]
+
+[[package]]
 name = "primitive-types"
 version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2507,11 +2507,11 @@ name = "rust-ethereum"
 version = "0.1.0"
 dependencies = [
  "clap",
- "common",
  "dotenv",
  "impl_ethers_rs",
  "impl_rust_web3",
  "ipfs",
+ "prelude",
  "strum",
  "strum_macros",
  "thiserror",
