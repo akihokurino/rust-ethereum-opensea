@@ -1,13 +1,46 @@
 use prelude::*;
 use secp256k1::SecretKey;
-use std::env;
 use std::str::FromStr;
+use std::{env, time};
+use web3::contract::{Contract, Options};
 use web3::signing::SecretKeyRef;
+use web3::transports::Http;
 use web3::types::{Address, TransactionParameters, U256};
-use web3::{transports, Web3};
+use web3::Web3;
 
 pub mod rust_token_1155;
 pub mod rust_token_721;
+
+fn contract(contract_address: Address, abi: &[u8], network: Network) -> Contract<Http> {
+    let transport = Http::new(&network.chain_url()).ok().unwrap();
+    Contract::from_json(Web3::new(transport).eth(), contract_address, abi).unwrap()
+}
+
+async fn deploy_contract(
+    wallet_secret: String,
+    abi: &[u8],
+    network: Network,
+    bytecode: &str,
+) -> Web3Result<Contract<Http>> {
+    let secret_key = SecretKey::from_str(&wallet_secret).unwrap();
+    let transport = Http::new(&network.chain_url()).ok().unwrap();
+    let contract = Contract::deploy(Web3::new(transport).eth(), abi)?
+        .confirmations(1)
+        .poll_interval(time::Duration::from_secs(10))
+        .options(Options::with(|opt| {
+            opt.gas = Some(U256::from(GAS_LIMIT));
+            opt.gas_price = Some(U256::from(GAS_PRICE));
+        }))
+        .sign_with_key_and_execute(
+            bytecode,
+            (),
+            SecretKeyRef::from(&secret_key),
+            Some(network.chain_id()),
+        )
+        .await?;
+
+    Ok(contract)
+}
 
 fn parse_address(address: String) -> Option<Address> {
     match address.trim_start_matches("0x").parse() {
@@ -19,7 +52,7 @@ fn parse_address(address: String) -> Option<Address> {
 pub async fn get_balance(network: Network) -> Web3Result<()> {
     let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");
 
-    let transport = transports::Http::new(&network.chain_url())
+    let transport = Http::new(&network.chain_url())
         .ok()
         .expect("should set ethereum url");
     let cli = Web3::new(transport);
@@ -42,7 +75,7 @@ pub async fn send_eth(network: Network, eth: f64, to: String) -> Web3Result<()> 
     let wallet_secret = env::var("WALLET_SECRET").expect("WALLET_SECRET must be set");
     let prev_key = SecretKey::from_str(&wallet_secret).unwrap();
 
-    let transport = transports::Http::new(&network.chain_url())
+    let transport = Http::new(&network.chain_url())
         .ok()
         .expect("should set ethereum url");
     let cli = Web3::new(transport);
@@ -115,38 +148,20 @@ pub async fn show_token_info(target: TargetContract, network: Network) -> Web3Re
             let cli = rust_token_721::client::Client::new(network);
             println!("------------------------------------------------------------");
             println!("RustToken721 info: {}", network.rust_token_721_address());
-            println!("name = {}", cli.simple_query::<String>("name").await?);
-            println!(
-                "latestTokenId = {}",
-                cli.simple_query::<u128>("latestTokenId").await?
-            );
-            println!(
-                "totalSupply = {:?}",
-                cli.simple_query::<u128>("totalSupply").await?
-            );
-            println!(
-                "totalOwned = {:?}",
-                cli.simple_query::<u128>("totalOwned").await?
-            );
+            println!("name = {}", cli.name().await?);
+            println!("latestTokenId = {}", cli.latest_token_id().await?);
+            println!("totalSupply = {:?}", cli.total_supply().await?);
+            println!("totalOwned = {:?}", cli.total_owned().await?);
             println!("------------------------------------------------------------");
         }
         TargetContract::RustToken1155 => {
             let cli = rust_token_1155::client::Client::new(network);
             println!("------------------------------------------------------------");
             println!("RustToken1155 info: {}", network.rust_token_1155_address());
-            println!("name = {}", cli.simple_query::<String>("name").await?);
-            println!(
-                "latestTokenId = {}",
-                cli.simple_query::<u128>("latestTokenId").await?
-            );
-            println!(
-                "totalSupply = {:?}",
-                cli.simple_query::<u128>("totalSupply").await?
-            );
-            println!(
-                "totalOwned = {:?}",
-                cli.simple_query::<u128>("totalOwned").await?
-            );
+            println!("name = {}", cli.name().await?);
+            println!("latestTokenId = {}", cli.latest_token_id().await?);
+            println!("totalSupply = {:?}", cli.total_supply().await?);
+            println!("totalOwned = {:?}", cli.total_owned().await?);
             println!("------------------------------------------------------------");
         }
         _ => return Err(Error::Internal("invalid params".to_string())),
