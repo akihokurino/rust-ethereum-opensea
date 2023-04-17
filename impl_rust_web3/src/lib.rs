@@ -31,7 +31,7 @@ pub async fn get_balance(network: Network) -> Web3Result<()> {
 
     println!(
         "balance: {:?}",
-        common::unit::to_ether(balance.to_string().as_str(), "wei")
+        unit::to_ether(balance.to_string().as_str(), "wei")
     );
 
     Ok(())
@@ -47,7 +47,7 @@ pub async fn send_eth(network: Network, eth: f64, to: String) -> Web3Result<()> 
         .expect("should set ethereum url");
     let cli = Web3::new(transport);
 
-    let wei = common::unit::to_wei(eth.to_string().as_str(), "ether");
+    let wei = unit::to_wei(eth.to_string().as_str(), "ether");
     let wei: u128 = wei.parse().unwrap();
     let wei = U256::from(wei);
     println!("send wei: {}", &wei);
