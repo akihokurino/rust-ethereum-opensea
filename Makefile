@@ -62,13 +62,15 @@ mint: build
 	--contract $(CONTRACT) \
 	--network $(NETWORK) \
 	--content-hash $(CONTENT_HASH) \
-	--amount $(AMOUNT)
+	--amount $(AMOUNT) \
+	--package $(PACKAGE)
 
 deploy-token: build
 	./target/debug/rust-ethereum \
 	--command deploy-token \
 	--contract $(CONTRACT) \
-	--network $(NETWORK)
+	--network $(NETWORK) \
+	--package $(PACKAGE)
 
 opensea-asset-info: build
 	./target/debug/rust-ethereum \
