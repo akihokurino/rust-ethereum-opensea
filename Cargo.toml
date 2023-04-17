@@ -2,10 +2,18 @@
 name = "rust-ethereum"
 version = "0.1.0"
 authors = ["akiho <aki030402@mail.com>"]
-description = "Ethereum OpenSea CLI"
+description = "Ethereum CLI"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace]
+members = [
+    "common",
+    "impl_ethers_rs",
+    "impl_rust_web3",
+    "ipfs",
+]
 
 [dependencies]
 common = { path = "common" }

@@ -1,4 +1,4 @@
-# Rust Ethereum OpenSea CLI
+# Rust Ethereum CLI
 
 ## Specs
 
