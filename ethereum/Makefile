@@ -39,3 +39,9 @@ deploy-rust-sbt-721:
 
 deploy-reveal-token-721:
 	npx hardhat run scripts/deploy-reveal-token-721.ts --network $(NETWORK)
+
+deploy-rust-token-upgradeable-721-v1:
+	npx hardhat run scripts/deploy-rust-token-upgradeable-721-v1.ts --network $(NETWORK)
+
+upgrade-rust-token-upgradeable-721-v2:
+	npx hardhat run scripts/upgrade-rust-token-upgradeable-721-v2.ts --network $(NETWORK)
