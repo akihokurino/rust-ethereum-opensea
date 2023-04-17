@@ -1,11 +1,9 @@
-use crate::error::CliResult;
 use crate::open_sea::{ApiClient, CallInput};
-use crate::CliError;
+use crate::{CliResult, Error};
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
 
 pub enum OrderSide {
-    Buy,
     Sell,
 }
 
@@ -26,7 +24,7 @@ impl ApiClient {
             .to_string(),
             body: Some(
                 serde_json::to_string(&body)
-                    .map_err(|e| CliError::Internal(e.to_string()))?
+                    .map_err(|e| Error::Internal(e.to_string()))?
                     .into(),
             ),
             query,
@@ -35,7 +33,7 @@ impl ApiClient {
         .error_for_status()?
         .json::<get_asset::Output>()
         .await
-        .map_err(CliError::from)
+        .map_err(Error::from)
     }
 
     pub async fn get_order(&self, input: get_order::Input) -> CliResult<get_order::Output> {
@@ -43,13 +41,12 @@ impl ApiClient {
         struct Body {}
 
         let body = Body {};
-        let _side = match input.side {
-            OrderSide::Buy => "0",
+        let side = match input.side {
             OrderSide::Sell => "1",
         };
         let query = vec![
             ("limit".to_string(), "1".to_string()),
-            // ("side".to_string(), side.to_string()),
+            ("side".to_string(), side.to_string()),
             ("asset_contract_address".to_string(), input.contract_address),
             ("token_ids".to_string(), input.token_id),
         ];
@@ -59,7 +56,7 @@ impl ApiClient {
             path: "/v2/orders/goerli/seaport/listings".to_string(),
             body: Some(
                 serde_json::to_string(&body)
-                    .map_err(|e| CliError::Internal(e.to_string()))?
+                    .map_err(|e| Error::Internal(e.to_string()))?
                     .into(),
             ),
             query,
@@ -68,7 +65,7 @@ impl ApiClient {
         .error_for_status()?
         .json::<get_order::Output>()
         .await
-        .map_err(CliError::from)
+        .map_err(Error::from)
     }
 }
 

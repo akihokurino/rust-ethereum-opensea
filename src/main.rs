@@ -1,20 +1,18 @@
 extern crate core;
 
-mod aws;
-mod command;
-mod error;
-mod ethereum;
-mod ipfs;
-mod model;
-mod open_sea;
-
-use crate::command::{deploy, key, query, transaction};
-use crate::error::CliError;
-use crate::model::{Network, Schema};
+use crate::aws::lambda;
 use crate::open_sea::api::OrderSide;
+use aws_sdk_lambda::error::InvokeError;
+use aws_sdk_lambda::types::SdkError;
 use clap::{Arg, Command};
 use dotenv::dotenv;
+use reqwest::StatusCode;
 use std::str::FromStr;
+use thiserror::Error as ThisErr;
+
+mod aws;
+mod ipfs;
+mod open_sea;
 
 const COMMAND: &str = "command";
 
@@ -25,9 +23,7 @@ const COMMAND_MINT: &str = "mint";
 const COMMAND_TOKEN_INFO: &str = "token-info";
 const COMMAND_OPENSEA_ASSET_INFO: &str = "opensea-asset-info";
 const COMMAND_OPENSEA_SELL_ORDER_INFO: &str = "opensea-sell-order-info";
-const COMMAND_OPENSEA_BUY_ORDER_INFO: &str = "opensea-buy-order-info";
 const COMMAND_OPENSEA_SELL: &str = "opensea-sell";
-const COMMAND_OPENSEA_TRANSFER: &str = "opensea-transfer";
 const COMMAND_KEY_GEN: &str = "key-gen";
 const COMMAND_SIGN: &str = "sign";
 const COMMAND_VERIFY: &str = "verify";
@@ -39,7 +35,10 @@ const ARGS_DESCRIPTION: &str = "description";
 const ARGS_IMAGE_FILENAME: &str = "image-filename";
 const ARGS_IMAGE_URL: &str = "image-url";
 const ARGS_AMOUNT: &str = "amount";
+const ARGS_CONTENT_HASH: &str = "content-hash";
+const ARGS_PACKAGE: &str = "package";
 const ARGS_NETWORK: &str = "network";
+const ARGS_CONTRACT: &str = "contract";
 const ARGS_SCHEMA: &str = "schema";
 const ARGS_CONTRACT_ADDRESS: &str = "contract-address";
 const ARGS_TOKEN_ID: &str = "token-id";
@@ -67,9 +66,7 @@ pub async fn main() {
                     COMMAND_TOKEN_INFO,
                     COMMAND_OPENSEA_ASSET_INFO,
                     COMMAND_OPENSEA_SELL_ORDER_INFO,
-                    COMMAND_OPENSEA_BUY_ORDER_INFO,
                     COMMAND_OPENSEA_SELL,
-                    COMMAND_OPENSEA_TRANSFER,
                     COMMAND_KEY_GEN,
                     COMMAND_SIGN,
                     COMMAND_VERIFY,
@@ -110,9 +107,29 @@ pub async fn main() {
                 .takes_value(true),
         )
         .arg(
+            Arg::new(ARGS_CONTENT_HASH)
+                .long(ARGS_CONTENT_HASH)
+                .required(false)
+                .takes_value(true),
+        )
+        .arg(
+            Arg::new(ARGS_PACKAGE)
+                .long(ARGS_PACKAGE)
+                .possible_values(&["EthersRs", "RustWeb3"])
+                .required(false)
+                .takes_value(true),
+        )
+        .arg(
             Arg::new(ARGS_NETWORK)
                 .long(ARGS_NETWORK)
                 .possible_values(&["Ethereum", "Polygon", "Avalanche"])
+                .required(false)
+                .takes_value(true),
+        )
+        .arg(
+            Arg::new(ARGS_CONTRACT)
+                .long(ARGS_CONTRACT)
+                .possible_values(&["RustToken721", "RustToken1155", "RustSbt721", "RevealToken"])
                 .required(false)
                 .takes_value(true),
         )
@@ -180,11 +197,25 @@ pub async fn main() {
         .unwrap_or_default()
         .parse()
         .unwrap_or(0);
+    let content_hash: String = matches
+        .value_of(ARGS_CONTENT_HASH)
+        .unwrap_or_default()
+        .to_string();
+    let package: String = matches
+        .value_of(ARGS_PACKAGE)
+        .unwrap_or("EthersRs")
+        .to_string();
+    let package = Package::from_str(&package).ok().unwrap();
     let network: String = matches
         .value_of(ARGS_NETWORK)
         .unwrap_or("Ethereum")
         .to_string();
     let network = Network::from_str(&network).ok().unwrap();
+    let contract: String = matches
+        .value_of(ARGS_CONTRACT)
+        .unwrap_or("RustToken721")
+        .to_string();
+    let contract = Contract::from_str(&contract).ok().unwrap();
     let schema: String = matches
         .value_of(ARGS_SCHEMA)
         .unwrap_or("ERC721")
@@ -216,42 +247,237 @@ pub async fn main() {
         .unwrap_or_default()
         .to_string();
 
-    let result = match matches.value_of(COMMAND).unwrap() {
-        COMMAND_BALANCE => query::get_balance(network).await,
-        COMMAND_SEND_ETH => transaction::send_eth(network, ether, to_address).await,
+    let result: CliResult<()> = match matches.value_of(COMMAND).unwrap() {
+        COMMAND_BALANCE => match package {
+            Package::EthersRs => impl_ethers_rs::get_balance(network.into())
+                .await
+                .map_err(Error::from),
+            Package::RustWeb3 => impl_rust_web3::get_balance(network.into())
+                .await
+                .map_err(Error::from),
+        },
+        COMMAND_SEND_ETH => match package {
+            Package::EthersRs => impl_ethers_rs::send_eth(network.into(), ether, to_address)
+                .await
+                .map_err(Error::from),
+            Package::RustWeb3 => impl_rust_web3::send_eth(network.into(), ether, to_address)
+                .await
+                .map_err(Error::from),
+        },
         COMMAND_MAKE_METADATA => {
-            transaction::make_metadata_from_url(name, description, image_url).await
-        }
-        COMMAND_MINT => match schema {
-            Schema::ERC721 => {
-                transaction::mint_erc721(network, name, description, image_filename).await
+            if !image_url.is_empty() {
+                ipfs::make_metadata_from_url(name, description, image_url)
+                    .await
+                    .map_err(Error::from)
+            } else {
+                ipfs::make_metadata_from_file(name, description, image_filename)
+                    .await
+                    .map_err(Error::from)
             }
-            Schema::ERC1155 => {
-                transaction::mint_erc1155(network, name, description, image_filename, amount).await
+        }
+        COMMAND_MINT => match package {
+            Package::EthersRs => {
+                impl_ethers_rs::mint(contract.into(), network.into(), content_hash, amount)
+                    .await
+                    .map_err(Error::from)
+            }
+            Package::RustWeb3 => {
+                impl_rust_web3::mint(contract.into(), network.into(), content_hash, amount)
+                    .await
+                    .map_err(Error::from)
             }
         },
-        COMMAND_TOKEN_INFO => query::show_token_contract(network).await,
-        COMMAND_OPENSEA_ASSET_INFO => query::show_asset(contract_address, token_id).await,
+        COMMAND_TOKEN_INFO => match package {
+            Package::EthersRs => impl_ethers_rs::show_token_info(contract.into(), network.into())
+                .await
+                .map_err(Error::from),
+            Package::RustWeb3 => impl_rust_web3::show_token_info(contract.into(), network.into())
+                .await
+                .map_err(Error::from),
+        },
+        COMMAND_OPENSEA_ASSET_INFO => open_sea::show_asset(contract_address, token_id).await,
         COMMAND_OPENSEA_SELL_ORDER_INFO => {
-            query::show_order(contract_address, token_id, OrderSide::Sell).await
+            open_sea::show_order(contract_address, token_id, OrderSide::Sell).await
         }
-        COMMAND_OPENSEA_BUY_ORDER_INFO => {
-            query::show_order(contract_address, token_id, OrderSide::Buy).await
+        COMMAND_OPENSEA_SELL => {
+            lambda::invoke_open_sea_sdk(lambda::invoke_open_sea_sdk::Input::sell(
+                contract_address,
+                token_id,
+                schema,
+                ether,
+            ))
+            .await
         }
-        COMMAND_OPENSEA_SELL => transaction::sell(network, token_id, schema, ether).await,
-        COMMAND_OPENSEA_TRANSFER => {
-            transaction::transfer(network, token_id, schema, to_address).await
-        }
-        COMMAND_KEY_GEN => key::generate_by_ethers_rs().await,
-        COMMAND_SIGN => key::sign(message).await,
-        COMMAND_VERIFY => key::verify(signature, message).await,
-        COMMAND_DEPLOY_TOKEN => deploy::deploy_token_contract(network, schema).await,
-        COMMAND_UPDATE_TIME => transaction::update_time(network).await,
-        _ => Err(CliError::Internal("unknown command".to_string())),
+        COMMAND_KEY_GEN => impl_ethers_rs::generate_keys().await.map_err(Error::from),
+        COMMAND_SIGN => impl_ethers_rs::sign(message).await.map_err(Error::from),
+        COMMAND_VERIFY => impl_ethers_rs::verify(signature, message)
+            .await
+            .map_err(Error::from),
+        COMMAND_DEPLOY_TOKEN => match package {
+            Package::EthersRs => impl_ethers_rs::deploy(contract.into(), network.into())
+                .await
+                .map_err(Error::from),
+            Package::RustWeb3 => impl_rust_web3::deploy(contract.into(), network.into())
+                .await
+                .map_err(Error::from),
+        },
+        COMMAND_UPDATE_TIME => impl_ethers_rs::update_time(network.into())
+            .await
+            .map_err(Error::from),
+        _ => Err(Error::Internal("unknown command".to_string())),
     };
 
     if let Err(e) = result {
         println!("error: {:?}", e);
         return;
+    }
+}
+
+#[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
+pub enum Contract {
+    RustToken721,
+    RustToken1155,
+    RustSbt721,
+    RevealToken,
+}
+
+impl Into<impl_ethers_rs::Contract> for Contract {
+    fn into(self) -> impl_ethers_rs::Contract {
+        match self {
+            Contract::RustToken721 => impl_ethers_rs::Contract::RustToken721,
+            Contract::RustToken1155 => impl_ethers_rs::Contract::RustToken1155,
+            Contract::RustSbt721 => impl_ethers_rs::Contract::RustSbt721,
+            Contract::RevealToken => impl_ethers_rs::Contract::RevealToken,
+        }
+    }
+}
+
+impl Into<impl_rust_web3::Contract> for Contract {
+    fn into(self) -> impl_rust_web3::Contract {
+        match self {
+            Contract::RustToken721 => impl_rust_web3::Contract::RustToken721,
+            Contract::RustToken1155 => impl_rust_web3::Contract::RustToken1155,
+            Contract::RustSbt721 => unimplemented!(),
+            Contract::RevealToken => unimplemented!(),
+        }
+    }
+}
+
+#[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
+pub enum Package {
+    EthersRs,
+    RustWeb3,
+}
+
+#[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
+pub enum Schema {
+    ERC721,
+    ERC1155,
+}
+
+impl Into<impl_ethers_rs::Schema> for Schema {
+    fn into(self) -> impl_ethers_rs::Schema {
+        match self {
+            Schema::ERC721 => impl_ethers_rs::Schema::ERC721,
+            Schema::ERC1155 => impl_ethers_rs::Schema::ERC1155,
+        }
+    }
+}
+
+impl Into<impl_rust_web3::Schema> for Schema {
+    fn into(self) -> impl_rust_web3::Schema {
+        match self {
+            Schema::ERC721 => impl_rust_web3::Schema::ERC721,
+            Schema::ERC1155 => impl_rust_web3::Schema::ERC1155,
+        }
+    }
+}
+
+#[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
+pub enum Network {
+    Ethereum,
+    Polygon,
+    Avalanche,
+}
+
+impl Into<impl_ethers_rs::Network> for Network {
+    fn into(self) -> impl_ethers_rs::Network {
+        match self {
+            Network::Ethereum => impl_ethers_rs::Network::Ethereum,
+            Network::Polygon => impl_ethers_rs::Network::Polygon,
+            Network::Avalanche => impl_ethers_rs::Network::Avalanche,
+        }
+    }
+}
+
+impl Into<impl_rust_web3::Network> for Network {
+    fn into(self) -> impl_rust_web3::Network {
+        match self {
+            Network::Ethereum => impl_rust_web3::Network::Ethereum,
+            Network::Polygon => impl_rust_web3::Network::Polygon,
+            Network::Avalanche => impl_rust_web3::Network::Avalanche,
+        }
+    }
+}
+
+pub type CliResult<T> = Result<T, Error>;
+
+#[derive(ThisErr, Debug, PartialOrd, PartialEq, Clone)]
+pub enum Error {
+    #[error("invalid parameter error: {0}")]
+    InvalidArgument(String),
+    #[error("not found error")]
+    NotFound,
+    #[error("internal error: {0}")]
+    Internal(String),
+}
+
+impl From<SdkError<InvokeError>> for Error {
+    fn from(e: SdkError<InvokeError>) -> Self {
+        let msg = format!("lambda invoke error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
+impl From<serde_json::Error> for Error {
+    fn from(e: serde_json::Error) -> Self {
+        let msg = format!("json parse error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
+impl From<std::io::Error> for Error {
+    fn from(e: std::io::Error) -> Self {
+        let msg = format!("io error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
+impl From<reqwest::Error> for Error {
+    fn from(e: reqwest::Error) -> Self {
+        let code = e.status().unwrap_or_default();
+        let msg = format!("http error: {:?}", e);
+        if code == StatusCode::from_u16(400).unwrap() {
+            return Self::InvalidArgument(e.to_string());
+        }
+        if code == StatusCode::from_u16(404).unwrap() {
+            return Self::NotFound;
+        }
+
+        Self::Internal(msg)
+    }
+}
+
+impl From<impl_ethers_rs::Error> for Error {
+    fn from(e: impl_ethers_rs::Error) -> Self {
+        let msg = format!("http error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
+impl From<impl_rust_web3::Error> for Error {
+    fn from(e: impl_rust_web3::Error) -> Self {
+        let msg = format!("http error: {:?}", e);
+        Self::Internal(msg)
     }
 }

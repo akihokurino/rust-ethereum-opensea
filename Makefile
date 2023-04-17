@@ -19,6 +19,12 @@ SIGNATURE := ""
 build:
 	cargo build
 
+build-impl-ethers-rs:
+	cargo build --lib --package impl-ethers-rs
+
+build-impl-rust-web3:
+	cargo build --lib --package impl-rust-web3
+
 balance: build
 	./target/debug/rust-ethereum \
 	--command balance \

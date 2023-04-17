@@ -1,6 +1,4 @@
-use crate::error::CliResult;
-use crate::ethereum::{GAS_LIMIT, GAS_PRICE};
-use crate::model::Network;
+use crate::{EthersResult, Network, GAS_LIMIT, GAS_PRICE};
 use ethers::abi::{Abi, Tokenizable};
 use ethers::contract::Contract;
 use ethers::prelude::*;
@@ -12,8 +10,6 @@ use std::sync::Arc;
 
 #[derive(Clone, Debug)]
 pub struct Client {
-    #[allow(dead_code)]
-    wallet_address: String,
     wallet_secret: String,
     provider: Provider<Http>,
     address: Address,
@@ -23,31 +19,27 @@ pub struct Client {
 
 impl Client {
     pub fn new(network: Network) -> Self {
-        let wallet_address = env::var("WALLET_ADDRESS").expect("WALLET_ADDRESS must be set");
         let wallet_secret = env::var("WALLET_SECRET").expect("WALLET_SECRET must be set");
 
         Client {
-            wallet_address,
             wallet_secret,
             provider: Provider::<Http>::try_from(network.chain_url()).unwrap(),
-            address: network.rust_token1155_address().parse::<Address>().unwrap(),
-            abi: serde_json::from_str(include_str!("rust-token1155.abi.json").trim()).unwrap(),
+            address: network.rust_token_721_address().parse::<Address>().unwrap(),
+            abi: serde_json::from_str(include_str!("abi.json").trim()).unwrap(),
             network,
         }
     }
 
-    #[allow(unused)]
     pub async fn simple_query<T: Tokenizable + std::fmt::Debug>(
         &self,
         method: &str,
-    ) -> CliResult<T> {
+    ) -> EthersResult<T> {
         let contract = Contract::new(self.address, self.abi.to_owned(), self.provider.to_owned());
         let res = contract.method::<_, T>(method, ())?.call().await?;
         Ok(res)
     }
 
-    #[allow(unused)]
-    pub async fn mint(&self, hash: String, amount: u128) -> CliResult<()> {
+    pub async fn mint(&self, hash: String) -> EthersResult<()> {
         let wallet = self
             .wallet_secret
             .parse::<LocalWallet>()?
@@ -66,7 +58,7 @@ impl Client {
             );
 
         let call = contract
-            .method::<_, H256>("mint", (hash, amount))?
+            .method::<_, H256>("mint", hash)?
             .gas(GAS_LIMIT)
             .gas_price(GAS_PRICE);
         let tx = call.send().await?;
@@ -77,8 +69,7 @@ impl Client {
         Ok(())
     }
 
-    #[allow(unused)]
-    pub async fn deploy(&self) -> CliResult<()> {
+    pub async fn deploy(&self) -> EthersResult<()> {
         let wallet = self
             .wallet_secret
             .parse::<LocalWallet>()?
@@ -89,7 +80,7 @@ impl Client {
             .unwrap();
         let client = Arc::new(client);
 
-        let bytecode = include_str!("rust-token1155.bin").trim();
+        let bytecode = include_str!("bin").trim();
         let factory = ContractFactory::new(
             self.abi.to_owned(),
             Bytes::from_str(bytecode).unwrap(),
@@ -111,7 +102,7 @@ impl Client {
             .await
             .unwrap();
 
-        println!("deployed erc1155 to: {:?}", contract.address());
+        println!("deployed erc721 to: {:?}", contract.address());
 
         Ok(())
     }

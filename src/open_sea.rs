@@ -1,5 +1,5 @@
-use crate::error::CliResult;
-use crate::CliError;
+use crate::open_sea::api::OrderSide;
+use crate::{CliResult, Error};
 use reqwest::header::{HeaderMap, HeaderValue};
 use reqwest::{Body, Method, Response, Url};
 use std::env;
@@ -43,7 +43,7 @@ impl ApiClient {
         let resp = cli
             .execute(req)
             .await
-            .map_err(|e| -> CliError { CliError::from(e) })?;
+            .map_err(|e| -> Error { Error::from(e) })?;
 
         Ok(resp)
     }
@@ -55,4 +55,49 @@ pub struct CallInput {
     pub path: String,
     pub body: Option<Body>,
     pub query: Vec<(String, String)>,
+}
+
+pub async fn show_asset(contract_address: String, token_id: String) -> CliResult<()> {
+    if contract_address.is_empty() || token_id.is_empty() {
+        return Err(Error::InvalidArgument("parameter is invalid".to_string()));
+    }
+
+    let api_cli = ApiClient::new();
+    let asset = api_cli
+        .get_asset(api::get_asset::Input {
+            contract_address,
+            token_id,
+        })
+        .await?;
+
+    println!("{:?}", asset);
+
+    Ok(())
+}
+
+pub async fn show_order(
+    contract_address: String,
+    token_id: String,
+    side: OrderSide,
+) -> CliResult<()> {
+    if contract_address.is_empty() || token_id.is_empty() {
+        return Err(Error::InvalidArgument("parameter is invalid".to_string()));
+    }
+
+    let api_cli = ApiClient::new();
+    let order = api_cli
+        .get_order(api::get_order::Input {
+            side,
+            contract_address,
+            token_id,
+        })
+        .await?;
+
+    if order.orders.len() == 0 {
+        return Err(Error::NotFound);
+    }
+
+    println!("{:?}", order.orders.first().unwrap());
+
+    Ok(())
 }
