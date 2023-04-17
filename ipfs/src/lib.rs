@@ -1,5 +1,3 @@
-use crate::metadata::Metadata;
-use crate::{CliResult, Error};
 use bytes::Bytes;
 use reqwest::multipart;
 use reqwest::multipart::Part;
@@ -9,8 +7,10 @@ use std::fs::File;
 use std::io::Read;
 use url::Url;
 
+mod metadata;
+
 #[derive(Clone, Debug)]
-pub struct Adapter {
+struct Adapter {
     base_url: Url,
     key: String,
     secret: String,
@@ -29,7 +29,7 @@ impl Adapter {
         }
     }
 
-    pub async fn upload(&self, byte: Bytes, name: String) -> CliResult<IpfsOutput> {
+    pub async fn upload(&self, byte: Bytes, name: String) -> IpfsResult<IpfsOutput> {
         let form = multipart::Form::new().part("file", Part::bytes(byte.to_vec()).file_name(name));
 
         let mut url = self.base_url.to_owned();
@@ -51,7 +51,7 @@ impl Adapter {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct IpfsOutput {
+struct IpfsOutput {
     #[serde(rename = "Name")]
     pub name: String,
     #[serde(rename = "Hash")]
@@ -62,17 +62,17 @@ pub async fn create_metadata_from_url(
     name: String,
     description: String,
     image_url: String,
-) -> CliResult<()> {
+) -> IpfsResult<()> {
     let ipfs = Adapter::new();
 
     if name.is_empty() || description.is_empty() {
-        return Err(Error::InvalidArgument("parameter is invalid".to_string()));
+        return Err(Error::Internal("parameter is invalid".to_string()));
     }
     if image_url.is_empty() {
-        return Err(Error::InvalidArgument("parameter is invalid".to_string()));
+        return Err(Error::Internal("parameter is invalid".to_string()));
     }
 
-    let metadata = Metadata::new(&name, &image_url, &description);
+    let metadata = metadata::Metadata::new(&name, &image_url, &description);
     let metadata = serde_json::to_string(&metadata).map_err(Error::from)?;
     let content_hash = ipfs.upload(Bytes::from(metadata), name.clone()).await?;
     println!(
@@ -86,14 +86,14 @@ pub async fn create_metadata_from_file(
     name: String,
     description: String,
     image_filename: String,
-) -> CliResult<()> {
+) -> IpfsResult<()> {
     let ipfs = Adapter::new();
 
     if name.is_empty() || description.is_empty() {
-        return Err(Error::InvalidArgument("parameter is invalid".to_string()));
+        return Err(Error::Internal("parameter is invalid".to_string()));
     }
     if image_filename.is_empty() {
-        return Err(Error::InvalidArgument("parameter is invalid".to_string()));
+        return Err(Error::Internal("parameter is invalid".to_string()));
     }
 
     let mut file = File::open(format!("asset/{}", image_filename))?;
@@ -101,7 +101,7 @@ pub async fn create_metadata_from_file(
     let _ = file.read_to_end(&mut buf)?;
 
     let content_hash = ipfs.upload(Bytes::from(buf), name.clone()).await?;
-    let metadata = Metadata::new(
+    let metadata = metadata::Metadata::new(
         &name,
         &format!("ipfs://{}", content_hash.hash.clone()),
         &description,
@@ -114,4 +114,34 @@ pub async fn create_metadata_from_file(
     );
 
     Ok(())
+}
+
+pub type IpfsResult<T> = Result<T, Error>;
+
+#[derive(thiserror::Error, Debug, PartialOrd, PartialEq, Clone)]
+pub enum Error {
+    #[error("internal error: {0}")]
+    Internal(String),
+}
+
+impl From<serde_json::Error> for Error {
+    fn from(e: serde_json::Error) -> Self {
+        let msg = format!("json parse error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
+impl From<std::io::Error> for Error {
+    fn from(e: std::io::Error) -> Self {
+        let msg = format!("io error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
+impl From<reqwest::Error> for Error {
+    fn from(e: reqwest::Error) -> Self {
+        let code = e.status().unwrap_or_default();
+        let msg = format!("http error: {:?}, code: {:?}", e, code);
+        Self::Internal(msg)
+    }
 }

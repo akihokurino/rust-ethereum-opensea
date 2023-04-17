@@ -24,6 +24,9 @@ build-impl-ethers-rs:
 build-impl-rust-web3:
 	cargo build --lib --package impl-rust-web3
 
+build-ipfs:
+	cargo build --lib --package ipfs
+
 balance: build
 	./target/debug/rust-ethereum \
 	--command balance \

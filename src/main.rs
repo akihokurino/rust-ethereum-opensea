@@ -3,11 +3,7 @@ extern crate core;
 use clap::{Arg, Command};
 use common::*;
 use dotenv::dotenv;
-use reqwest::StatusCode;
 use std::str::FromStr;
-
-mod ipfs;
-pub mod metadata;
 
 const COMMAND: &str = "command";
 
@@ -285,53 +281,27 @@ pub type CliResult<T> = Result<T, Error>;
 
 #[derive(thiserror::Error, Debug, PartialOrd, PartialEq, Clone)]
 pub enum Error {
-    #[error("invalid parameter error: {0}")]
-    InvalidArgument(String),
-    #[error("not found error")]
-    NotFound,
     #[error("internal error: {0}")]
     Internal(String),
 }
 
-impl From<serde_json::Error> for Error {
-    fn from(e: serde_json::Error) -> Self {
-        let msg = format!("json parse error: {:?}", e);
-        Self::Internal(msg)
-    }
-}
-
-impl From<std::io::Error> for Error {
-    fn from(e: std::io::Error) -> Self {
-        let msg = format!("io error: {:?}", e);
-        Self::Internal(msg)
-    }
-}
-
-impl From<reqwest::Error> for Error {
-    fn from(e: reqwest::Error) -> Self {
-        let code = e.status().unwrap_or_default();
-        let msg = format!("http error: {:?}", e);
-        if code == StatusCode::from_u16(400).unwrap() {
-            return Self::InvalidArgument(e.to_string());
-        }
-        if code == StatusCode::from_u16(404).unwrap() {
-            return Self::NotFound;
-        }
-
-        Self::Internal(msg)
-    }
-}
-
 impl From<impl_ethers_rs::Error> for Error {
     fn from(e: impl_ethers_rs::Error) -> Self {
-        let msg = format!("http error: {:?}", e);
+        let msg = format!("ethers-rs error: {:?}", e);
         Self::Internal(msg)
     }
 }
 
 impl From<impl_rust_web3::Error> for Error {
     fn from(e: impl_rust_web3::Error) -> Self {
-        let msg = format!("http error: {:?}", e);
+        let msg = format!("rust-web3 error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
+impl From<ipfs::Error> for Error {
+    fn from(e: ipfs::Error) -> Self {
+        let msg = format!("ipfs error: {:?}", e);
         Self::Internal(msg)
     }
 }

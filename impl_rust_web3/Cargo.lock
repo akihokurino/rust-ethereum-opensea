@@ -696,8 +696,6 @@ version = "0.1.0"
 dependencies = [
  "common",
  "secp256k1",
- "serde",
- "serde_json",
  "strum",
  "strum_macros",
  "thiserror",

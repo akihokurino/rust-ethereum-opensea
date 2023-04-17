@@ -1571,10 +1571,7 @@ dependencies = [
  "common",
  "ethers",
  "ethers-signers",
- "serde",
  "serde_json",
- "strum",
- "strum_macros",
  "thiserror",
 ]
 
@@ -1584,10 +1581,6 @@ version = "0.1.0"
 dependencies = [
  "common",
  "secp256k1",
- "serde",
- "serde_json",
- "strum",
- "strum_macros",
  "thiserror",
  "web3",
 ]
@@ -1638,6 +1631,20 @@ dependencies = [
  "hermit-abi 0.3.1",
  "libc",
  "windows-sys 0.48.0",
+]
+
+[[package]]
+name = "ipfs"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "strum",
+ "strum_macros",
+ "thiserror",
+ "url",
 ]
 
 [[package]]
@@ -2499,22 +2506,16 @@ dependencies = [
 name = "rust-ethereum"
 version = "0.1.0"
 dependencies = [
- "base64 0.21.0",
- "bytes",
  "clap",
  "common",
  "dotenv",
  "impl_ethers_rs",
  "impl_rust_web3",
- "rand 0.8.5",
- "reqwest",
- "serde",
- "serde_json",
+ "ipfs",
  "strum",
  "strum_macros",
  "thiserror",
  "tokio",
- "url",
 ]
 
 [[package]]
