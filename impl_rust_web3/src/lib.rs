@@ -1,9 +1,5 @@
-use bigdecimal::BigDecimal;
-use regex::Regex;
 use secp256k1::SecretKey;
-use std::collections::HashMap;
 use std::env;
-use std::ops::Mul;
 use std::str::FromStr;
 use thiserror::Error as ThisErr;
 use web3::signing::SecretKeyRef;
@@ -84,55 +80,7 @@ impl Network {
     }
 }
 
-fn convert<'a>(value: &str, unit: &'a str) -> HashMap<&'a str, String> {
-    let v = to_ether(value, unit);
-    let mut map: HashMap<&'a str, String> = HashMap::new();
-
-    map.insert(unit, BigDecimal::from_str(&value).unwrap().to_string());
-
-    if unit != "wei" {
-        map.insert("wei", s(&v, "1000000000000000000"));
-    }
-    if unit != "ether" {
-        map.insert("ether", s(&v, "1"));
-    }
-
-    return map;
-}
-
-fn m(v: &BigDecimal, u: &str) -> BigDecimal {
-    return v.mul(&BigDecimal::from_str(u).unwrap());
-}
-
-fn s(v: &BigDecimal, u: &str) -> String {
-    return t(v.mul(&BigDecimal::from_str(u).unwrap()).to_string());
-}
-
-fn t(v: String) -> String {
-    let re = Regex::new(r"(.*)\.0+$").unwrap();
-    let v = re.replace_all(&v, "$1").to_string();
-    let re = Regex::new(r"(.*\.\d+[1-9]+)(0+)$").unwrap();
-    return re.replace_all(&v, "$1").to_string();
-}
-
-pub fn to_wei(value: &str, unit: &str) -> String {
-    return convert(&value, &unit).get("wei").unwrap().to_string();
-}
-
-pub fn to_ether(value: &str, unit: &str) -> BigDecimal {
-    let v = BigDecimal::from_str(&value).unwrap();
-
-    if unit == "wei" {
-        return m(&v, "0.000000000000000001");
-    }
-    if unit == "ether" {
-        return m(&v, "1");
-    }
-
-    panic!("unit not supported");
-}
-
-pub fn parse_address(address: String) -> Option<Address> {
+fn parse_address(address: String) -> Option<Address> {
     match address.trim_start_matches("0x").parse() {
         Ok(value) => Some(value),
         Err(_e) => None,
@@ -154,7 +102,7 @@ pub async fn get_balance(network: Network) -> Web3Result<()> {
 
     println!(
         "balance: {:?}",
-        to_ether(balance.to_string().as_str(), "wei")
+        common::unit::to_ether(balance.to_string().as_str(), "wei")
     );
 
     Ok(())
@@ -170,7 +118,7 @@ pub async fn send_eth(network: Network, eth: f64, to: String) -> Web3Result<()> 
         .expect("should set ethereum url");
     let cli = Web3::new(transport);
 
-    let wei = to_wei(eth.to_string().as_str(), "ether");
+    let wei = common::unit::to_wei(eth.to_string().as_str(), "ether");
     let wei: u128 = wei.parse().unwrap();
     let wei = U256::from(wei);
     println!("send wei: {}", &wei);

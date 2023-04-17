@@ -129,7 +129,12 @@ pub async fn main() {
         .arg(
             Arg::new(ARGS_CONTRACT)
                 .long(ARGS_CONTRACT)
-                .possible_values(&["RustToken721", "RustToken1155", "RustSbt721", "RevealToken"])
+                .possible_values(&[
+                    "RustToken721",
+                    "RustToken1155",
+                    "RustSbt721",
+                    "RevealToken721",
+                ])
                 .required(false)
                 .takes_value(true),
         )
@@ -338,7 +343,7 @@ pub enum Contract {
     RustToken721,
     RustToken1155,
     RustSbt721,
-    RevealToken,
+    RevealToken721,
 }
 
 impl Into<impl_ethers_rs::Contract> for Contract {
@@ -347,7 +352,7 @@ impl Into<impl_ethers_rs::Contract> for Contract {
             Contract::RustToken721 => impl_ethers_rs::Contract::RustToken721,
             Contract::RustToken1155 => impl_ethers_rs::Contract::RustToken1155,
             Contract::RustSbt721 => impl_ethers_rs::Contract::RustSbt721,
-            Contract::RevealToken => impl_ethers_rs::Contract::RevealToken,
+            Contract::RevealToken721 => impl_ethers_rs::Contract::RevealToken721,
         }
     }
 }
@@ -358,7 +363,7 @@ impl Into<impl_rust_web3::Contract> for Contract {
             Contract::RustToken721 => impl_rust_web3::Contract::RustToken721,
             Contract::RustToken1155 => impl_rust_web3::Contract::RustToken1155,
             Contract::RustSbt721 => unimplemented!(),
-            Contract::RevealToken => unimplemented!(),
+            Contract::RevealToken721 => unimplemented!(),
         }
     }
 }

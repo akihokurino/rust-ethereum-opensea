@@ -114,15 +114,18 @@ update-time: build
     --network $(NETWORK)
 
 extract-abi:
-	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq '.abi' > src/ethereum/rust_web3/rust-token721.abi.json
-	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq '.abi' > src/ethereum/rust_web3/rust-token1155.abi.json
-	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq -r '.bytecode' > src/ethereum/rust_web3/rust-token721.bin
-	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq -r '.bytecode' > src/ethereum/rust_web3/rust-token1155.bin
-	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq '.abi' > src/ethereum/ethers_rs/rust-token721.abi.json
-	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq '.abi' > src/ethereum/ethers_rs/rust-token1155.abi.json
-	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq -r '.bytecode' > src/ethereum/ethers_rs/rust-token721.bin
-	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq -r '.bytecode' > src/ethereum/ethers_rs/rust-token1155.bin
-	cat ethereum/artifacts/contracts/RevealToken721.sol/RevealToken721.json | jq '.abi' > src/ethereum/ethers_rs/reveal-token721.abi.json
-	cat ethereum/artifacts/contracts/RevealToken721.sol/RevealToken721.json | jq '.bytecode' > src/ethereum/ethers_rs/reveal-token721.bin
-	cat ethereum/artifacts/contracts/RustSbt721.sol/RustSbt721.json | jq '.abi' > src/ethereum/ethers_rs/rust-sbt721.abi.json
-	cat ethereum/artifacts/contracts/RustSbt721.sol/RustSbt721.json | jq '.bytecode' > src/ethereum/ethers_rs/rust-sbt721.bin
+	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq '.abi' > impl_ethers_rs/src/rust_token_721/abi.json
+	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq -r '.bytecode' > impl_ethers_rs/src/rust_token_721/bin
+	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq '.abi' > impl_rust_web3/src/rust_token_721/abi.json
+	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq -r '.bytecode' > impl_rust_web3/src/rust_token_721/bin
+
+	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq '.abi' > impl_ethers_rs/src/rust_token_1155/abi.json
+	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq -r '.bytecode' > impl_ethers_rs/src/rust_token_1155/bin
+	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq '.abi' > impl_rust_web3/src/rust_token_1155/abi.json
+	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq -r '.bytecode' > impl_rust_web3/src/rust_token_1155/bin
+
+	cat ethereum/artifacts/contracts/RevealToken721.sol/RevealToken721.json | jq '.abi' > impl_ethers_rs/src/reveal_token_721/abi.json
+	cat ethereum/artifacts/contracts/RevealToken721.sol/RevealToken721.json | jq '.bytecode' > impl_ethers_rs/src/reveal_token_721/bin
+
+	cat ethereum/artifacts/contracts/RustSbt721.sol/RustSbt721.json | jq '.abi' > impl_ethers_rs/src/rust_sbt_721/abi.json
+	cat ethereum/artifacts/contracts/RustSbt721.sol/RustSbt721.json | jq '.bytecode' > impl_ethers_rs/src/rust_sbt_721/bin
