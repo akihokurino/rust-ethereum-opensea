@@ -1,7 +1,9 @@
 import "@nomicfoundation/hardhat-chai-matchers";
+import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-etherscan";
 import "@openzeppelin/hardhat-upgrades";
 import dotenv from "dotenv";
+import "hardhat-gas-reporter";
 import { HardhatUserConfig } from "hardhat/config";
 
 dotenv.config();
@@ -51,6 +53,39 @@ const config: HardhatUserConfig = {
       accounts: [process.env.WALLET_SECRET!],
       chainId: chainIds.fuji,
     },
+  },
+  etherscan: {
+    apiKey: {
+      goerli: process.env.ETHERSCAN_API_KEY!,
+      mumbai: process.env.POLYGONSCAN_API_KEY!,
+      fuji: process.env.SNOW_TRACE_API_KEY!,
+    },
+    customChains: [
+      {
+        network: "goerli",
+        chainId: chainIds.goerli,
+        urls: {
+          apiURL: "https://api-goerli.etherscan.io/api",
+          browserURL: "https://goerli.etherscan.io",
+        },
+      },
+      {
+        network: "mumbai",
+        chainId: chainIds.mumbai,
+        urls: {
+          apiURL: "https://api-testnet.polygonscan.com/api",
+          browserURL: "https://mumbai.polygonscan.com",
+        },
+      },
+      {
+        network: "fuji",
+        chainId: chainIds.fuji,
+        urls: {
+          apiURL: "https://api-testnet.snowtrace.io/api",
+          browserURL: "https://testnet.snowtrace.io",
+        },
+      },
+    ],
   },
 };
 

@@ -13,7 +13,6 @@ contract RevealToken721 is ERC721Enumerable, Ownable, ChainlinkClient {
 
     mapping(uint256 => string) private _token2hash;
     uint256 private _localTokenId;
-    string private _baseUrl;
     struct TimeAdapterResponse {
         string now;
         uint256 timestamp;
@@ -26,7 +25,6 @@ contract RevealToken721 is ERC721Enumerable, Ownable, ChainlinkClient {
     /**
      * Network: Goerli
      * Chainlink Address: 0x326C977E6efc84E512bB9C30f76E30c160eD06FB
-     * Oracle Address: 0x45585c78a16c62b510E6336fD8B95C61e88039B0
      * TimeAdapter JobId: 371ddf3b-2f03-4ee2-bfea-97ebe6398165（セットするときはハイフンなし）
      */
     constructor(
@@ -37,19 +35,16 @@ contract RevealToken721 is ERC721Enumerable, Ownable, ChainlinkClient {
         string memory jobId
     ) ERC721(name, symbol) {
         _localTokenId = 0;
-        _baseUrl = "https://akiho-playground.infura-ipfs.io/ipfs/";
 
         setChainlinkToken(chainlinkAddress);
-        chainlinkFee = 1 * 10**18;
+        chainlinkFee = 1 * 10 ** 18;
         oracleAddress = oracle;
         timeAdapterJobId = stringToBytes32(jobId);
     }
 
-    function stringToBytes32(string memory source)
-        public
-        pure
-        returns (bytes32 result)
-    {
+    function stringToBytes32(
+        string memory source
+    ) public pure returns (bytes32 result) {
         bytes memory tempEmptyStringTest = bytes(source);
         if (tempEmptyStringTest.length == 0) {
             return 0x0;
@@ -86,29 +81,21 @@ contract RevealToken721 is ERC721Enumerable, Ownable, ChainlinkClient {
         _mint(_msgSender(), _localTokenId);
     }
 
-    function setBaseURI(string memory base) public virtual onlyOwner {
-        _baseUrl = base;
-    }
-
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        virtual
-        override
-        returns (string memory)
-    {
+    function tokenURI(
+        uint256 tokenId
+    ) public view virtual override returns (string memory) {
         if (timeAdapterResponse.timestamp > 0) {
             uint256 hour = DateTime.getHour(timeAdapterResponse.timestamp);
             if (3 <= hour && hour < 10) {
                 string memory contentHash = _token2hash[tokenId];
-                return string(abi.encodePacked(_baseUrl, contentHash));
+                return string(abi.encodePacked("ipfs://", contentHash));
             }
         }
 
         return
             string(
                 abi.encodePacked(
-                    _baseUrl,
+                    "ipfs://",
                     "QmbJswgamjqeuLoH8eFEaGSCehLNqE4C4E4PRUo5ymLzgg"
                 )
             );

@@ -1,24 +1,20 @@
 import { expect } from "chai";
-import { ethers, upgrades } from "hardhat";
+import { ethers } from "hardhat";
 
 describe("RustSbt721", function () {
   it("should mint and get token url", async () => {
-    const contract = await upgrades.deployProxy(
-      await ethers.getContractFactory("RustSbt721", {}),
-      ["RustSbt", "RS"]
-    );
+    const Contract = await ethers.getContractFactory("RustSbt721");
+    const contract = await Contract.deploy("RustSbt", "RS");
+    await contract.deployed();
 
     await contract.mint("A");
-    expect(await contract.tokenURI(1)).to.equal(
-      "https://akiho-playground.infura-ipfs.io/ipfs/A"
-    );
+    expect(await contract.tokenURI(1)).to.equal("ipfs://A");
   });
 
   it("should get is owner", async () => {
-    const contract = await upgrades.deployProxy(
-      await ethers.getContractFactory("RustSbt721", {}),
-      ["RustSbt", "RS"]
-    );
+    const Contract = await ethers.getContractFactory("RustSbt721");
+    const contract = await Contract.deploy("RustSbt", "RS");
+    await contract.deployed();
 
     const [owner, other] = await ethers.getSigners();
 
@@ -28,10 +24,9 @@ describe("RustSbt721", function () {
   });
 
   it("should cannot transfer", async () => {
-    const contract = await upgrades.deployProxy(
-      await ethers.getContractFactory("RustSbt721", {}),
-      ["RustSbt", "RS"]
-    );
+    const Contract = await ethers.getContractFactory("RustSbt721");
+    const contract = await Contract.deploy("RustSbt", "RS");
+    await contract.deployed();
 
     const [owner, other] = await ethers.getSigners();
 

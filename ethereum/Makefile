@@ -1,45 +1,7 @@
+NETWORK := mumbai
+
 vendor:
 	npm install
-
-compile:
-	npx hardhat compile
-
-.PHONY: test
-test:
-	npx hardhat test
-
-node:
-	npx hardhat node
-
-deploy-hardhat:
-	npx hardhat run scripts/deploy-nft.ts --network hardhat
-	npx hardhat run scripts/deploy-oracle.ts --network hardhat
-	npx hardhat run scripts/deploy-reveal-token.ts --network hardhat
-	npx hardhat run scripts/deploy-sbt.ts --network hardhat
-
-deploy-geth:
-	npx hardhat run scripts/deploy-nft.ts --network geth
-	npx hardhat run scripts/deploy-oracle.ts --network geth
-	npx hardhat run scripts/deploy-reveal-token.ts --network geth
-	npx hardhat run scripts/deploy-sbt.ts --network geth
-
-deploy-nft-goerli:
-	npx hardhat run scripts/deploy-nft.ts --network goerli
-
-deploy-oracle-goerli:
-	npx hardhat run scripts/deploy-oracle.ts --network goerli
-
-deploy-reveal-token-goerli:
-	npx hardhat run scripts/deploy-reveal-token.ts --network goerli
-
-deploy-sbt-goerli:
-	npx hardhat run scripts/deploy-sbt.ts --network goerli
-
-deploy-nft-mumbai:
-	npx hardhat run scripts/deploy-nft.ts --network mumbai
-
-deploy-nft-fuji:
-	npx hardhat run scripts/deploy-nft.ts --network fuji
 
 init-private-net:
 	geth --datadir ./private-net/ init ./private-net/genesis.json
@@ -55,3 +17,25 @@ reset-private-net:
 
 import-private-net:
 	geth account import --datadir ./private-net/ ./private-net/key.prv
+
+compile:
+	npx hardhat compile
+
+.PHONY: test
+test:
+	npx hardhat test
+
+node:
+	npx hardhat node
+
+deploy-rust-token-721:
+	npx hardhat run scripts/deploy-rust-token-721.ts --network $(NETWORK)
+
+deploy-rust-token-1155:
+	npx hardhat run scripts/deploy-rust-token-1155.ts --network $(NETWORK)
+
+deploy-rust-sbt-721:
+	npx hardhat run scripts/deploy-rust-sbt-721.ts --network $(NETWORK)
+
+deploy-reveal-token-721:
+	npx hardhat run scripts/deploy-reveal-token-721.ts --network $(NETWORK)

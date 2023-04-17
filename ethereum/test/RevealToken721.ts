@@ -16,31 +16,29 @@ describe("RevealToken721", function () {
     await contract.mint("A");
     expect(await contract.getCurrentHour()).to.equal(-1);
     expect(await contract.tokenURI(1)).to.equal(
-      "https://akiho-playground.infura-ipfs.io/ipfs/QmbJswgamjqeuLoH8eFEaGSCehLNqE4C4E4PRUo5ymLzgg"
+      "ipfs://QmbJswgamjqeuLoH8eFEaGSCehLNqE4C4E4PRUo5ymLzgg"
     );
 
     await contract.setTimestampForDebug(Math.floor(1675648800000 / 1000));
     expect(await contract.getCurrentHour()).to.equal(2);
     expect(await contract.tokenURI(1)).to.equal(
-      "https://akiho-playground.infura-ipfs.io/ipfs/QmbJswgamjqeuLoH8eFEaGSCehLNqE4C4E4PRUo5ymLzgg"
+      "ipfs://QmbJswgamjqeuLoH8eFEaGSCehLNqE4C4E4PRUo5ymLzgg"
     );
 
     await contract.setTimestampForDebug(Math.floor(1675652400000 / 1000));
     expect(await contract.getCurrentHour()).to.equal(3);
-    expect(await contract.tokenURI(1)).to.equal(
-      "https://akiho-playground.infura-ipfs.io/ipfs/A"
-    );
+    expect(await contract.tokenURI(1)).to.equal("ipfs://A");
 
     await contract.setTimestampForDebug(Math.floor(1675677600000 / 1000));
     expect(await contract.getCurrentHour()).to.equal(10);
     expect(await contract.tokenURI(1)).to.equal(
-      "https://akiho-playground.infura-ipfs.io/ipfs/QmbJswgamjqeuLoH8eFEaGSCehLNqE4C4E4PRUo5ymLzgg"
+      "ipfs://QmbJswgamjqeuLoH8eFEaGSCehLNqE4C4E4PRUo5ymLzgg"
     );
 
     await contract.setTimestampForDebug(Math.floor(1675695600000 / 1000));
     expect(await contract.getCurrentHour()).to.equal(15);
     expect(await contract.tokenURI(1)).to.equal(
-      "https://akiho-playground.infura-ipfs.io/ipfs/QmbJswgamjqeuLoH8eFEaGSCehLNqE4C4E4PRUo5ymLzgg"
+      "ipfs://QmbJswgamjqeuLoH8eFEaGSCehLNqE4C4E4PRUo5ymLzgg"
     );
   });
 });

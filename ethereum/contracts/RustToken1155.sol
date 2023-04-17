@@ -1,56 +1,39 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract RustToken1155 is ERC1155Upgradeable, OwnableUpgradeable {
+contract RustToken1155 is ERC1155, Ownable {
     mapping(uint256 => string) private _token2hash;
     uint256 private _localTokenId;
-    string private _baseUrl;
     uint256 private _totalSupply;
 
     string public name;
     string public symbol;
 
-    function initialize(string memory _name, string memory _symbol)
-        public
-        initializer
-    {
-        __ERC1155_init("");
-        __Ownable_init();
-        _localTokenId = 0;
-        _totalSupply = 0;
-        _baseUrl = "https://akiho-playground.infura-ipfs.io/ipfs/";
-
+    constructor(string memory _name, string memory _symbol) ERC1155("") {
         name = _name;
         symbol = _symbol;
+        _localTokenId = 0;
+        _totalSupply = 0;
     }
 
-    function mint(string memory contentHash, uint256 amount)
-        public
-        virtual
-        onlyOwner
-    {
+    function mint(
+        string memory contentHash,
+        uint256 amount
+    ) public virtual onlyOwner {
         _localTokenId += 1;
         _token2hash[_localTokenId] = contentHash;
         _mint(_msgSender(), _localTokenId, amount, "");
         _totalSupply += amount;
     }
 
-    function setBaseURI(string memory base) public virtual onlyOwner {
-        _baseUrl = base;
-    }
-
-    function uri(uint256 tokenId)
-        public
-        view
-        virtual
-        override
-        returns (string memory)
-    {
+    function uri(
+        uint256 tokenId
+    ) public view virtual override returns (string memory) {
         string memory contentHash = _token2hash[tokenId];
-        return string(abi.encodePacked(_baseUrl, contentHash));
+        return string(abi.encodePacked("ipfs://", contentHash));
     }
 
     function latestTokenId() public view virtual returns (uint256) {
@@ -69,12 +52,10 @@ contract RustToken1155 is ERC1155Upgradeable, OwnableUpgradeable {
         return owned;
     }
 
-    function isOwner(uint256 tokenId, address target)
-        public
-        view
-        virtual
-        returns (bool)
-    {
+    function isOwner(
+        uint256 tokenId,
+        address target
+    ) public view virtual returns (bool) {
         return balanceOf(target, tokenId) > 0;
     }
 }
