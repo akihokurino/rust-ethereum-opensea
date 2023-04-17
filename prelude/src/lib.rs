@@ -6,7 +6,7 @@ pub const GAS_LIMIT: i64 = 8000000;
 pub const GAS_PRICE: i64 = 25000000000; // 40000000000
 
 #[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
-pub enum Contract {
+pub enum TargetContract {
     RustToken721,
     RustToken1155,
     RustSbt721,

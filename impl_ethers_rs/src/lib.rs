@@ -1,14 +1,89 @@
-use prelude::*;
+use ethers::abi::Abi;
+use ethers::contract::Contract;
 use ethers::core::k256::elliptic_curve::sec1::ToEncodedPoint;
 use ethers::prelude::*;
+use ethers::types::transaction::eip2718::TypedTransaction;
 use ethers_signers::{LocalWallet, Signer, Wallet, WalletError};
+use prelude::*;
 use std::env;
 use std::str::FromStr;
+use std::sync::Arc;
 
 pub mod reveal_token_721;
 pub mod rust_sbt_721;
 pub mod rust_token_1155;
 pub mod rust_token_721;
+
+fn query_contract(
+    contract_address: Address,
+    abi: Abi,
+    network: Network,
+) -> Contract<Provider<Http>> {
+    Contract::new(
+        contract_address,
+        abi,
+        Provider::<Http>::try_from(network.chain_url()).unwrap(),
+    )
+}
+
+async fn transaction_contract(
+    wallet_secret: String,
+    contract_address: Address,
+    abi: Abi,
+    network: Network,
+) -> Contract<SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>> {
+    let wallet = wallet_secret
+        .parse::<LocalWallet>()
+        .unwrap()
+        .with_chain_id(network.chain_id());
+
+    let provider = Provider::<Http>::try_from(network.chain_url()).unwrap();
+    let client = SignerMiddleware::new_with_provider_chain(provider, wallet)
+        .await
+        .unwrap();
+    let client = Arc::new(client);
+
+    Contract::<SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>>::new(
+        contract_address,
+        abi,
+        client.clone(),
+    )
+}
+
+async fn deploy_contract(
+    wallet_secret: String,
+    abi: Abi,
+    network: Network,
+    bytecode: &str,
+) -> Contract<SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>> {
+    let wallet = wallet_secret
+        .parse::<LocalWallet>()
+        .unwrap()
+        .with_chain_id(network.chain_id());
+
+    let provider = Provider::<Http>::try_from(network.chain_url()).unwrap();
+    let client = SignerMiddleware::new_with_provider_chain(provider, wallet)
+        .await
+        .unwrap();
+    let client = Arc::new(client);
+
+    let factory = ContractFactory::new(abi, Bytes::from_str(bytecode).unwrap(), client.clone());
+
+    let mut deployer = factory.deploy(()).unwrap();
+    deployer.tx = TypedTransaction::Legacy(TransactionRequest {
+        to: None,
+        data: deployer.tx.data().cloned(),
+        gas: Some(U256::from(GAS_LIMIT)),
+        gas_price: Some(U256::from(GAS_PRICE)),
+        ..Default::default()
+    });
+    deployer
+        .confirmations(1 as usize)
+        .legacy()
+        .send()
+        .await
+        .unwrap()
+}
 
 pub async fn get_balance(network: Network) -> EthersResult<()> {
     let wallet_secret = env::var("WALLET_SECRET").expect("WALLET_SECRET must be set");
@@ -65,25 +140,25 @@ pub async fn send_eth(network: Network, eth: f64, to: String) -> EthersResult<()
 }
 
 pub async fn mint(
-    target: Contract,
+    target: TargetContract,
     network: Network,
     hash: String,
     amount: u128,
 ) -> EthersResult<()> {
     match target {
-        Contract::RustToken721 => {
+        TargetContract::RustToken721 => {
             let cli = rust_token_721::client::Client::new(network);
             cli.mint(hash.clone()).await
         }
-        Contract::RustToken1155 => {
+        TargetContract::RustToken1155 => {
             let cli = rust_token_1155::client::Client::new(network);
             cli.mint(hash.clone(), amount).await
         }
-        Contract::RustSbt721 => {
+        TargetContract::RustSbt721 => {
             let cli = rust_sbt_721::client::Client::new(network);
             cli.mint(hash.clone()).await
         }
-        Contract::RevealToken721 => {
+        TargetContract::RevealToken721 => {
             let cli = reveal_token_721::client::Client::new(network);
             cli.mint(hash.clone()).await
         }
@@ -91,21 +166,21 @@ pub async fn mint(
     Ok(())
 }
 
-pub async fn deploy(target: Contract, network: Network) -> EthersResult<()> {
+pub async fn deploy(target: TargetContract, network: Network) -> EthersResult<()> {
     match target {
-        Contract::RustToken721 => {
+        TargetContract::RustToken721 => {
             let cli = rust_token_721::client::Client::new(network);
             cli.deploy().await
         }
-        Contract::RustToken1155 => {
+        TargetContract::RustToken1155 => {
             let cli = rust_token_1155::client::Client::new(network);
             cli.deploy().await
         }
-        Contract::RustSbt721 => {
+        TargetContract::RustSbt721 => {
             let cli = rust_sbt_721::client::Client::new(network);
             cli.deploy().await
         }
-        Contract::RevealToken721 => {
+        TargetContract::RevealToken721 => {
             let cli = reveal_token_721::client::Client::new(network);
             cli.deploy().await
         }
@@ -113,73 +188,46 @@ pub async fn deploy(target: Contract, network: Network) -> EthersResult<()> {
     Ok(())
 }
 
-pub async fn show_token_info(target: Contract, network: Network) -> EthersResult<()> {
+pub async fn show_token_info(target: TargetContract, network: Network) -> EthersResult<()> {
     match target {
-        Contract::RustToken721 => {
+        TargetContract::RustToken721 => {
             let cli = rust_token_721::client::Client::new(network);
             println!("------------------------------------------------------------");
             println!("RustToken721 info: {}", network.rust_token_721_address());
-            println!("name = {}", cli.simple_query::<String>("name").await?);
-            println!(
-                "latestTokenId = {}",
-                cli.simple_query::<u128>("latestTokenId").await?
-            );
-            println!(
-                "totalSupply = {:?}",
-                cli.simple_query::<u128>("totalSupply").await?
-            );
-            println!(
-                "totalOwned = {:?}",
-                cli.simple_query::<u128>("totalOwned").await?
-            );
+            println!("name = {}", cli.name().await?);
+            println!("latestTokenId = {}", cli.latest_token_id().await?);
+            println!("totalSupply = {:?}", cli.total_supply().await?);
+            println!("totalOwned = {:?}", cli.total_owned().await?);
             println!("------------------------------------------------------------");
         }
-        Contract::RustToken1155 => {
+        TargetContract::RustToken1155 => {
             let cli = rust_token_1155::client::Client::new(network);
             println!("------------------------------------------------------------");
             println!("RustToken1155 info: {}", network.rust_token_1155_address());
-            println!("name = {}", cli.simple_query::<String>("name").await?);
-            println!(
-                "latestTokenId = {}",
-                cli.simple_query::<u128>("latestTokenId").await?
-            );
-            println!(
-                "totalSupply = {:?}",
-                cli.simple_query::<u128>("totalSupply").await?
-            );
-            println!(
-                "totalOwned = {:?}",
-                cli.simple_query::<u128>("totalOwned").await?
-            );
+            println!("name = {}", cli.name().await?);
+            println!("latestTokenId = {}", cli.latest_token_id().await?);
+            println!("totalSupply = {:?}", cli.total_supply().await?);
+            println!("totalOwned = {:?}", cli.total_owned().await?);
             println!("------------------------------------------------------------");
         }
-        Contract::RustSbt721 => {
+        TargetContract::RustSbt721 => {
             let cli = rust_sbt_721::client::Client::new(network);
             println!("------------------------------------------------------------");
             println!("RustSbt721 info: {}", network.rust_sbt_721_address());
-            println!("name = {}", cli.simple_query::<String>("name").await?);
-            println!(
-                "totalSupply = {:?}",
-                cli.simple_query::<u128>("totalSupply").await?
-            );
+            println!("name = {}", cli.name().await?);
+            println!("totalSupply = {:?}", cli.total_supply().await?);
             println!("------------------------------------------------------------");
         }
-        Contract::RevealToken721 => {
+        TargetContract::RevealToken721 => {
             let cli = reveal_token_721::client::Client::new(network);
             println!("------------------------------------------------------------");
             println!(
                 "RevealToken721 info: {}",
                 network.reveal_token_721_address()
             );
-            println!("name = {}", cli.simple_query::<String>("name").await?);
-            println!(
-                "totalSupply = {:?}",
-                cli.simple_query::<u128>("totalSupply").await?
-            );
-            println!(
-                "getCurrentHour = {}",
-                cli.simple_query::<u128>("getCurrentHour").await?
-            );
+            println!("name = {}", cli.name().await?);
+            println!("totalSupply = {:?}", cli.total_supply().await?);
+            println!("getCurrentHour = {}", cli.get_current_hour().await?);
             println!("------------------------------------------------------------");
         }
     }

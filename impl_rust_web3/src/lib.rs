@@ -75,17 +75,17 @@ pub async fn send_eth(network: Network, eth: f64, to: String) -> Web3Result<()> 
 }
 
 pub async fn mint(
-    target: Contract,
+    target: TargetContract,
     network: Network,
     hash: String,
     amount: u128,
 ) -> Web3Result<()> {
     match target {
-        Contract::RustToken721 => {
+        TargetContract::RustToken721 => {
             let cli = rust_token_721::client::Client::new(network);
             cli.mint(hash.clone()).await
         }
-        Contract::RustToken1155 => {
+        TargetContract::RustToken1155 => {
             let cli = rust_token_1155::client::Client::new(network);
             cli.mint(hash.clone(), amount).await
         }
@@ -94,13 +94,13 @@ pub async fn mint(
     Ok(())
 }
 
-pub async fn deploy(target: Contract, network: Network) -> Web3Result<()> {
+pub async fn deploy(target: TargetContract, network: Network) -> Web3Result<()> {
     match target {
-        Contract::RustToken721 => {
+        TargetContract::RustToken721 => {
             let cli = rust_token_721::client::Client::new(network);
             cli.deploy().await
         }
-        Contract::RustToken1155 => {
+        TargetContract::RustToken1155 => {
             let cli = rust_token_1155::client::Client::new(network);
             cli.deploy().await
         }
@@ -109,9 +109,9 @@ pub async fn deploy(target: Contract, network: Network) -> Web3Result<()> {
     Ok(())
 }
 
-pub async fn show_token_info(target: Contract, network: Network) -> Web3Result<()> {
+pub async fn show_token_info(target: TargetContract, network: Network) -> Web3Result<()> {
     match target {
-        Contract::RustToken721 => {
+        TargetContract::RustToken721 => {
             let cli = rust_token_721::client::Client::new(network);
             println!("------------------------------------------------------------");
             println!("RustToken721 info: {}", network.rust_token_721_address());
@@ -130,7 +130,7 @@ pub async fn show_token_info(target: Contract, network: Network) -> Web3Result<(
             );
             println!("------------------------------------------------------------");
         }
-        Contract::RustToken1155 => {
+        TargetContract::RustToken1155 => {
             let cli = rust_token_1155::client::Client::new(network);
             println!("------------------------------------------------------------");
             println!("RustToken1155 info: {}", network.rust_token_1155_address());

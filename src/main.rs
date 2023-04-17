@@ -1,8 +1,8 @@
 extern crate core;
 
 use clap::{Arg, Command};
-use prelude::*;
 use dotenv::dotenv;
+use prelude::*;
 use std::str::FromStr;
 
 const COMMAND: &str = "command";
@@ -183,7 +183,7 @@ pub async fn main() {
         .value_of(ARGS_CONTRACT)
         .unwrap_or("RustToken721")
         .to_string();
-    let contract = Contract::from_str(&contract).ok().unwrap();
+    let contract = TargetContract::from_str(&contract).ok().unwrap();
     let ether: f64 = matches
         .value_of(ARGS_ETHER)
         .unwrap_or_default()
