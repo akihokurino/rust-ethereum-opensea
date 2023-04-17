@@ -77,11 +77,7 @@ pub async fn make_metadata_from_url(
     let content_hash = ipfs.upload(Bytes::from(metadata), name.clone()).await?;
     println!(
         "metadata url: {:?}",
-        format!(
-            "{}/ipfs/{}",
-            env::var("IPFS_GATEWAY").expect("should set IPFS_GATEWAY"),
-            content_hash.hash.clone()
-        )
+        format!("ipfs://{}", content_hash.hash.clone())
     );
     Ok(())
 }
@@ -107,22 +103,14 @@ pub async fn make_metadata_from_file(
     let content_hash = ipfs.upload(Bytes::from(buf), name.clone()).await?;
     let metadata = Metadata::new(
         &name,
-        &format!(
-            "{}/ipfs/{}",
-            env::var("IPFS_GATEWAY").expect("should set IPFS_GATEWAY"),
-            content_hash.hash.clone()
-        ),
+        &format!("ipfs://{}", content_hash.hash.clone()),
         &description,
     );
     let metadata = serde_json::to_string(&metadata).map_err(Error::from)?;
     let content_hash = ipfs.upload(Bytes::from(metadata), name.clone()).await?;
     println!(
         "metadata url: {:?}",
-        format!(
-            "{}/ipfs/{}",
-            env::var("IPFS_GATEWAY").expect("should set IPFS_GATEWAY"),
-            content_hash.hash.clone()
-        )
+        format!("ipfs://{}", content_hash.hash.clone())
     );
 
     Ok(())
