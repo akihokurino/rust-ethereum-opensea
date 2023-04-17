@@ -19,11 +19,8 @@ fn query_contract(
     abi: Abi,
     network: Network,
 ) -> Contract<Provider<Http>> {
-    Contract::new(
-        contract_address,
-        abi,
-        Provider::<Http>::try_from(network.chain_url()).unwrap(),
-    )
+    let provider = Arc::new(Provider::<Http>::try_from(network.chain_url()).unwrap());
+    Contract::new(contract_address, abi, provider)
 }
 
 async fn transaction_contract(
@@ -250,7 +247,7 @@ pub async fn generate_keys() -> EthersResult<()> {
         ethers::core::k256::elliptic_curve::SecretKey::<ethers::core::k256::Secp256k1>::random(
             &mut rand::thread_rng(),
         );
-    let seckey_str = ethers::utils::hex::encode(seckey.to_be_bytes().as_slice());
+    let seckey_str = ethers::utils::hex::encode(seckey.to_bytes().as_slice());
     let pubkey = seckey.public_key();
     let pubkey_encoded = pubkey.to_encoded_point(false);
     let pubkey_str = ethers::utils::hex::encode(pubkey_encoded.as_bytes());
@@ -339,14 +336,6 @@ impl From<ContractError<SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::Sig
                 let msg = format!("ethers contract sign error: {:?}", e);
                 Self::Internal(msg)
             }
-            ContractError::MiddlewareError(e) => {
-                let msg = format!("ethers contract sign error: {:?}", e);
-                Self::Internal(msg)
-            }
-            ContractError::ProviderError(e) => {
-                let msg = format!("ethers contract sign error: {:?}", e);
-                Self::Internal(msg)
-            }
             ContractError::ConstructorError => {
                 let msg =
                     format!("ethers contract sign error: constructor is not defined in the ABI");
@@ -354,6 +343,11 @@ impl From<ContractError<SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::Sig
             }
             ContractError::ContractNotDeployed => {
                 let msg = format!("ethers contract sign error: Contract was not deployed");
+                Self::Internal(msg)
+            }
+            _ => {
+                println!("contract error: {:?}", e);
+                let msg = format!("ethers contract sign error");
                 Self::Internal(msg)
             }
         }
