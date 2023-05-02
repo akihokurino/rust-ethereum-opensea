@@ -32,10 +32,10 @@ describe("RustSbt721", function () {
 
     await contract.mint("A");
 
-    expect(
+    await expect(
       contract.transferFrom(owner.address, other.address, 1)
     ).to.be.revertedWith("Err: token is SOUL BOUND");
-    expect(
+    await expect(
       contract["safeTransferFrom(address,address,uint256)"](
         owner.address,
         other.address,

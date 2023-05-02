@@ -46,6 +46,6 @@ describe("RustTokenUpgradeable721", function () {
       await ethers.getContractFactory("RustTokenUpgradeable721_V2")
     );
 
-    expect(contractV2.mint("A")).to.be.revertedWith("not initialized");
+    await expect(contractV2.mint("A")).to.be.revertedWith("not initialized");
   });
 });

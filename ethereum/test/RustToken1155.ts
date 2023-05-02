@@ -18,7 +18,7 @@ describe("RustToken1155", function () {
 
     const [owner, other] = await ethers.getSigners();
 
-    expect(contract.connect(other).mint("A", 10)).to.be.revertedWith(
+    await expect(contract.connect(other).mint("A", 10)).to.be.revertedWith(
       "Ownable: caller is not the owner"
     );
   });
