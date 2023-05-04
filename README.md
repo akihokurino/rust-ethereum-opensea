@@ -1,6 +1,6 @@
 # Rust Ethereum CLI
 
-## Specs
+## Used, Dependency
 
 - rust v1.68.2
 - ethers-rs ( https://github.com/gakonst/ethers-rs )
