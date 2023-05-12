@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract RustToken721 is ERC721Enumerable, Ownable {
+contract Sbt721 is ERC721Enumerable, Ownable {
     mapping(uint256 => string) private _token2hash;
     uint256 private _localTokenId;
 
@@ -25,24 +25,19 @@ contract RustToken721 is ERC721Enumerable, Ownable {
         return string(abi.encodePacked("ipfs://", contentHash));
     }
 
-    function latestTokenId() public view virtual returns (uint256) {
-        return _localTokenId;
-    }
-
-    function totalOwned() public view virtual returns (uint256) {
-        uint256 owned = 0;
-        for (uint256 i = 1; i <= _localTokenId; i++) {
-            if (ownerOf(i) == owner()) {
-                owned += 1;
-            }
-        }
-        return owned;
-    }
-
     function isOwner(
         uint256 tokenId,
         address target
     ) public view virtual returns (bool) {
         return ownerOf(tokenId) == target;
+    }
+
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal override {
+        require(from == address(0), "Err: token is SOUL BOUND");
+        super._beforeTokenTransfer(from, to, tokenId);
     }
 }

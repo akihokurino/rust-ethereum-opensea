@@ -1,9 +1,9 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-describe("RustSbt721", function () {
+describe("Sbt721", function () {
   it("should mint and get token url", async () => {
-    const Contract = await ethers.getContractFactory("RustSbt721");
+    const Contract = await ethers.getContractFactory("Sbt721");
     const contract = await Contract.deploy("RustSbt", "RS");
     await contract.deployed();
 
@@ -12,7 +12,7 @@ describe("RustSbt721", function () {
   });
 
   it("should get is owner", async () => {
-    const Contract = await ethers.getContractFactory("RustSbt721");
+    const Contract = await ethers.getContractFactory("Sbt721");
     const contract = await Contract.deploy("RustSbt", "RS");
     await contract.deployed();
 
@@ -24,7 +24,7 @@ describe("RustSbt721", function () {
   });
 
   it("should cannot transfer", async () => {
-    const Contract = await ethers.getContractFactory("RustSbt721");
+    const Contract = await ethers.getContractFactory("Sbt721");
     const contract = await Contract.deploy("RustSbt", "RS");
     await contract.deployed();
 

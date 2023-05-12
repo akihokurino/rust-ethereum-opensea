@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract RustToken1155 is ERC1155, Ownable {
+contract Nft1155 is ERC1155, Ownable {
     mapping(uint256 => string) private _token2hash;
     uint256 private _localTokenId;
     uint256 private _totalSupply;

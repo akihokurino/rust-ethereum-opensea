@@ -2,8 +2,8 @@ import { ethers } from "hardhat";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 async function main(hre: HardhatRuntimeEnvironment) {
-  const Contract = await ethers.getContractFactory("RustToken721");
-  const contract = await Contract.deploy("RustToken", "RT");
+  const Contract = await ethers.getContractFactory("Nft1155");
+  const contract = await Contract.deploy("NftSample", "NS");
   await contract.deployed();
   console.log("deployed to:", contract.address);
 
@@ -11,7 +11,7 @@ async function main(hre: HardhatRuntimeEnvironment) {
   await ethers.provider.waitForTransaction(receipt.transactionHash, 5);
   await hre.run("verify:verify", {
     address: contract.address,
-    constructorArguments: ["RustToken", "RT"],
+    constructorArguments: ["NftSample", "NS"],
   });
 }
 

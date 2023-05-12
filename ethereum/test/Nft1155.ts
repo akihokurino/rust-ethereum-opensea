@@ -1,9 +1,9 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-describe("RustToken1155", function () {
+describe("Nft1155", function () {
   it("should mint and get token url", async () => {
-    const Contract = await ethers.getContractFactory("RustToken1155");
+    const Contract = await ethers.getContractFactory("Nft1155");
     const contract = await Contract.deploy("RustToken", "RT");
     await contract.deployed();
 
@@ -12,7 +12,7 @@ describe("RustToken1155", function () {
   });
 
   it("should error when mint by not owner", async () => {
-    const Contract = await ethers.getContractFactory("RustToken1155");
+    const Contract = await ethers.getContractFactory("Nft1155");
     const contract = await Contract.deploy("RustToken", "RT");
     await contract.deployed();
 
@@ -24,7 +24,7 @@ describe("RustToken1155", function () {
   });
 
   it("should get name and symbol", async () => {
-    const Contract = await ethers.getContractFactory("RustToken1155");
+    const Contract = await ethers.getContractFactory("Nft1155");
     const contract = await Contract.deploy("RustToken", "RT");
     await contract.deployed();
 
@@ -33,7 +33,7 @@ describe("RustToken1155", function () {
   });
 
   it("should get latest token id", async () => {
-    const Contract = await ethers.getContractFactory("RustToken1155");
+    const Contract = await ethers.getContractFactory("Nft1155");
     const contract = await Contract.deploy("RustToken", "RT");
     await contract.deployed();
 
@@ -46,7 +46,7 @@ describe("RustToken1155", function () {
   });
 
   it("should get total supply", async () => {
-    const Contract = await ethers.getContractFactory("RustToken1155");
+    const Contract = await ethers.getContractFactory("Nft1155");
     const contract = await Contract.deploy("RustToken", "RT");
     await contract.deployed();
 
@@ -59,7 +59,7 @@ describe("RustToken1155", function () {
   });
 
   it("should get total owned", async () => {
-    const Contract = await ethers.getContractFactory("RustToken1155");
+    const Contract = await ethers.getContractFactory("Nft1155");
     const contract = await Contract.deploy("RustToken", "RT");
     await contract.deployed();
 
@@ -87,7 +87,7 @@ describe("RustToken1155", function () {
   });
 
   it("should get is owner", async () => {
-    const Contract = await ethers.getContractFactory("RustToken1155");
+    const Contract = await ethers.getContractFactory("Nft1155");
     const contract = await Contract.deploy("RustToken", "RT");
     await contract.deployed();
 

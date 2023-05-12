@@ -1,10 +1,10 @@
 import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
 
-describe("RustTokenUpgradeable721", function () {
+describe("UpgradeableNft721", function () {
   it("should upgradable", async () => {
     const contractV1 = await upgrades.deployProxy(
-      await ethers.getContractFactory("RustTokenUpgradeable721_V1", {}),
+      await ethers.getContractFactory("UpgradeableNft721_V1", {}),
       ["RustToken", "RT", "hello"]
     );
 
@@ -16,7 +16,7 @@ describe("RustTokenUpgradeable721", function () {
 
     const contractV2 = await upgrades.upgradeProxy(
       contractV1.address,
-      await ethers.getContractFactory("RustTokenUpgradeable721_V2"),
+      await ethers.getContractFactory("UpgradeableNft721_V2"),
       {
         call: {
           fn: "initialize",
@@ -37,13 +37,13 @@ describe("RustTokenUpgradeable721", function () {
 
   it("should mint error when not initalize", async () => {
     const contractV1 = await upgrades.deployProxy(
-      await ethers.getContractFactory("RustTokenUpgradeable721_V1", {}),
+      await ethers.getContractFactory("UpgradeableNft721_V1", {}),
       ["RustToken", "RT", ""]
     );
 
     const contractV2 = await upgrades.upgradeProxy(
       contractV1.address,
-      await ethers.getContractFactory("RustTokenUpgradeable721_V2")
+      await ethers.getContractFactory("UpgradeableNft721_V2")
     );
 
     await expect(contractV2.mint("A")).to.be.revertedWith("not initialized");

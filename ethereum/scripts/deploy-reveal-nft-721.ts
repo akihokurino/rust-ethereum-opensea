@@ -12,10 +12,10 @@ async function main(hre: HardhatRuntimeEnvironment) {
   const chainlinkAddress = "0x326C977E6efc84E512bB9C30f76E30c160eD06FB";
   const timeAdapterJobId = "371ddf3b2f034ee2bfea97ebe6398165";
 
-  const Contract = await ethers.getContractFactory("RevealToken721");
+  const Contract = await ethers.getContractFactory("RevealNft721");
   const contract = await Contract.deploy(
-    "RevealToken",
-    "RT",
+    "RevealSample",
+    "RS",
     chainlinkAddress,
     oracle.address,
     timeAdapterJobId
@@ -28,8 +28,8 @@ async function main(hre: HardhatRuntimeEnvironment) {
   await hre.run("verify:verify", {
     address: contract.address,
     constructorArguments: [
-      "RevealToken",
-      "RT",
+      "RevealSample",
+      "RS",
       chainlinkAddress,
       oracle.address,
       timeAdapterJobId,

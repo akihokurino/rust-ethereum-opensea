@@ -8,7 +8,7 @@ import "@quant-finance/solidity-datetime/contracts/DateTime.sol";
 
 // https://forum.openzeppelin.com/t/how-to-make-a-contract-inheriting-chalinkclient-uups-upgradable/20670
 // UpgradableとChainlinkClientは現状共存できないっぽい
-contract RevealToken721 is ERC721Enumerable, Ownable, ChainlinkClient {
+contract RevealNft721 is ERC721Enumerable, Ownable, ChainlinkClient {
     using Chainlink for Chainlink.Request;
 
     mapping(uint256 => string) private _token2hash;

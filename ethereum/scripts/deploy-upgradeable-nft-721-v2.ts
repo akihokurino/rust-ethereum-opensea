@@ -1,17 +1,29 @@
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 async function main(hre: HardhatRuntimeEnvironment) {
-  const Contract = await ethers.getContractFactory("RustToken1155");
-  const contract = await Contract.deploy("RustToken", "RT");
-  await contract.deployed();
+  const address = process.env.RUST_TOKEN_UPGRADEABLE_721_V1_ADDRESS!;
+
+  // await upgrades.forceImport(
+  //   address,
+  //   await ethers.getContractFactory("UpgradeableNft721_V1")
+  // );
+  const contract = await upgrades.upgradeProxy(
+    address,
+    await ethers.getContractFactory("UpgradeableNft721_V2"),
+    {
+      call: {
+        fn: "initialize",
+        args: ["world"],
+      },
+    }
+  );
   console.log("deployed to:", contract.address);
 
   const receipt = await contract.deployTransaction.wait();
   await ethers.provider.waitForTransaction(receipt.transactionHash, 5);
   await hre.run("verify:verify", {
     address: contract.address,
-    constructorArguments: ["RustToken", "RT"],
   });
 }
 

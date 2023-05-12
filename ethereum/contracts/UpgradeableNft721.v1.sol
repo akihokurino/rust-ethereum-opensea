@@ -4,19 +4,25 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 
-contract RustTokenUpgradeable721_V2 is ERC721Upgradeable, OwnableUpgradeable {
+contract UpgradeableNft721_V1 is ERC721Upgradeable, OwnableUpgradeable {
     mapping(uint256 => string) private _token2hash;
     uint256 private _localTokenId;
     string private _messageForV1;
-    string private _messageForV2;
 
     modifier initialized() {
-        require(version() == 2, "not initialized");
+        require(version() == 1, "not initialized");
         _;
     }
 
-    function initialize(string memory _message) public reinitializer(2) {
-        _messageForV2 = _message;
+    function initialize(
+        string memory name,
+        string memory symbol,
+        string memory _message
+    ) public initializer {
+        __ERC721_init(name, symbol);
+        __Ownable_init();
+        _localTokenId = 0;
+        _messageForV1 = _message;
     }
 
     function version() public view virtual returns (uint256) {
@@ -39,6 +45,6 @@ contract RustTokenUpgradeable721_V2 is ERC721Upgradeable, OwnableUpgradeable {
     }
 
     function message() public view virtual returns (string memory) {
-        return string(abi.encodePacked(_messageForV1, _messageForV2));
+        return _messageForV1;
     }
 }

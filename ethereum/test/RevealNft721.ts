@@ -1,9 +1,9 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-describe("RevealToken721", function () {
+describe("RevealNft721", function () {
   it("should reveal", async () => {
-    const Contract = await ethers.getContractFactory("RevealToken721");
+    const Contract = await ethers.getContractFactory("RevealNft721");
     const contract = await Contract.deploy(
       "Test",
       "T",
