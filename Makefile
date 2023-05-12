@@ -31,6 +31,9 @@ build-ipfs:
 build-cli:
 	cargo build --bin cli
 
+build-event-watcher:
+	cargo build --bin event_watcher
+
 balance: build
 	./target/debug/cli \
 	--command balance \
@@ -104,6 +107,30 @@ update-time: build
     --command update-time \
     --network $(NETWORK)
 
+nft-market-sell: build
+	./target/debug/cli \
+	--command nft-market-sell \
+	--token-id $(TOKEN_ID)
+
+nft-market-cancel: build
+	./target/debug/cli \
+	--command nft-market-cancel \
+	--token-id $(TOKEN_ID)
+
+nft-market-buy: build
+	./target/debug/cli \
+	--command nft-market-buy \
+	--token-id $(TOKEN_ID)
+
+approve-for-sell: build
+	./target/debug/cli \
+	--command approve-for-sell \
+	--contract $(CONTRACT) \
+	--network $(NETWORK) \
+
+run-event-watcher:
+	cargo run --bin event_watcher
+
 extract-abi:
 	cat ethereum/artifacts/contracts/Nft721.sol/Nft721.json | jq '.abi' > impl_ethers_rs/src/nft_721/abi.json
 	cat ethereum/artifacts/contracts/Nft721.sol/Nft721.json | jq -r '.bytecode' > impl_ethers_rs/src/nft_721/bin
@@ -120,3 +147,5 @@ extract-abi:
 
 	cat ethereum/artifacts/contracts/Sbt721.sol/Sbt721.json | jq '.abi' > impl_ethers_rs/src/sbt_721/abi.json
 	cat ethereum/artifacts/contracts/Sbt721.sol/Sbt721.json | jq '.bytecode' > impl_ethers_rs/src/sbt_721/bin
+
+	cat ethereum/artifacts/contracts/NftMarket.sol/NftMarket.json | jq '.abi' > impl_ethers_rs/src/nft_market/abi.json

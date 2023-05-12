@@ -4,6 +4,7 @@ members = [
     "impl_ethers_rs",
     "impl_rust_web3",
     "ipfs",
-    "cli"
+    "cli",
+    "event_watcher"
 ]
 

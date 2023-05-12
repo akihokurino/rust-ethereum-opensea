@@ -1,0 +1,16 @@
+[package]
+name = "event_watcher"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "event_watcher"
+path = "src/main.rs"
+
+[dependencies]
+prelude = { path = "../prelude" }
+impl_ethers_rs = { path = "../impl_ethers_rs" }
+tokio = { version = "1", features = ["full"] }
+dotenv = "0.15.0"

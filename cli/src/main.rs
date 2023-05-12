@@ -3,6 +3,7 @@ extern crate core;
 use clap::{arg, Parser, ValueEnum};
 use dotenv::dotenv;
 use prelude::*;
+use std::env;
 use std::str::FromStr;
 
 #[derive(ValueEnum, Clone, Debug)]
@@ -18,6 +19,10 @@ enum Command {
     Verify,
     Deploy,
     UpdateTime,
+    NftMarketSell,
+    NftMarketCancel,
+    NftMarketBuy,
+    ApproveForSell,
 }
 
 #[derive(ValueEnum, Clone, Debug)]
@@ -32,6 +37,7 @@ pub enum Contract {
     Nft1155,
     Sbt721,
     RevealNft721,
+    NftMarket,
 }
 
 #[derive(Parser, Debug)]
@@ -62,14 +68,14 @@ struct Args {
     #[arg(long, default_value = "QmPDE4pXnFvNtqJ2889HgEQUEft8KCdyMaKKt5zzw3NuMS")]
     content_hash: String,
 
-    #[arg(long)]
+    #[arg(long, default_value = "ethers-rs")]
     #[clap(value_enum)]
     package: Package,
 
     #[arg(long, default_value = "Polygon")]
     network: String,
 
-    #[arg(long)]
+    #[arg(long, default_value = "nft721")]
     #[clap(value_enum)]
     contract: Contract,
 
@@ -160,6 +166,7 @@ async fn execute(args: Args) -> CliResult<()> {
                         .await
                         .map_err(Error::from)
                 }
+                _ => return Err(Error::Internal("invalid params".to_string())),
             },
             Package::RustWeb3 => match args.contract {
                 Contract::Nft721 => {
@@ -264,6 +271,18 @@ async fn execute(args: Args) -> CliResult<()> {
                     println!("------------------------------------------------------------");
                     Ok(())
                 }
+                Contract::NftMarket => {
+                    let market = impl_ethers_rs::nft_market::client::Client::new(Network::Polygon);
+                    let keys = market.get_sell_order_keys().await.map_err(Error::from)?;
+                    for key in keys {
+                        println!("key: {:?}", key);
+                    }
+                    let items = market.get_all_sell_order().await.map_err(Error::from)?;
+                    for item in items {
+                        println!("{:?}", item);
+                    }
+                    Ok(())
+                }
             },
             Package::RustWeb3 => match args.contract {
                 Contract::Nft721 => {
@@ -316,6 +335,7 @@ async fn execute(args: Args) -> CliResult<()> {
                     let cli = impl_ethers_rs::reveal_nft_721::client::Client::new(network);
                     cli.deploy().await.map_err(Error::from)
                 }
+                _ => return Err(Error::Internal("invalid params".to_string())),
             },
             Package::RustWeb3 => match args.contract {
                 Contract::Nft721 => {
@@ -337,6 +357,56 @@ async fn execute(args: Args) -> CliResult<()> {
 
             Ok(())
         }
+        Command::NftMarketSell => {
+            let market = impl_ethers_rs::nft_market::client::Client::new(Network::Polygon);
+            market
+                .sell_order(
+                    env::var("SELLER_SECRET").expect("SELLER_SECRET must be set"),
+                    Network::Polygon.nft_721_address(),
+                    args.token_id,
+                    args.ether,
+                )
+                .await
+                .map_err(Error::from)
+        }
+        Command::NftMarketCancel => {
+            let market = impl_ethers_rs::nft_market::client::Client::new(Network::Polygon);
+            market
+                .cancel_order(
+                    env::var("SELLER_SECRET").expect("SELLER_SECRET must be set"),
+                    Network::Polygon.nft_721_address(),
+                    args.token_id,
+                )
+                .await
+                .map_err(Error::from)
+        }
+        Command::NftMarketBuy => {
+            let market = impl_ethers_rs::nft_market::client::Client::new(Network::Polygon);
+            market
+                .buy_order(
+                    env::var("BUYER_SECRET").expect("BUYER_SECRET must be set"),
+                    Network::Polygon.nft_721_address(),
+                    args.token_id,
+                    args.ether,
+                )
+                .await
+                .map_err(Error::from)
+        }
+        Command::ApproveForSell => match args.contract {
+            Contract::Nft721 => {
+                let cli = impl_ethers_rs::nft_721::client::Client::new(network);
+                cli.set_approval_for_all().await.map_err(Error::from)
+            }
+            Contract::Nft1155 => {
+                let cli = impl_ethers_rs::nft_1155::client::Client::new(network);
+                cli.set_approval_for_all().await.map_err(Error::from)
+            }
+            Contract::RevealNft721 => {
+                let cli = impl_ethers_rs::reveal_nft_721::client::Client::new(network);
+                cli.set_approval_for_all().await.map_err(Error::from)
+            }
+            _ => return Err(Error::Internal("invalid params".to_string())),
+        },
     }
 }
 

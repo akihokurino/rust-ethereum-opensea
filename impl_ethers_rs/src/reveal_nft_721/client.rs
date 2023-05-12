@@ -120,6 +120,34 @@ impl Client {
         Ok(())
     }
 
+    pub async fn set_approval_for_all(&self) -> EthersResult<()> {
+        let call = transaction_contract(
+            self.wallet_secret.to_owned(),
+            self.address.to_owned(),
+            self.abi.to_owned(),
+            self.network.to_owned(),
+        )
+        .await
+        .method::<_, H256>(
+            "setApprovalForAll",
+            (
+                self.network
+                    .nft_market_address()
+                    .parse::<Address>()
+                    .unwrap(),
+                true,
+            ),
+        )?
+        .gas(GAS_LIMIT)
+        .gas_price(GAS_PRICE);
+        let tx = call.send().await?;
+        let receipt = tx.await?;
+
+        println!("{:?}", receipt);
+
+        Ok(())
+    }
+
     pub async fn deploy(&self) -> EthersResult<()> {
         let contract = deploy_contract(
             self.wallet_secret.to_owned(),

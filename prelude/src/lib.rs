@@ -81,6 +81,15 @@ impl Network {
             Network::Avalanche => unimplemented!(),
         }
     }
+
+    pub fn nft_market_address(&self) -> String {
+        match self {
+            Network::Ethereum => unimplemented!(),
+            Network::Polygon => env::var("POLYGON_NFT_MARKET_ADDRESS")
+                .expect("POLYGON_NFT_MARKET_ADDRESS must be set"),
+            Network::Avalanche => unimplemented!(),
+        }
+    }
 }
 
 #[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]

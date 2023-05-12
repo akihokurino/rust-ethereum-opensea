@@ -9,10 +9,22 @@ use std::env;
 use std::str::FromStr;
 use std::sync::Arc;
 
+pub mod event;
 pub mod nft_1155;
 pub mod nft_721;
+pub mod nft_market;
 pub mod reveal_nft_721;
 pub mod sbt_721;
+
+fn wei_to_ether(wei_amount: U256) -> f64 {
+    let ether_float = wei_amount.to_string().parse::<f64>().unwrap() * (10.0f64).powi(-18);
+    ether_float
+}
+
+fn ether_to_wei(ether_amount: f64) -> U256 {
+    let wei_float = ether_amount * (10.0f64).powi(18);
+    U256::from(wei_float.round() as u64)
+}
 
 fn query_contract(
     contract_address: Address,
@@ -241,7 +253,6 @@ impl From<ContractError<SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::Sig
                 Self::Internal(msg)
             }
             _ => {
-                println!("contract error: {:?}", e);
                 let msg = format!("ethers contract sign error");
                 Self::Internal(msg)
             }
@@ -252,6 +263,20 @@ impl From<ContractError<SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::Sig
 impl From<ProviderError> for Error {
     fn from(e: ProviderError) -> Self {
         let msg = format!("ethers transaction error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
+impl From<abi::Error> for Error {
+    fn from(e: abi::Error) -> Self {
+        let msg = format!("ethers abi error: {:?}", e);
+        Self::Internal(msg)
+    }
+}
+
+impl From<ContractError<Provider<Ws>>> for Error {
+    fn from(e: ContractError<Provider<Ws>>) -> Self {
+        let msg = format!("ethers ws error: {:?}", e);
         Self::Internal(msg)
     }
 }
