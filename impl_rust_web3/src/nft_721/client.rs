@@ -23,7 +23,7 @@ impl Client {
         Client {
             wallet_address: parse_address(wallet_address).unwrap(),
             wallet_secret,
-            contract_address: parse_address(network.rust_token_721_address().to_owned()).unwrap(),
+            contract_address: parse_address(network.nft_721_address().to_owned()).unwrap(),
             network,
         }
     }

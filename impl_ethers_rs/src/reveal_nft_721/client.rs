@@ -21,10 +21,7 @@ impl Client {
         Client {
             wallet_address: wallet_address.parse::<Address>().unwrap(),
             wallet_secret,
-            address: network
-                .reveal_token_721_address()
-                .parse::<Address>()
-                .unwrap(),
+            address: network.reveal_nft_address().parse::<Address>().unwrap(),
             abi: serde_json::from_str(include_str!("abi.json").trim()).unwrap(),
             network,
         }

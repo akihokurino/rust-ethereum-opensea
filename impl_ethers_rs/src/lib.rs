@@ -9,10 +9,10 @@ use std::env;
 use std::str::FromStr;
 use std::sync::Arc;
 
-pub mod reveal_token_721;
-pub mod rust_sbt_721;
-pub mod rust_token_1155;
-pub mod rust_token_721;
+pub mod nft_1155;
+pub mod nft_721;
+pub mod reveal_nft_721;
+pub mod sbt_721;
 
 fn query_contract(
     contract_address: Address,
@@ -143,20 +143,20 @@ pub async fn mint(
     amount: u128,
 ) -> EthersResult<()> {
     match target {
-        TargetContract::RustToken721 => {
-            let cli = rust_token_721::client::Client::new(network);
+        TargetContract::Nft721 => {
+            let cli = nft_721::client::Client::new(network);
             cli.mint(hash.clone()).await
         }
-        TargetContract::RustToken1155 => {
-            let cli = rust_token_1155::client::Client::new(network);
+        TargetContract::Nft1155 => {
+            let cli = nft_1155::client::Client::new(network);
             cli.mint(hash.clone(), amount).await
         }
-        TargetContract::RustSbt721 => {
-            let cli = rust_sbt_721::client::Client::new(network);
+        TargetContract::Sbt721 => {
+            let cli = sbt_721::client::Client::new(network);
             cli.mint(hash.clone()).await
         }
-        TargetContract::RevealToken721 => {
-            let cli = reveal_token_721::client::Client::new(network);
+        TargetContract::RevealNft721 => {
+            let cli = reveal_nft_721::client::Client::new(network);
             cli.mint(hash.clone()).await
         }
     }?;
@@ -170,19 +170,19 @@ pub async fn transfer(
     token_id: u64,
 ) -> EthersResult<()> {
     match target {
-        TargetContract::RustToken721 => {
-            let cli = rust_token_721::client::Client::new(network);
+        TargetContract::Nft721 => {
+            let cli = nft_721::client::Client::new(network);
             cli.transfer(to.parse::<Address>().unwrap(), token_id).await
         }
-        TargetContract::RustToken1155 => {
-            let cli = rust_token_1155::client::Client::new(network);
+        TargetContract::Nft1155 => {
+            let cli = nft_1155::client::Client::new(network);
             cli.transfer(to.parse::<Address>().unwrap(), token_id).await
         }
-        TargetContract::RustSbt721 => {
+        TargetContract::Sbt721 => {
             unimplemented!()
         }
-        TargetContract::RevealToken721 => {
-            let cli = reveal_token_721::client::Client::new(network);
+        TargetContract::RevealNft721 => {
+            let cli = reveal_nft_721::client::Client::new(network);
             cli.transfer(to.parse::<Address>().unwrap(), token_id).await
         }
     }?;
@@ -191,20 +191,20 @@ pub async fn transfer(
 
 pub async fn deploy(target: TargetContract, network: Network) -> EthersResult<()> {
     match target {
-        TargetContract::RustToken721 => {
-            let cli = rust_token_721::client::Client::new(network);
+        TargetContract::Nft721 => {
+            let cli = nft_721::client::Client::new(network);
             cli.deploy().await
         }
-        TargetContract::RustToken1155 => {
-            let cli = rust_token_1155::client::Client::new(network);
+        TargetContract::Nft1155 => {
+            let cli = nft_1155::client::Client::new(network);
             cli.deploy().await
         }
-        TargetContract::RustSbt721 => {
-            let cli = rust_sbt_721::client::Client::new(network);
+        TargetContract::Sbt721 => {
+            let cli = sbt_721::client::Client::new(network);
             cli.deploy().await
         }
-        TargetContract::RevealToken721 => {
-            let cli = reveal_token_721::client::Client::new(network);
+        TargetContract::RevealNft721 => {
+            let cli = reveal_nft_721::client::Client::new(network);
             cli.deploy().await
         }
     }?;
@@ -213,41 +213,38 @@ pub async fn deploy(target: TargetContract, network: Network) -> EthersResult<()
 
 pub async fn show_token_info(target: TargetContract, network: Network) -> EthersResult<()> {
     match target {
-        TargetContract::RustToken721 => {
-            let cli = rust_token_721::client::Client::new(network);
+        TargetContract::Nft721 => {
+            let cli = nft_721::client::Client::new(network);
             println!("------------------------------------------------------------");
-            println!("RustToken721 info: {}", network.rust_token_721_address());
+            println!("RustToken721 info: {}", network.nft_721_address());
             println!("name = {}", cli.name().await?);
             println!("latestTokenId = {}", cli.latest_token_id().await?);
             println!("totalSupply = {:?}", cli.total_supply().await?);
             println!("totalOwned = {:?}", cli.total_owned().await?);
             println!("------------------------------------------------------------");
         }
-        TargetContract::RustToken1155 => {
-            let cli = rust_token_1155::client::Client::new(network);
+        TargetContract::Nft1155 => {
+            let cli = nft_1155::client::Client::new(network);
             println!("------------------------------------------------------------");
-            println!("RustToken1155 info: {}", network.rust_token_1155_address());
+            println!("RustToken1155 info: {}", network.nft_1155_address());
             println!("name = {}", cli.name().await?);
             println!("latestTokenId = {}", cli.latest_token_id().await?);
             println!("totalSupply = {:?}", cli.total_supply().await?);
             println!("totalOwned = {:?}", cli.total_owned().await?);
             println!("------------------------------------------------------------");
         }
-        TargetContract::RustSbt721 => {
-            let cli = rust_sbt_721::client::Client::new(network);
+        TargetContract::Sbt721 => {
+            let cli = sbt_721::client::Client::new(network);
             println!("------------------------------------------------------------");
-            println!("RustSbt721 info: {}", network.rust_sbt_721_address());
+            println!("RustSbt721 info: {}", network.sbt_721_address());
             println!("name = {}", cli.name().await?);
             println!("totalSupply = {:?}", cli.total_supply().await?);
             println!("------------------------------------------------------------");
         }
-        TargetContract::RevealToken721 => {
-            let cli = reveal_token_721::client::Client::new(network);
+        TargetContract::RevealNft721 => {
+            let cli = reveal_nft_721::client::Client::new(network);
             println!("------------------------------------------------------------");
-            println!(
-                "RevealToken721 info: {}",
-                network.reveal_token_721_address()
-            );
+            println!("RevealToken721 info: {}", network.reveal_nft_address());
             println!("name = {}", cli.name().await?);
             println!("totalSupply = {:?}", cli.total_supply().await?);
             println!("getCurrentHour = {}", cli.get_current_hour().await?);
@@ -260,14 +257,13 @@ pub async fn show_token_info(target: TargetContract, network: Network) -> Ethers
 
 pub async fn update_time(network: Network) -> EthersResult<()> {
     if network == Network::Ethereum {
-        let cli = reveal_token_721::client::Client::new(network);
+        let cli = reveal_nft_721::client::Client::new(network);
         cli.update_time().await?;
     }
 
     Ok(())
 }
 
-#[allow(unused)]
 pub async fn generate_keys() -> EthersResult<()> {
     let seckey =
         ethers::core::k256::elliptic_curve::SecretKey::<ethers::core::k256::Secp256k1>::random(

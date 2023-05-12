@@ -8,8 +8,8 @@ use web3::transports::Http;
 use web3::types::{Address, TransactionParameters, U256};
 use web3::Web3;
 
-pub mod rust_token_1155;
-pub mod rust_token_721;
+pub mod nft_1155;
+pub mod nft_721;
 
 fn contract(contract_address: Address, abi: &[u8], network: Network) -> Contract<Http> {
     let transport = Http::new(&network.chain_url()).ok().unwrap();
@@ -114,12 +114,12 @@ pub async fn mint(
     amount: u128,
 ) -> Web3Result<()> {
     match target {
-        TargetContract::RustToken721 => {
-            let cli = rust_token_721::client::Client::new(network);
+        TargetContract::Nft721 => {
+            let cli = nft_721::client::Client::new(network);
             cli.mint(hash.clone()).await
         }
-        TargetContract::RustToken1155 => {
-            let cli = rust_token_1155::client::Client::new(network);
+        TargetContract::Nft1155 => {
+            let cli = nft_1155::client::Client::new(network);
             cli.mint(hash.clone(), amount).await
         }
         _ => return Err(Error::Internal("invalid params".to_string())),
@@ -134,12 +134,12 @@ pub async fn transfer(
     token_id: u64,
 ) -> Web3Result<()> {
     match target {
-        TargetContract::RustToken721 => {
-            let cli = rust_token_721::client::Client::new(network);
+        TargetContract::Nft721 => {
+            let cli = nft_721::client::Client::new(network);
             cli.transfer(parse_address(to).unwrap(), token_id).await
         }
-        TargetContract::RustToken1155 => {
-            let cli = rust_token_1155::client::Client::new(network);
+        TargetContract::Nft1155 => {
+            let cli = nft_1155::client::Client::new(network);
             cli.transfer(parse_address(to).unwrap(), token_id).await
         }
         _ => return Err(Error::Internal("invalid params".to_string())),
@@ -149,12 +149,12 @@ pub async fn transfer(
 
 pub async fn deploy(target: TargetContract, network: Network) -> Web3Result<()> {
     match target {
-        TargetContract::RustToken721 => {
-            let cli = rust_token_721::client::Client::new(network);
+        TargetContract::Nft721 => {
+            let cli = nft_721::client::Client::new(network);
             cli.deploy().await
         }
-        TargetContract::RustToken1155 => {
-            let cli = rust_token_1155::client::Client::new(network);
+        TargetContract::Nft1155 => {
+            let cli = nft_1155::client::Client::new(network);
             cli.deploy().await
         }
         _ => return Err(Error::Internal("invalid params".to_string())),
@@ -164,20 +164,20 @@ pub async fn deploy(target: TargetContract, network: Network) -> Web3Result<()> 
 
 pub async fn show_token_info(target: TargetContract, network: Network) -> Web3Result<()> {
     match target {
-        TargetContract::RustToken721 => {
-            let cli = rust_token_721::client::Client::new(network);
+        TargetContract::Nft721 => {
+            let cli = nft_721::client::Client::new(network);
             println!("------------------------------------------------------------");
-            println!("RustToken721 info: {}", network.rust_token_721_address());
+            println!("RustToken721 info: {}", network.nft_721_address());
             println!("name = {}", cli.name().await?);
             println!("latestTokenId = {}", cli.latest_token_id().await?);
             println!("totalSupply = {:?}", cli.total_supply().await?);
             println!("totalOwned = {:?}", cli.total_owned().await?);
             println!("------------------------------------------------------------");
         }
-        TargetContract::RustToken1155 => {
-            let cli = rust_token_1155::client::Client::new(network);
+        TargetContract::Nft1155 => {
+            let cli = nft_1155::client::Client::new(network);
             println!("------------------------------------------------------------");
-            println!("RustToken1155 info: {}", network.rust_token_1155_address());
+            println!("RustToken1155 info: {}", network.nft_1155_address());
             println!("name = {}", cli.name().await?);
             println!("latestTokenId = {}", cli.latest_token_id().await?);
             println!("totalSupply = {:?}", cli.total_supply().await?);

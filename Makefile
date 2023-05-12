@@ -13,7 +13,7 @@ TOKEN_ID := "1"
 MESSAGE := "world"
 SIGNATURE := "2a30afb5d5b476a505422d931c5b98a10d6ac6b6fb3a56a27c658a9fa36911f10b079fe392893e684881813e7d07a3fd14048ba902c20eb56eb9f0e7f8c2a1131b"
 PACKAGE := "EthersRs"
-CONTRACT := "RustToken721"
+CONTRACT := "Nft721"
 CONTENT_HASH := "QmPDE4pXnFvNtqJ2889HgEQUEft8KCdyMaKKt5zzw3NuMS"
 
 build:
@@ -102,18 +102,18 @@ update-time: build
     --network $(NETWORK)
 
 extract-abi:
-	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq '.abi' > impl_ethers_rs/src/rust_token_721/abi.json
-	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq -r '.bytecode' > impl_ethers_rs/src/rust_token_721/bin
-	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq '.abi' > impl_rust_web3/src/rust_token_721/abi.json
-	cat ethereum/artifacts/contracts/RustToken721.sol/RustToken721.json | jq -r '.bytecode' > impl_rust_web3/src/rust_token_721/bin
+	cat ethereum/artifacts/contracts/Nft721.sol/Nft721.json | jq '.abi' > impl_ethers_rs/src/nft_721/abi.json
+	cat ethereum/artifacts/contracts/Nft721.sol/Nft721.json | jq -r '.bytecode' > impl_ethers_rs/src/nft_721/bin
+	cat ethereum/artifacts/contracts/Nft721.sol/Nft721.json | jq '.abi' > impl_rust_web3/src/nft_721/abi.json
+	cat ethereum/artifacts/contracts/Nft721.sol/Nft721.json | jq -r '.bytecode' > impl_rust_web3/src/nft_721/bin
 
-	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq '.abi' > impl_ethers_rs/src/rust_token_1155/abi.json
-	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq -r '.bytecode' > impl_ethers_rs/src/rust_token_1155/bin
-	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq '.abi' > impl_rust_web3/src/rust_token_1155/abi.json
-	cat ethereum/artifacts/contracts/RustToken1155.sol/RustToken1155.json | jq -r '.bytecode' > impl_rust_web3/src/rust_token_1155/bin
+	cat ethereum/artifacts/contracts/Nft1155.sol/Nft1155.json | jq '.abi' > impl_ethers_rs/src/nft_1155/abi.json
+	cat ethereum/artifacts/contracts/Nft1155.sol/Nft1155.json | jq -r '.bytecode' > impl_ethers_rs/src/nft_1155/bin
+	cat ethereum/artifacts/contracts/Nft1155.sol/Nft1155.json | jq '.abi' > impl_rust_web3/src/nft_1155/abi.json
+	cat ethereum/artifacts/contracts/Nft1155.sol/Nft1155.json | jq -r '.bytecode' > impl_rust_web3/src/nft_1155/bin
 
-	cat ethereum/artifacts/contracts/RevealToken721.sol/RevealToken721.json | jq '.abi' > impl_ethers_rs/src/reveal_token_721/abi.json
-	cat ethereum/artifacts/contracts/RevealToken721.sol/RevealToken721.json | jq '.bytecode' > impl_ethers_rs/src/reveal_token_721/bin
+	cat ethereum/artifacts/contracts/RevealNft721.sol/RevealNft721.json | jq '.abi' > impl_ethers_rs/src/reveal_nft_721/abi.json
+	cat ethereum/artifacts/contracts/RevealNft721.sol/RevealNft721.json | jq '.bytecode' > impl_ethers_rs/src/reveal_nft_721/bin
 
-	cat ethereum/artifacts/contracts/RustSbt721.sol/RustSbt721.json | jq '.abi' > impl_ethers_rs/src/rust_sbt_721/abi.json
-	cat ethereum/artifacts/contracts/RustSbt721.sol/RustSbt721.json | jq '.bytecode' > impl_ethers_rs/src/rust_sbt_721/bin
+	cat ethereum/artifacts/contracts/Sbt721.sol/Sbt721.json | jq '.abi' > impl_ethers_rs/src/sbt_721/abi.json
+	cat ethereum/artifacts/contracts/Sbt721.sol/Sbt721.json | jq '.bytecode' > impl_ethers_rs/src/sbt_721/bin

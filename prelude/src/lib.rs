@@ -7,10 +7,10 @@ pub const GAS_PRICE: i64 = 25000000000; // 40000000000
 
 #[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
 pub enum TargetContract {
-    RustToken721,
-    RustToken1155,
-    RustSbt721,
-    RevealToken721,
+    Nft721,
+    Nft1155,
+    Sbt721,
+    RevealNft721,
 }
 
 #[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
@@ -46,41 +46,45 @@ impl Network {
         }
     }
 
-    pub fn rust_token_721_address(&self) -> String {
+    pub fn nft_721_address(&self) -> String {
         match self {
-            Network::Ethereum => env::var("ETHEREUM_RUST_TOKEN_721_ADDRESS")
-                .expect("ETHEREUM_RUST_TOKEN_721_ADDRESS must be set"),
-            Network::Polygon => env::var("POLYGON_RUST_TOKEN_721_ADDRESS")
-                .expect("POLYGON_RUST_TOKEN_721_ADDRESS must be set"),
-            Network::Avalanche => env::var("AVALANCHE_RUST_TOKEN_721_ADDRESS")
-                .expect("AVALANCHE_RUST_TOKEN_721_ADDRESS must be set"),
+            Network::Ethereum => {
+                env::var("ETHEREUM_NFT_721_ADDRESS").expect("ETHEREUM_NFT_721_ADDRESS must be set")
+            }
+            Network::Polygon => {
+                env::var("POLYGON_NFT_721_ADDRESS").expect("POLYGON_NFT_721_ADDRESS must be set")
+            }
+            Network::Avalanche => env::var("AVALANCHE_NFT_721_ADDRESS")
+                .expect("AVALANCHE_NFT_721_ADDRESS must be set"),
         }
     }
 
-    pub fn rust_token_1155_address(&self) -> String {
+    pub fn nft_1155_address(&self) -> String {
         match self {
-            Network::Ethereum => env::var("ETHEREUM_RUST_TOKEN_1155_ADDRESS")
-                .expect("ETHEREUM_RUST_TOKEN_1155_ADDRESS must be set"),
-            Network::Polygon => env::var("POLYGON_RUST_TOKEN_1155_ADDRESS")
-                .expect("POLYGON_RUST_TOKEN_1155_ADDRESS must be set"),
-            Network::Avalanche => env::var("AVALANCHE_RUST_TOKEN_1155_ADDRESS")
-                .expect("AVALANCHE_RUST_TOKEN_1155_ADDRESS must be set"),
+            Network::Ethereum => env::var("ETHEREUM_NFT_1155_ADDRESS")
+                .expect("ETHEREUM_NFT_1155_ADDRESS must be set"),
+            Network::Polygon => {
+                env::var("POLYGON_NFT_1155_ADDRESS").expect("POLYGON_NFT_1155_ADDRESS must be set")
+            }
+            Network::Avalanche => env::var("AVALANCHE_NFT_1155_ADDRESS")
+                .expect("AVALANCHE_NFT_1155_ADDRESS must be set"),
         }
     }
 
-    pub fn reveal_token_721_address(&self) -> String {
+    pub fn reveal_nft_address(&self) -> String {
         match self {
-            Network::Ethereum => env::var("ETHEREUM_REVEAL_TOKEN_721_ADDRESS")
-                .expect("ETHEREUM_REVEAL_TOKEN_721_ADDRESS must be set"),
+            Network::Ethereum => env::var("ETHEREUM_REVEAL_NFT_721_ADDRESS")
+                .expect("ETHEREUM_REVEAL_NFT_721_ADDRESS must be set"),
             Network::Polygon => unimplemented!(),
             Network::Avalanche => unimplemented!(),
         }
     }
 
-    pub fn rust_sbt_721_address(&self) -> String {
+    pub fn sbt_721_address(&self) -> String {
         match self {
-            Network::Ethereum => env::var("ETHEREUM_RUST_SBT_721_ADDRESS")
-                .expect("ETHEREUM_RUST_SBT_721_ADDRESS must be set"),
+            Network::Ethereum => {
+                env::var("ETHEREUM_SBT_721_ADDRESS").expect("ETHEREUM_SBT_721_ADDRESS must be set")
+            }
             Network::Polygon => unimplemented!(),
             Network::Avalanche => unimplemented!(),
         }

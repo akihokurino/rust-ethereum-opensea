@@ -114,12 +114,7 @@ pub async fn main() {
         .arg(
             Arg::new(ARGS_CONTRACT)
                 .long(ARGS_CONTRACT)
-                .possible_values(&[
-                    "RustToken721",
-                    "RustToken1155",
-                    "RustSbt721",
-                    "RevealToken721",
-                ])
+                .possible_values(&["Nft721", "Nft1155", "Sbt721", "RevealNft721"])
                 .required(false)
                 .takes_value(true),
         )
@@ -190,7 +185,7 @@ pub async fn main() {
     let network = Network::from_str(&network).ok().unwrap();
     let contract: String = matches
         .value_of(ARGS_CONTRACT)
-        .unwrap_or("RustToken721")
+        .unwrap_or("Nft721")
         .to_string();
     let contract = TargetContract::from_str(&contract).ok().unwrap();
     let ether: f64 = matches
