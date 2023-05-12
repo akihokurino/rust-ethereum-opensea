@@ -1,0 +1,24 @@
+[package]
+name = "rust-ethereum"
+version = "0.1.0"
+authors = ["akiho <aki030402@mail.com>"]
+description = "Ethereum CLI"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "cli"
+path = "src/main.rs"
+
+[dependencies]
+prelude = { path = "../prelude" }
+impl_ethers_rs = { path = "../impl_ethers_rs" }
+impl_rust_web3 = { path = "../impl_rust_web3" }
+ipfs = { path = "../ipfs" }
+tokio = { version = "1", features = ["full"] }
+dotenv = "0.15.0"
+thiserror = "1.0.24"
+strum = "0.24.1"
+strum_macros = "0.24.3"
+clap = { version = "3.2.23", features = ["derive"] }

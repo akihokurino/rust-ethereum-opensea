@@ -28,14 +28,17 @@ build-impl-rust-web3:
 build-ipfs:
 	cargo build --lib --package ipfs
 
+build-cli:
+	cargo build --bin cli
+
 balance: build
-	./target/debug/rust-ethereum \
+	./target/debug/cli \
 	--command balance \
 	--network $(NETWORK) \
 	--package $(PACKAGE)
 
 send-eth: build
-	./target/debug/rust-ethereum \
+	./target/debug/cli \
 	--command send-eth \
 	--ether $(ETHER) \
 	--to-address $(TO_ADDRESS) \
@@ -43,21 +46,21 @@ send-eth: build
 	--package $(PACKAGE)
 
 token-info: build
-	./target/debug/rust-ethereum \
+	./target/debug/cli \
 	--command token-info \
 	--network $(NETWORK) \
 	--package $(PACKAGE) \
 	--contract $(CONTRACT)
 
 create-metadata: build
-	./target/debug/rust-ethereum \
+	./target/debug/cli \
     --command create-metadata \
   	--name $(NAME) \
     --description $(DESCRIPTION) \
     --image-filename $(IMAGE_FILENAME)
 
 mint: build
-	./target/debug/rust-ethereum \
+	./target/debug/cli \
 	--command mint \
 	--contract $(CONTRACT) \
 	--network $(NETWORK) \
@@ -66,7 +69,7 @@ mint: build
 	--package $(PACKAGE)
 
 transfer: build
-	./target/debug/rust-ethereum \
+	./target/debug/cli \
 	--command transfer \
 	--contract $(CONTRACT) \
 	--network $(NETWORK) \
@@ -75,29 +78,29 @@ transfer: build
 	--package $(PACKAGE)
 
 deploy-contract: build
-	./target/debug/rust-ethereum \
+	./target/debug/cli \
 	--command deploy-contract \
 	--contract $(CONTRACT) \
 	--network $(NETWORK) \
 	--package $(PACKAGE)
 
 key-gen: build
-	./target/debug/rust-ethereum \
+	./target/debug/cli \
 	--command key-gen
 
 sign: build
-	./target/debug/rust-ethereum \
+	./target/debug/cli \
 	--command sign \
 	--message $(MESSAGE)
 
 verify: build
-	./target/debug/rust-ethereum \
+	./target/debug/cli \
 	--command verify \
 	--message $(MESSAGE) \
 	--signature $(SIGNATURE)
 
 update-time: build
-	./target/debug/rust-ethereum \
+	./target/debug/cli \
     --command update-time \
     --network $(NETWORK)
 
