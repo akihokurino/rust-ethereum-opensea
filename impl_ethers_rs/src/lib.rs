@@ -136,146 +136,19 @@ pub async fn send_eth(network: Network, eth: f64, to: String) -> EthersResult<()
     Ok(())
 }
 
-pub async fn mint(
-    target: TargetContract,
-    network: Network,
-    hash: String,
-    amount: u128,
-) -> EthersResult<()> {
-    match target {
-        TargetContract::Nft721 => {
-            let cli = nft_721::client::Client::new(network);
-            cli.mint(hash.clone()).await
-        }
-        TargetContract::Nft1155 => {
-            let cli = nft_1155::client::Client::new(network);
-            cli.mint(hash.clone(), amount).await
-        }
-        TargetContract::Sbt721 => {
-            let cli = sbt_721::client::Client::new(network);
-            cli.mint(hash.clone()).await
-        }
-        TargetContract::RevealNft721 => {
-            let cli = reveal_nft_721::client::Client::new(network);
-            cli.mint(hash.clone()).await
-        }
-    }?;
-    Ok(())
-}
-
-pub async fn transfer(
-    target: TargetContract,
-    network: Network,
-    to: String,
-    token_id: u64,
-) -> EthersResult<()> {
-    match target {
-        TargetContract::Nft721 => {
-            let cli = nft_721::client::Client::new(network);
-            cli.transfer(to.parse::<Address>().unwrap(), token_id).await
-        }
-        TargetContract::Nft1155 => {
-            let cli = nft_1155::client::Client::new(network);
-            cli.transfer(to.parse::<Address>().unwrap(), token_id).await
-        }
-        TargetContract::Sbt721 => {
-            unimplemented!()
-        }
-        TargetContract::RevealNft721 => {
-            let cli = reveal_nft_721::client::Client::new(network);
-            cli.transfer(to.parse::<Address>().unwrap(), token_id).await
-        }
-    }?;
-    Ok(())
-}
-
-pub async fn deploy(target: TargetContract, network: Network) -> EthersResult<()> {
-    match target {
-        TargetContract::Nft721 => {
-            let cli = nft_721::client::Client::new(network);
-            cli.deploy().await
-        }
-        TargetContract::Nft1155 => {
-            let cli = nft_1155::client::Client::new(network);
-            cli.deploy().await
-        }
-        TargetContract::Sbt721 => {
-            let cli = sbt_721::client::Client::new(network);
-            cli.deploy().await
-        }
-        TargetContract::RevealNft721 => {
-            let cli = reveal_nft_721::client::Client::new(network);
-            cli.deploy().await
-        }
-    }?;
-    Ok(())
-}
-
-pub async fn show_token_info(target: TargetContract, network: Network) -> EthersResult<()> {
-    match target {
-        TargetContract::Nft721 => {
-            let cli = nft_721::client::Client::new(network);
-            println!("------------------------------------------------------------");
-            println!("RustToken721 info: {}", network.nft_721_address());
-            println!("name = {}", cli.name().await?);
-            println!("latestTokenId = {}", cli.latest_token_id().await?);
-            println!("totalSupply = {:?}", cli.total_supply().await?);
-            println!("totalOwned = {:?}", cli.total_owned().await?);
-            println!("------------------------------------------------------------");
-        }
-        TargetContract::Nft1155 => {
-            let cli = nft_1155::client::Client::new(network);
-            println!("------------------------------------------------------------");
-            println!("RustToken1155 info: {}", network.nft_1155_address());
-            println!("name = {}", cli.name().await?);
-            println!("latestTokenId = {}", cli.latest_token_id().await?);
-            println!("totalSupply = {:?}", cli.total_supply().await?);
-            println!("totalOwned = {:?}", cli.total_owned().await?);
-            println!("------------------------------------------------------------");
-        }
-        TargetContract::Sbt721 => {
-            let cli = sbt_721::client::Client::new(network);
-            println!("------------------------------------------------------------");
-            println!("RustSbt721 info: {}", network.sbt_721_address());
-            println!("name = {}", cli.name().await?);
-            println!("totalSupply = {:?}", cli.total_supply().await?);
-            println!("------------------------------------------------------------");
-        }
-        TargetContract::RevealNft721 => {
-            let cli = reveal_nft_721::client::Client::new(network);
-            println!("------------------------------------------------------------");
-            println!("RevealToken721 info: {}", network.reveal_nft_address());
-            println!("name = {}", cli.name().await?);
-            println!("totalSupply = {:?}", cli.total_supply().await?);
-            println!("getCurrentHour = {}", cli.get_current_hour().await?);
-            println!("------------------------------------------------------------");
-        }
-    }
-
-    Ok(())
-}
-
-pub async fn update_time(network: Network) -> EthersResult<()> {
-    if network == Network::Ethereum {
-        let cli = reveal_nft_721::client::Client::new(network);
-        cli.update_time().await?;
-    }
-
-    Ok(())
+pub fn to_address(from: String) -> Address {
+    from.parse::<Address>().unwrap()
 }
 
 pub async fn generate_keys() -> EthersResult<()> {
     let seckey =
-        ethers::core::k256::elliptic_curve::SecretKey::<ethers::core::k256::Secp256k1>::random(
-            &mut rand::thread_rng(),
-        );
+        k256::elliptic_curve::SecretKey::<k256::Secp256k1>::random(&mut rand::thread_rng());
     let seckey_str = ethers::utils::hex::encode(seckey.to_bytes().as_slice());
     let pubkey = seckey.public_key();
     let pubkey_encoded = pubkey.to_encoded_point(false);
     let pubkey_str = ethers::utils::hex::encode(pubkey_encoded.as_bytes());
-    let address = ethers::core::types::Address::from_slice(
-        &ethers::utils::keccak256(&pubkey_encoded.as_bytes()[1..])[12..],
-    );
+    let address =
+        Address::from_slice(&ethers::utils::keccak256(&pubkey_encoded.as_bytes()[1..])[12..]);
     let address_str = format!("{:?}", address);
 
     println!("secret: {}", seckey_str);

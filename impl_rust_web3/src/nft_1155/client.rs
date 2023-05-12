@@ -104,7 +104,7 @@ impl Client {
         Ok(())
     }
 
-    pub async fn transfer(&self, to: Address, token_id: u64) -> Web3Result<()> {
+    pub async fn transfer(&self, to: Address, token_id: u128) -> Web3Result<()> {
         let secret_key = SecretKey::from_str(&self.wallet_secret).unwrap();
         let contract = contract(
             self.contract_address.to_owned(),

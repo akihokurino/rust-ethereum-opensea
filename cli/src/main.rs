@@ -1,218 +1,113 @@
 extern crate core;
 
-use clap::{Arg, Command};
+use clap::{arg, Parser, ValueEnum};
 use dotenv::dotenv;
 use prelude::*;
 use std::str::FromStr;
 
-const COMMAND: &str = "command";
+#[derive(ValueEnum, Clone, Debug)]
+enum Command {
+    Balance,
+    SendEth,
+    CreateMetadata,
+    Mint,
+    Transfer,
+    Info,
+    KeyGen,
+    Sign,
+    Verify,
+    Deploy,
+    UpdateTime,
+}
 
-const COMMAND_BALANCE: &str = "balance";
-const COMMAND_SEND_ETH: &str = "send-eth";
-const COMMAND_CREATE_METADATA: &str = "create-metadata";
-const COMMAND_MINT: &str = "mint";
-const COMMAND_TRANSFER: &str = "transfer";
-const COMMAND_TOKEN_INFO: &str = "token-info";
-const COMMAND_KEY_GEN: &str = "key-gen";
-const COMMAND_SIGN: &str = "sign";
-const COMMAND_VERIFY: &str = "verify";
-const COMMAND_DEPLOY_CONTRACT: &str = "deploy-contract";
-const COMMAND_UPDATE_TIME: &str = "update-time";
+#[derive(ValueEnum, Clone, Debug)]
+pub enum Package {
+    EthersRs,
+    RustWeb3,
+}
 
-const ARGS_NAME: &str = "name";
-const ARGS_DESCRIPTION: &str = "description";
-const ARGS_IMAGE_FILENAME: &str = "image-filename";
-const ARGS_IMAGE_URL: &str = "image-url";
-const ARGS_AMOUNT: &str = "amount";
-const ARGS_CONTENT_HASH: &str = "content-hash";
-const ARGS_PACKAGE: &str = "package";
-const ARGS_NETWORK: &str = "network";
-const ARGS_CONTRACT: &str = "contract";
-const ARGS_ETHER: &str = "ether";
-const ARGS_TO_ADDRESS: &str = "to-address";
-const ARGS_TOKEN_ID: &str = "token-id";
-const ARGS_MESSAGE: &str = "message";
-const ARGS_SIGNATURE: &str = "signature";
+#[derive(ValueEnum, Clone, Debug)]
+pub enum Contract {
+    Nft721,
+    Nft1155,
+    Sbt721,
+    RevealNft721,
+}
+
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    #[arg(long)]
+    #[clap(value_enum)]
+    command: Command,
+
+    #[arg(long, default_value = "nft")]
+    name: String,
+
+    #[arg(long, default_value = "nft market sample")]
+    description: String,
+
+    #[arg(long, default_value = "sample.png")]
+    image_filename: String,
+
+    #[arg(
+        long,
+        default_value = "https://placehold.jp/3d4070/ffffff/500x500.png?text=Reveal"
+    )]
+    image_url: String,
+
+    #[arg(long, default_value_t = 10)]
+    amount: u128,
+
+    #[arg(long, default_value = "QmPDE4pXnFvNtqJ2889HgEQUEft8KCdyMaKKt5zzw3NuMS")]
+    content_hash: String,
+
+    #[arg(long)]
+    #[clap(value_enum)]
+    package: Package,
+
+    #[arg(long, default_value = "Polygon")]
+    network: String,
+
+    #[arg(long)]
+    #[clap(value_enum)]
+    contract: Contract,
+
+    #[arg(long, default_value_t = 0.1)]
+    ether: f64,
+
+    #[arg(long, default_value = "0x0E91D6613a84d7C8b72a289D8b275AF7717C3d2E")]
+    to_address: String,
+
+    #[arg(long, default_value_t = 1)]
+    token_id: u128,
+
+    #[arg(long, default_value = "world")]
+    message: String,
+
+    #[arg(
+        long,
+        default_value = "2a30afb5d5b476a505422d931c5b98a10d6ac6b6fb3a56a27c658a9fa36911f10b079fe392893e684881813e7d07a3fd14048ba902c20eb56eb9f0e7f8c2a1131b"
+    )]
+    signature: String,
+}
 
 #[tokio::main]
 pub async fn main() {
     dotenv().ok();
 
-    let app = Command::new("rust-ethereum")
-        .version("0.1.0")
-        .author("akiho <aki030402@mail.com>")
-        .about("Ethereum OpenSea CLI")
-        .arg(
-            Arg::new(COMMAND)
-                .long(COMMAND)
-                .possible_values(&[
-                    COMMAND_BALANCE,
-                    COMMAND_SEND_ETH,
-                    COMMAND_CREATE_METADATA,
-                    COMMAND_MINT,
-                    COMMAND_TRANSFER,
-                    COMMAND_TOKEN_INFO,
-                    COMMAND_KEY_GEN,
-                    COMMAND_SIGN,
-                    COMMAND_VERIFY,
-                    COMMAND_DEPLOY_CONTRACT,
-                    COMMAND_UPDATE_TIME,
-                ])
-                .required(true)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_NAME)
-                .long(ARGS_NAME)
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_DESCRIPTION)
-                .long(ARGS_DESCRIPTION)
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_IMAGE_FILENAME)
-                .long(ARGS_IMAGE_FILENAME)
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_IMAGE_URL)
-                .long(ARGS_IMAGE_URL)
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_AMOUNT)
-                .long(ARGS_AMOUNT)
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_CONTENT_HASH)
-                .long(ARGS_CONTENT_HASH)
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_PACKAGE)
-                .long(ARGS_PACKAGE)
-                .possible_values(&["EthersRs", "RustWeb3"])
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_NETWORK)
-                .long(ARGS_NETWORK)
-                .possible_values(&["Ethereum", "Polygon", "Avalanche"])
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_CONTRACT)
-                .long(ARGS_CONTRACT)
-                .possible_values(&["Nft721", "Nft1155", "Sbt721", "RevealNft721"])
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_ETHER)
-                .long(ARGS_ETHER)
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_TO_ADDRESS)
-                .long(ARGS_TO_ADDRESS)
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_TOKEN_ID)
-                .long(ARGS_TOKEN_ID)
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_MESSAGE)
-                .long(ARGS_MESSAGE)
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new(ARGS_SIGNATURE)
-                .long(ARGS_SIGNATURE)
-                .required(false)
-                .takes_value(true),
-        );
+    if let Err(e) = execute(Args::parse()).await {
+        println!("error: {:?}", e);
+        return;
+    }
+}
 
-    let matches = app.get_matches();
+async fn execute(args: Args) -> CliResult<()> {
+    let network = Network::from_str(&args.network).unwrap();
+    let to_address = impl_ethers_rs::to_address(args.to_address.clone());
 
-    let name: String = matches.value_of(ARGS_NAME).unwrap_or_default().to_string();
-    let description: String = matches
-        .value_of(ARGS_DESCRIPTION)
-        .unwrap_or_default()
-        .to_string();
-    let image_filename: String = matches
-        .value_of(ARGS_IMAGE_FILENAME)
-        .unwrap_or_default()
-        .to_string();
-    let image_url: String = matches
-        .value_of(ARGS_IMAGE_URL)
-        .unwrap_or_default()
-        .to_string();
-    let amount: u128 = matches
-        .value_of(ARGS_AMOUNT)
-        .unwrap_or_default()
-        .parse()
-        .unwrap_or(0);
-    let content_hash: String = matches
-        .value_of(ARGS_CONTENT_HASH)
-        .unwrap_or_default()
-        .to_string();
-    let package: String = matches
-        .value_of(ARGS_PACKAGE)
-        .unwrap_or("EthersRs")
-        .to_string();
-    let package = Package::from_str(&package).ok().unwrap();
-    let network: String = matches
-        .value_of(ARGS_NETWORK)
-        .unwrap_or("Ethereum")
-        .to_string();
-    let network = Network::from_str(&network).ok().unwrap();
-    let contract: String = matches
-        .value_of(ARGS_CONTRACT)
-        .unwrap_or("Nft721")
-        .to_string();
-    let contract = TargetContract::from_str(&contract).ok().unwrap();
-    let ether: f64 = matches
-        .value_of(ARGS_ETHER)
-        .unwrap_or_default()
-        .parse()
-        .unwrap_or(0.0);
-    let to_address: String = matches
-        .value_of(ARGS_TO_ADDRESS)
-        .unwrap_or_default()
-        .to_string();
-    let token_id: u64 = matches
-        .value_of(ARGS_TOKEN_ID)
-        .unwrap_or_default()
-        .parse()
-        .unwrap_or(0);
-    let message: String = matches
-        .value_of(ARGS_MESSAGE)
-        .unwrap_or_default()
-        .to_string();
-    let signature: String = matches
-        .value_of(ARGS_SIGNATURE)
-        .unwrap_or_default()
-        .to_string();
-
-    let result: CliResult<()> = match matches.value_of(COMMAND).unwrap() {
-        COMMAND_BALANCE => match package {
+    match args.command {
+        Command::Balance => match args.package {
             Package::EthersRs => impl_ethers_rs::get_balance(network)
                 .await
                 .map_err(Error::from),
@@ -220,78 +115,229 @@ pub async fn main() {
                 .await
                 .map_err(Error::from),
         },
-        COMMAND_SEND_ETH => match package {
-            Package::EthersRs => impl_ethers_rs::send_eth(network, ether, to_address)
+        Command::SendEth => match args.package {
+            Package::EthersRs => impl_ethers_rs::send_eth(network, args.ether, args.to_address)
                 .await
                 .map_err(Error::from),
-            Package::RustWeb3 => impl_rust_web3::send_eth(network, ether, to_address)
+            Package::RustWeb3 => impl_rust_web3::send_eth(network, args.ether, args.to_address)
                 .await
                 .map_err(Error::from),
         },
-        COMMAND_CREATE_METADATA => {
-            if !image_url.is_empty() {
-                ipfs::create_metadata_from_url(name, description, image_url)
+        Command::CreateMetadata => {
+            if !args.image_url.is_empty() {
+                ipfs::create_metadata_from_url(args.name, args.description, args.image_url)
                     .await
                     .map_err(Error::from)
             } else {
-                ipfs::create_metadata_from_file(name, description, image_filename)
+                ipfs::create_metadata_from_file(args.name, args.description, args.image_filename)
                     .await
                     .map_err(Error::from)
             }
         }
-        COMMAND_MINT => match package {
-            Package::EthersRs => impl_ethers_rs::mint(contract, network, content_hash, amount)
-                .await
-                .map_err(Error::from),
-            Package::RustWeb3 => impl_rust_web3::mint(contract, network, content_hash, amount)
-                .await
-                .map_err(Error::from),
+        Command::Mint => match args.package {
+            Package::EthersRs => match args.contract {
+                Contract::Nft721 => {
+                    let cli = impl_ethers_rs::nft_721::client::Client::new(network);
+                    cli.mint(args.content_hash.clone())
+                        .await
+                        .map_err(Error::from)
+                }
+                Contract::Nft1155 => {
+                    let cli = impl_ethers_rs::nft_1155::client::Client::new(network);
+                    cli.mint(args.content_hash.clone(), args.amount)
+                        .await
+                        .map_err(Error::from)
+                }
+                Contract::Sbt721 => {
+                    let cli = impl_ethers_rs::sbt_721::client::Client::new(network);
+                    cli.mint(args.content_hash.clone())
+                        .await
+                        .map_err(Error::from)
+                }
+                Contract::RevealNft721 => {
+                    let cli = impl_ethers_rs::reveal_nft_721::client::Client::new(network);
+                    cli.mint(args.content_hash.clone())
+                        .await
+                        .map_err(Error::from)
+                }
+            },
+            Package::RustWeb3 => match args.contract {
+                Contract::Nft721 => {
+                    let cli = impl_rust_web3::nft_721::client::Client::new(network);
+                    cli.mint(args.content_hash.clone())
+                        .await
+                        .map_err(Error::from)
+                }
+                Contract::Nft1155 => {
+                    let cli = impl_rust_web3::nft_1155::client::Client::new(network);
+                    cli.mint(args.content_hash.clone(), args.amount)
+                        .await
+                        .map_err(Error::from)
+                }
+                _ => return Err(Error::Internal("invalid params".to_string())),
+            },
         },
-        COMMAND_TRANSFER => match package {
-            Package::EthersRs => impl_ethers_rs::transfer(contract, network, to_address, token_id)
-                .await
-                .map_err(Error::from),
-            Package::RustWeb3 => impl_rust_web3::transfer(contract, network, to_address, token_id)
-                .await
-                .map_err(Error::from),
+        Command::Transfer => match args.package {
+            Package::EthersRs => match args.contract {
+                Contract::Nft721 => {
+                    let cli = impl_ethers_rs::nft_721::client::Client::new(network);
+                    cli.transfer(to_address, args.token_id)
+                        .await
+                        .map_err(Error::from)
+                }
+                Contract::Nft1155 => {
+                    let cli = impl_ethers_rs::nft_1155::client::Client::new(network);
+                    cli.transfer(to_address, args.token_id)
+                        .await
+                        .map_err(Error::from)
+                }
+                Contract::RevealNft721 => {
+                    let cli = impl_ethers_rs::reveal_nft_721::client::Client::new(network);
+                    cli.transfer(to_address, args.token_id)
+                        .await
+                        .map_err(Error::from)
+                }
+                _ => return Err(Error::Internal("invalid params".to_string())),
+            },
+            Package::RustWeb3 => match args.contract {
+                Contract::Nft721 => {
+                    let cli = impl_rust_web3::nft_721::client::Client::new(network);
+                    cli.transfer(
+                        impl_rust_web3::parse_address(args.to_address).unwrap(),
+                        args.token_id,
+                    )
+                    .await
+                    .map_err(Error::from)
+                }
+                Contract::Nft1155 => {
+                    let cli = impl_rust_web3::nft_1155::client::Client::new(network);
+                    cli.transfer(
+                        impl_rust_web3::parse_address(args.to_address).unwrap(),
+                        args.token_id,
+                    )
+                    .await
+                    .map_err(Error::from)
+                }
+                _ => return Err(Error::Internal("invalid params".to_string())),
+            },
         },
-        COMMAND_TOKEN_INFO => match package {
-            Package::EthersRs => impl_ethers_rs::show_token_info(contract, network)
-                .await
-                .map_err(Error::from),
-            Package::RustWeb3 => impl_rust_web3::show_token_info(contract, network)
-                .await
-                .map_err(Error::from),
+        Command::Info => match args.package {
+            Package::EthersRs => match args.contract {
+                Contract::Nft721 => {
+                    let cli = impl_ethers_rs::nft_721::client::Client::new(network);
+                    println!("------------------------------------------------------------");
+                    println!("Nft721 info: {}", network.nft_721_address());
+                    println!("name = {}", cli.name().await?);
+                    println!("latestTokenId = {}", cli.latest_token_id().await?);
+                    println!("totalSupply = {:?}", cli.total_supply().await?);
+                    println!("totalOwned = {:?}", cli.total_owned().await?);
+                    println!("------------------------------------------------------------");
+                    Ok(())
+                }
+                Contract::Nft1155 => {
+                    let cli = impl_ethers_rs::nft_1155::client::Client::new(network);
+                    println!("------------------------------------------------------------");
+                    println!("Nft1155 info: {}", network.nft_1155_address());
+                    println!("name = {}", cli.name().await?);
+                    println!("latestTokenId = {}", cli.latest_token_id().await?);
+                    println!("totalSupply = {:?}", cli.total_supply().await?);
+                    println!("totalOwned = {:?}", cli.total_owned().await?);
+                    println!("------------------------------------------------------------");
+                    Ok(())
+                }
+                Contract::Sbt721 => {
+                    let cli = impl_ethers_rs::sbt_721::client::Client::new(network);
+                    println!("------------------------------------------------------------");
+                    println!("Sbt721 info: {}", network.sbt_721_address());
+                    println!("name = {}", cli.name().await?);
+                    println!("totalSupply = {:?}", cli.total_supply().await?);
+                    println!("------------------------------------------------------------");
+                    Ok(())
+                }
+                Contract::RevealNft721 => {
+                    let cli = impl_ethers_rs::reveal_nft_721::client::Client::new(network);
+                    println!("------------------------------------------------------------");
+                    println!("RevealNft721 info: {}", network.reveal_nft_address());
+                    println!("name = {}", cli.name().await?);
+                    println!("totalSupply = {:?}", cli.total_supply().await?);
+                    println!("getCurrentHour = {}", cli.get_current_hour().await?);
+                    println!("------------------------------------------------------------");
+                    Ok(())
+                }
+            },
+            Package::RustWeb3 => match args.contract {
+                Contract::Nft721 => {
+                    let cli = impl_rust_web3::nft_721::client::Client::new(network);
+                    println!("------------------------------------------------------------");
+                    println!("Nft721 info: {}", network.nft_721_address());
+                    println!("name = {}", cli.name().await?);
+                    println!("latestTokenId = {}", cli.latest_token_id().await?);
+                    println!("totalSupply = {:?}", cli.total_supply().await?);
+                    println!("totalOwned = {:?}", cli.total_owned().await?);
+                    println!("------------------------------------------------------------");
+                    Ok(())
+                }
+                Contract::Nft1155 => {
+                    let cli = impl_rust_web3::nft_1155::client::Client::new(network);
+                    println!("------------------------------------------------------------");
+                    println!("Nft1155 info: {}", network.nft_1155_address());
+                    println!("name = {}", cli.name().await?);
+                    println!("latestTokenId = {}", cli.latest_token_id().await?);
+                    println!("totalSupply = {:?}", cli.total_supply().await?);
+                    println!("totalOwned = {:?}", cli.total_owned().await?);
+                    println!("------------------------------------------------------------");
+                    Ok(())
+                }
+                _ => return Err(Error::Internal("invalid params".to_string())),
+            },
         },
-        COMMAND_KEY_GEN => impl_ethers_rs::generate_keys().await.map_err(Error::from),
-        COMMAND_SIGN => impl_ethers_rs::sign(message).await.map_err(Error::from),
-        COMMAND_VERIFY => impl_ethers_rs::verify(signature, message)
+        Command::KeyGen => impl_ethers_rs::generate_keys().await.map_err(Error::from),
+        Command::Sign => impl_ethers_rs::sign(args.message)
             .await
             .map_err(Error::from),
-        COMMAND_DEPLOY_CONTRACT => match package {
-            Package::EthersRs => impl_ethers_rs::deploy(contract, network)
-                .await
-                .map_err(Error::from),
-            Package::RustWeb3 => impl_rust_web3::deploy(contract, network)
-                .await
-                .map_err(Error::from),
-        },
-        COMMAND_UPDATE_TIME => impl_ethers_rs::update_time(network)
+        Command::Verify => impl_ethers_rs::verify(args.signature, args.message)
             .await
             .map_err(Error::from),
-        _ => Err(Error::Internal("unknown command".to_string())),
-    };
+        Command::Deploy => match args.package {
+            Package::EthersRs => match args.contract {
+                Contract::Nft721 => {
+                    let cli = impl_ethers_rs::nft_721::client::Client::new(network);
+                    cli.deploy().await.map_err(Error::from)
+                }
+                Contract::Nft1155 => {
+                    let cli = impl_ethers_rs::nft_1155::client::Client::new(network);
+                    cli.deploy().await.map_err(Error::from)
+                }
+                Contract::Sbt721 => {
+                    let cli = impl_ethers_rs::sbt_721::client::Client::new(network);
+                    cli.deploy().await.map_err(Error::from)
+                }
+                Contract::RevealNft721 => {
+                    let cli = impl_ethers_rs::reveal_nft_721::client::Client::new(network);
+                    cli.deploy().await.map_err(Error::from)
+                }
+            },
+            Package::RustWeb3 => match args.contract {
+                Contract::Nft721 => {
+                    let cli = impl_rust_web3::nft_721::client::Client::new(network);
+                    cli.deploy().await.map_err(Error::from)
+                }
+                Contract::Nft1155 => {
+                    let cli = impl_rust_web3::nft_1155::client::Client::new(network);
+                    cli.deploy().await.map_err(Error::from)
+                }
+                _ => return Err(Error::Internal("invalid params".to_string())),
+            },
+        },
+        Command::UpdateTime => {
+            if network == Network::Ethereum {
+                let cli = impl_ethers_rs::reveal_nft_721::client::Client::new(network);
+                cli.update_time().await?;
+            }
 
-    if let Err(e) = result {
-        println!("error: {:?}", e);
-        return;
+            Ok(())
+        }
     }
-}
-
-#[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
-pub enum Package {
-    EthersRs,
-    RustWeb3,
 }
 
 pub type CliResult<T> = Result<T, Error>;

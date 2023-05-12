@@ -12,8 +12,8 @@ TO_ADDRESS := "0x0E91D6613a84d7C8b72a289D8b275AF7717C3d2E"
 TOKEN_ID := "1"
 MESSAGE := "world"
 SIGNATURE := "2a30afb5d5b476a505422d931c5b98a10d6ac6b6fb3a56a27c658a9fa36911f10b079fe392893e684881813e7d07a3fd14048ba902c20eb56eb9f0e7f8c2a1131b"
-PACKAGE := "EthersRs"
-CONTRACT := "Nft721"
+PACKAGE := "ethers-rs"
+CONTRACT := "nft721"
 CONTENT_HASH := "QmPDE4pXnFvNtqJ2889HgEQUEft8KCdyMaKKt5zzw3NuMS"
 
 build:
@@ -45,9 +45,9 @@ send-eth: build
 	--network $(NETWORK) \
 	--package $(PACKAGE)
 
-token-info: build
+info: build
 	./target/debug/cli \
-	--command token-info \
+	--command info \
 	--network $(NETWORK) \
 	--package $(PACKAGE) \
 	--contract $(CONTRACT)
@@ -77,9 +77,9 @@ transfer: build
 	--token-id $(TOKEN_ID) \
 	--package $(PACKAGE)
 
-deploy-contract: build
+deploy: build
 	./target/debug/cli \
-	--command deploy-contract \
+	--command deploy \
 	--contract $(CONTRACT) \
 	--network $(NETWORK) \
 	--package $(PACKAGE)

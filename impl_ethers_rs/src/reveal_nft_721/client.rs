@@ -101,7 +101,7 @@ impl Client {
         Ok(())
     }
 
-    pub async fn transfer(&self, to: Address, token_id: u64) -> EthersResult<()> {
+    pub async fn transfer(&self, to: Address, token_id: u128) -> EthersResult<()> {
         let call = transaction_contract(
             self.wallet_secret.to_owned(),
             self.address.to_owned(),

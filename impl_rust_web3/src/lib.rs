@@ -42,7 +42,7 @@ async fn deploy_contract(
     Ok(contract)
 }
 
-fn parse_address(address: String) -> Option<Address> {
+pub fn parse_address(address: String) -> Option<Address> {
     match address.trim_start_matches("0x").parse() {
         Ok(value) => Some(value),
         Err(_e) => None,
@@ -103,89 +103,6 @@ pub async fn send_eth(network: Network, eth: f64, to: String) -> Web3Result<()> 
         .await?;
 
     println!("sendEth: {:?}", result);
-
-    Ok(())
-}
-
-pub async fn mint(
-    target: TargetContract,
-    network: Network,
-    hash: String,
-    amount: u128,
-) -> Web3Result<()> {
-    match target {
-        TargetContract::Nft721 => {
-            let cli = nft_721::client::Client::new(network);
-            cli.mint(hash.clone()).await
-        }
-        TargetContract::Nft1155 => {
-            let cli = nft_1155::client::Client::new(network);
-            cli.mint(hash.clone(), amount).await
-        }
-        _ => return Err(Error::Internal("invalid params".to_string())),
-    }?;
-    Ok(())
-}
-
-pub async fn transfer(
-    target: TargetContract,
-    network: Network,
-    to: String,
-    token_id: u64,
-) -> Web3Result<()> {
-    match target {
-        TargetContract::Nft721 => {
-            let cli = nft_721::client::Client::new(network);
-            cli.transfer(parse_address(to).unwrap(), token_id).await
-        }
-        TargetContract::Nft1155 => {
-            let cli = nft_1155::client::Client::new(network);
-            cli.transfer(parse_address(to).unwrap(), token_id).await
-        }
-        _ => return Err(Error::Internal("invalid params".to_string())),
-    }?;
-    Ok(())
-}
-
-pub async fn deploy(target: TargetContract, network: Network) -> Web3Result<()> {
-    match target {
-        TargetContract::Nft721 => {
-            let cli = nft_721::client::Client::new(network);
-            cli.deploy().await
-        }
-        TargetContract::Nft1155 => {
-            let cli = nft_1155::client::Client::new(network);
-            cli.deploy().await
-        }
-        _ => return Err(Error::Internal("invalid params".to_string())),
-    }?;
-    Ok(())
-}
-
-pub async fn show_token_info(target: TargetContract, network: Network) -> Web3Result<()> {
-    match target {
-        TargetContract::Nft721 => {
-            let cli = nft_721::client::Client::new(network);
-            println!("------------------------------------------------------------");
-            println!("RustToken721 info: {}", network.nft_721_address());
-            println!("name = {}", cli.name().await?);
-            println!("latestTokenId = {}", cli.latest_token_id().await?);
-            println!("totalSupply = {:?}", cli.total_supply().await?);
-            println!("totalOwned = {:?}", cli.total_owned().await?);
-            println!("------------------------------------------------------------");
-        }
-        TargetContract::Nft1155 => {
-            let cli = nft_1155::client::Client::new(network);
-            println!("------------------------------------------------------------");
-            println!("RustToken1155 info: {}", network.nft_1155_address());
-            println!("name = {}", cli.name().await?);
-            println!("latestTokenId = {}", cli.latest_token_id().await?);
-            println!("totalSupply = {:?}", cli.total_supply().await?);
-            println!("totalOwned = {:?}", cli.total_owned().await?);
-            println!("------------------------------------------------------------");
-        }
-        _ => return Err(Error::Internal("invalid params".to_string())),
-    }
 
     Ok(())
 }

@@ -21,4 +21,4 @@ dotenv = "0.15.0"
 thiserror = "1.0.24"
 strum = "0.24.1"
 strum_macros = "0.24.3"
-clap = { version = "3.2.23", features = ["derive"] }
+clap = { version = "4.2.4", features = ["derive"] }

@@ -6,14 +6,6 @@ pub const GAS_LIMIT: i64 = 8000000;
 pub const GAS_PRICE: i64 = 25000000000; // 40000000000
 
 #[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
-pub enum TargetContract {
-    Nft721,
-    Nft1155,
-    Sbt721,
-    RevealNft721,
-}
-
-#[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
 pub enum Network {
     Ethereum,
     Polygon,
