@@ -28,20 +28,23 @@ test:
 node:
 	npx hardhat node
 
-deploy-rust-token-721:
-	npx hardhat run scripts/deploy-rust-token-721.ts --network $(NETWORK)
+deploy-nft-721:
+	npx hardhat run scripts/deploy-nft-721.ts --network $(NETWORK)
 
-deploy-rust-token-1155:
-	npx hardhat run scripts/deploy-rust-token-1155.ts --network $(NETWORK)
+deploy-nft-1155:
+	npx hardhat run scripts/deploy-nft-1155.ts --network $(NETWORK)
 
-deploy-rust-sbt-721:
-	npx hardhat run scripts/deploy-rust-sbt-721.ts --network $(NETWORK)
+deploy-sbt-721:
+	npx hardhat run scripts/deploy-sbt-721.ts --network $(NETWORK)
 
-deploy-reveal-token-721:
-	npx hardhat run scripts/deploy-reveal-token-721.ts --network $(NETWORK)
+deploy-reveal-nft-721:
+	npx hardhat run scripts/deploy-reveal-nft-721.ts --network $(NETWORK)
 
-deploy-rust-token-upgradeable-721-v1:
-	npx hardhat run scripts/deploy-rust-token-upgradeable-721-v1.ts --network $(NETWORK)
+deploy-upgradeable-nft-721-v1:
+	npx hardhat run scripts/deploy-upgradeable-nft-721-v1.ts --network $(NETWORK)
 
-upgrade-rust-token-upgradeable-721-v2:
-	npx hardhat run scripts/upgrade-rust-token-upgradeable-721-v2.ts --network $(NETWORK)
+deploy-upgradeable-nft-721-v2:
+	npx hardhat run scripts/deploy-upgradeable-nft-721-v2.ts --network $(NETWORK)
+
+deploy-nft-market:
+	npx hardhat run scripts/deploy-nft-market.ts --network $(NETWORK)
