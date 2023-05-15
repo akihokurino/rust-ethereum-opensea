@@ -8,11 +8,30 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import "hardhat/console.sol";
+import "@openzeppelin/contracts-upgradeable/utils/cryptography/draft-EIP712Upgradeable.sol";
 
-contract MetaTransactionWallet is Initializable, OwnableUpgradeable {
-    using ECDSA for bytes32;
+contract MetaTransactionWallet is
+    Initializable,
+    OwnableUpgradeable,
+    EIP712Upgradeable
+{
+    using ECDSAUpgradeable for bytes32;
 
-    address private _owner;
+    struct ForwardRequest {
+        address from;
+        address to;
+        uint256 value;
+        uint256 gas;
+        uint256 nonce;
+        bytes data;
+    }
+
+    bytes32 private constant _TYPEHASH =
+        keccak256(
+            "ForwardRequest(address from,address to,uint256 value,uint256 gas,uint256 nonce,bytes data)"
+        );
+
+    mapping(address => uint256) private nonces;
     address private _relayer;
 
     modifier onlyRelayer() {
@@ -20,31 +39,64 @@ contract MetaTransactionWallet is Initializable, OwnableUpgradeable {
         _;
     }
 
-    function initialize(address owner, address relayer) public initializer {
-        _owner = owner;
+    function initialize(address relayer) public initializer {
         _relayer = relayer;
         __Ownable_init();
+        __EIP712_init_unchained("MetaTransactionWallet", "0.0.1");
     }
 
-    function executeMetaTransaction(
-        uint256 nonce,
-        address destination,
-        uint256 value,
-        bytes memory data,
-        bytes memory signature
-    ) public onlyRelayer {
-        bytes32 hash = keccak256(
-            abi.encodePacked(nonce, destination, value, data)
-        );
-        bytes32 signedHash = ECDSA.toEthSignedMessageHash(hash);
+    function execute(
+        ForwardRequest calldata req,
+        bytes calldata signature
+    ) public onlyRelayer returns (bool success, bytes memory returndata) {
+        require(verify(req, signature), "signature does not match request");
+        nonces[req.from] = req.nonce + 1;
 
-        require(
-            _owner == ECDSA.recover(signedHash, signature),
-            "invalid signature"
+        (success, returndata) = req.to.call{gas: req.gas, value: req.value}(
+            abi.encodePacked(req.data, req.from)
         );
+        require(success, "call error");
 
-        (bool success, ) = destination.call{value: value}(data);
-        require(success, "transaction failed");
+        // Validate that the relayer has sent enough gas for the call.
+        // See https://ronan.eth.link/blog/ethereum-gas-dangers/
+        if (gasleft() <= req.gas / 63) {
+            // We explicitly trigger invalid opcode to consume all gas and bubble-up the effects, since
+            // neither revert or assert consume all gas since Solidity 0.8.0
+            // https://docs.soliditylang.org/en/v0.8.0/control-structures.html#panic-via-assert-and-error-via-require
+            // solhint-disable-next-line no-inline-assembly
+            assembly {
+                invalid()
+            }
+        }
+
+        return (success, returndata);
+    }
+
+    function getNonce(address from) external view returns (uint256) {
+        return nonces[from];
+    }
+
+    function verify(
+        ForwardRequest calldata req,
+        bytes calldata signature
+    ) private view returns (bool) {
+        address signer = _hashTypedDataV4(
+            keccak256(
+                abi.encode(
+                    _TYPEHASH,
+                    req.from,
+                    req.to,
+                    req.value,
+                    req.gas,
+                    req.nonce,
+                    keccak256(req.data)
+                )
+            )
+        ).recover(signature);
+
+        require(nonces[req.from] == req.nonce, "illegal nonce");
+        require(signer == req.from, "illegal signer");
+        return true;
     }
 
     receive() external payable {}

@@ -1,22 +1,86 @@
+import {
+  SignTypedDataVersion,
+  TypedMessage,
+  signTypedData,
+} from "@metamask/eth-sig-util";
 import { expect } from "chai";
-import { Contract, Signer } from "ethers";
+import { toBuffer } from "ethereumjs-util";
+import { Contract, Signer, Wallet } from "ethers";
 import { ethers, upgrades } from "hardhat";
+
+interface MessageTypeProperty {
+  name: string;
+  type: string;
+}
+
+interface MessageTypes {
+  EIP712Domain: MessageTypeProperty[];
+  [additionalProperties: string]: MessageTypeProperty[];
+}
+
+type Message = {
+  from: string;
+  to: string;
+  value: number;
+  gas: number;
+  nonce: number;
+  data: string;
+};
+
+const getChainId = async (): Promise<number> => {
+  const network = await ethers.provider.getNetwork();
+  const { chainId } = network;
+  return chainId;
+};
+
+const createMessageParam = async (
+  message: Message,
+  forwarderAddress: string
+): Promise<TypedMessage<MessageTypes>> => {
+  const chainId = await getChainId();
+  return {
+    types: {
+      EIP712Domain: [
+        { name: "name", type: "string" },
+        { name: "version", type: "string" },
+        { name: "chainId", type: "uint256" },
+        { name: "verifyingContract", type: "address" },
+      ],
+      ForwardRequest: [
+        { name: "from", type: "address" },
+        { name: "to", type: "address" },
+        { name: "value", type: "uint256" },
+        { name: "gas", type: "uint256" },
+        { name: "nonce", type: "uint256" },
+        { name: "data", type: "bytes" },
+      ],
+    },
+    primaryType: "ForwardRequest",
+    domain: {
+      name: "MetaTransactionWallet",
+      version: "0.0.1",
+      chainId,
+      verifyingContract: forwarderAddress,
+    },
+    message,
+  } as TypedMessage<MessageTypes>;
+};
 
 describe("MetaTransactionWallet", () => {
   let wallet: Contract;
   let nft: Contract;
-  let owner: Signer;
   let relay: Signer;
   let destination: Signer;
+  let userWallet: Wallet;
 
   beforeEach(async () => {
-    [owner, relay, destination] = await ethers.getSigners();
+    [relay, destination] = await ethers.getSigners();
+    userWallet = Wallet.createRandom();
 
     const MetaTransactionWalletFactory = await ethers.getContractFactory(
       "MetaTransactionWallet"
     );
     wallet = await upgrades.deployProxy(MetaTransactionWalletFactory, [
-      await owner.getAddress(),
       await relay.getAddress(),
     ]);
 
@@ -26,30 +90,36 @@ describe("MetaTransactionWallet", () => {
     nft = await MetaTransactionalNftFactory.deploy(wallet.address);
     await nft.deployed();
 
-    await owner.sendTransaction({
+    await relay.sendTransaction({
       to: wallet.address,
       value: ethers.utils.parseEther("1.0"),
     });
   });
 
   it("should execute meta transaction", async () => {
-    const nonce = 0;
-    const value = ethers.utils.parseEther("1.0");
-    const data = "0x";
+    const value = 1000000000;
     const dist = await destination.getAddress();
+    const nonce = await wallet.getNonce(await relay.getAddress());
 
-    const hash = ethers.utils.solidityKeccak256(
-      ["uint256", "address", "uint256", "bytes"],
-      [nonce, dist, value, data]
-    );
-    const message = ethers.utils.arrayify(hash);
-    const signature = await owner.signMessage(message);
+    const message: Message = {
+      from: userWallet.address,
+      to: dist,
+      value: value,
+      gas: 3000000,
+      nonce: nonce.toNumber(),
+      data: "0x",
+    };
+
+    const msgParams = await createMessageParam(message, wallet.address);
+    const signature = signTypedData({
+      privateKey: toBuffer(userWallet.privateKey),
+      data: msgParams,
+      version: SignTypedDataVersion.V4,
+    });
 
     const balanceBefore = await ethers.provider.getBalance(dist);
 
-    const tx = await wallet
-      .connect(relay)
-      .executeMetaTransaction(nonce, dist, value, data, signature);
+    const tx = await wallet.execute(message, signature);
     await tx.wait();
 
     const balanceAfter = await ethers.provider.getBalance(dist);
@@ -58,31 +128,39 @@ describe("MetaTransactionWallet", () => {
   });
 
   it("should mint nft through the meta transaction", async () => {
-    const nonce = 0;
-    const value = 0;
-    const to = await owner.getAddress();
+    const nonce = await wallet.getNonce(await relay.getAddress());
     const contentHash = "A";
-    const dist = nft.address;
 
-    const data = nft.interface.encodeFunctionData("mint", [to, contentHash]);
+    const data = nft.interface.encodeFunctionData("mint", [
+      await destination.getAddress(),
+      contentHash,
+    ]);
 
-    const hash = ethers.utils.solidityKeccak256(
-      ["uint256", "address", "uint256", "bytes"],
-      [nonce, dist, value, data]
-    );
-    const message = ethers.utils.arrayify(hash);
-    const signature = await owner.signMessage(message);
+    console.log(`from: ${userWallet.address}`);
+    const message: Message = {
+      from: userWallet.address,
+      to: nft.address,
+      value: 0,
+      gas: 3000000,
+      nonce: nonce.toNumber(),
+      data,
+    };
 
-    const tx = await wallet
-      .connect(relay)
-      .executeMetaTransaction(nonce, dist, value, data, signature);
+    const msgParams = await createMessageParam(message, wallet.address);
+    const signature = signTypedData({
+      privateKey: toBuffer(userWallet.privateKey),
+      data: msgParams,
+      version: SignTypedDataVersion.V4,
+    });
+
+    const tx = await wallet.connect(relay).execute(message, signature);
     await tx.wait();
 
     expect(await nft.tokenURI(1)).to.equal("ipfs://A");
   });
 
   it("should error when mint direct", async function () {
-    await expect(nft.mint(await owner.getAddress(), "A")).to.be.revertedWith(
+    await expect(nft.mint(await relay.getAddress(), "A")).to.be.revertedWith(
       "not an relayer"
     );
   });
