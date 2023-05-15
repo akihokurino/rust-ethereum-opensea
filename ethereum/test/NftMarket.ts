@@ -39,8 +39,8 @@ describe("Market", function () {
     expect(orders.length).to.equal(2);
     const keys = await market.getSellOrderKeys();
     expect(keys.length).to.equal(2);
-    expect(keys[0]).to.equal("0x65760734ea98a62233b1355c62cdbe90ddaffbc2#1");
-    expect(keys[1]).to.equal("0x65760734ea98a62233b1355c62cdbe90ddaffbc2#2");
+    expect(keys[0].toLowerCase()).to.equal(`${nft.address}#1`.toLowerCase());
+    expect(keys[1].toLowerCase()).to.equal(`${nft.address}#2`.toLowerCase());
 
     expect(orders[0].contractAddress).to.equal(nft.address);
     expect(orders[0].tokenId).to.equal(1);

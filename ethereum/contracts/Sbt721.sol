@@ -35,9 +35,10 @@ contract Sbt721 is ERC721Enumerable, Ownable {
     function _beforeTokenTransfer(
         address from,
         address to,
-        uint256 tokenId
+        uint256 firstTokenId,
+        uint256 batchSize
     ) internal override {
         require(from == address(0), "Err: token is SOUL BOUND");
-        super._beforeTokenTransfer(from, to, tokenId);
+        super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
     }
 }
