@@ -1,4 +1,7 @@
 // SPDX-License-Identifier: MIT
+// https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/metatx/MinimalForwarder.sol
+// https://github.com/dea-sg/meta-tx/blob/main/contracts/metatx/ForwarderUpgradeable.sol
+// https://github.com/dea-sg/meta-tx/blob/main/test/forward.ts
 pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
