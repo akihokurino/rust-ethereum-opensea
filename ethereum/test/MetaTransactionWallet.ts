@@ -1,3 +1,4 @@
+// https://github.com/dea-sg/meta-tx/blob/main/test/forward.ts
 import {
   SignTypedDataVersion,
   TypedMessage,
@@ -99,7 +100,7 @@ describe("MetaTransactionWallet", () => {
   it("should execute meta transaction", async () => {
     const value = 1000000000;
     const dist = await destination.getAddress();
-    const nonce = await wallet.getNonce(await relay.getAddress());
+    const nonce = await wallet.getNonce(userWallet.address);
 
     const message: Message = {
       from: userWallet.address,
@@ -128,7 +129,7 @@ describe("MetaTransactionWallet", () => {
   });
 
   it("should mint nft through the meta transaction", async () => {
-    const nonce = await wallet.getNonce(await relay.getAddress());
+    const nonce = await wallet.getNonce(userWallet.address);
     const contentHash = "A";
 
     const data = nft.interface.encodeFunctionData("mint", [

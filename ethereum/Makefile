@@ -48,3 +48,6 @@ deploy-upgradeable-nft-721-v2:
 
 deploy-nft-market:
 	npx hardhat run scripts/deploy-nft-market.ts --network $(NETWORK)
+
+deploy-meta-transaction-wallet:
+	npx hardhat run scripts/deploy-meta-transaction-wallet.ts --network $(NETWORK)

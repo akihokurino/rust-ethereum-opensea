@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 prelude = { path = "../prelude" }
-ethers = { version = "2.0.4", features = ["legacy"] }
+ethers = { version = "2.0.4", features = ["legacy", "eip712"] }
 ethers-signers = "2.0.4"
 ethers-providers = { version = "2.0.4", features = ["ws"] }
 thiserror = "1.0.24"

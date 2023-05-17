@@ -71,6 +71,15 @@ mint: build
 	--amount $(AMOUNT) \
 	--package $(PACKAGE)
 
+meta-mint: build
+	./target/debug/cli \
+	--command mint \
+	--contract meta-transaction-wallet \
+	--network $(NETWORK) \
+	--content-hash $(CONTENT_HASH) \
+	--package $(PACKAGE) \
+	--to-address "0x1341048E3d37046Ca18A09EFB154Ea9771744f41"
+
 transfer: build
 	./target/debug/cli \
 	--command transfer \
@@ -149,3 +158,6 @@ extract-abi:
 	cat ethereum/artifacts/contracts/Sbt721.sol/Sbt721.json | jq '.bytecode' > impl_ethers_rs/src/sbt_721/bin
 
 	cat ethereum/artifacts/contracts/NftMarket.sol/NftMarket.json | jq '.abi' > impl_ethers_rs/src/nft_market/abi.json
+
+	cat ethereum/artifacts/contracts/MetaTransactionWallet.sol/MetaTransactionWallet.json | jq '.abi' > impl_ethers_rs/src/meta_transaction_wallet/mtw_abi.json
+	cat ethereum/artifacts/contracts/MetaTransactionWallet.sol/MetaTransactionalNft721.json | jq '.abi' > impl_ethers_rs/src/meta_transaction_wallet/nft_abi.json

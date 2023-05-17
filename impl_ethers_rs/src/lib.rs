@@ -10,6 +10,7 @@ use std::str::FromStr;
 use std::sync::Arc;
 
 pub mod event;
+pub mod meta_transaction_wallet;
 pub mod nft_1155;
 pub mod nft_721;
 pub mod nft_market;

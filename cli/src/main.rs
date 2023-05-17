@@ -38,6 +38,7 @@ pub enum Contract {
     Sbt721,
     RevealNft721,
     NftMarket,
+    MetaTransactionWallet,
 }
 
 #[derive(Parser, Debug)]
@@ -166,6 +167,12 @@ async fn execute(args: Args) -> CliResult<()> {
                         .await
                         .map_err(Error::from)
                 }
+                Contract::MetaTransactionWallet => {
+                    let cli = impl_ethers_rs::meta_transaction_wallet::client::Client::new(network);
+                    cli.mint(to_address, args.content_hash.clone())
+                        .await
+                        .map_err(Error::from)
+                }
                 _ => return Err(Error::Internal("invalid params".to_string())),
             },
             Package::RustWeb3 => match args.contract {
@@ -283,6 +290,7 @@ async fn execute(args: Args) -> CliResult<()> {
                     }
                     Ok(())
                 }
+                _ => return Err(Error::Internal("invalid params".to_string())),
             },
             Package::RustWeb3 => match args.contract {
                 Contract::Nft721 => {

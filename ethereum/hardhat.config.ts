@@ -40,17 +40,17 @@ const config: HardhatUserConfig = {
     },
     goerli: {
       url: process.env.GOERLI_CHAIN_URL!,
-      accounts: [process.env.WALLET_SECRET!],
+      accounts: [process.env.WALLET_SECRET!, process.env.RELAYER_SECRET!],
       chainId: chainIds.goerli,
     },
     mumbai: {
       url: process.env.MUMBAI_CHAIN_URL!,
-      accounts: [process.env.WALLET_SECRET!],
+      accounts: [process.env.WALLET_SECRET!, process.env.RELAYER_SECRET!],
       chainId: chainIds.mumbai,
     },
     fuji: {
       url: process.env.FUJI_CHAIN_URL!,
-      accounts: [process.env.WALLET_SECRET!],
+      accounts: [process.env.WALLET_SECRET!, process.env.RELAYER_SECRET!],
       chainId: chainIds.fuji,
     },
   },

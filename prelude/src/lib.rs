@@ -90,6 +90,24 @@ impl Network {
             Network::Avalanche => unimplemented!(),
         }
     }
+
+    pub fn meta_transaction_wallet_address(&self) -> String {
+        match self {
+            Network::Ethereum => unimplemented!(),
+            Network::Polygon => env::var("POLYGON_META_TRANSACTION_WALLET_ADDRESS")
+                .expect("POLYGON_META_TRANSACTION_WALLET_ADDRESS must be set"),
+            Network::Avalanche => unimplemented!(),
+        }
+    }
+
+    pub fn meta_transactional_nft_721_address(&self) -> String {
+        match self {
+            Network::Ethereum => unimplemented!(),
+            Network::Polygon => env::var("POLYGON_META_TRANSACTIONAL_NFT_721_ADDRESS")
+                .expect("POLYGON_META_TRANSACTIONAL_NFT_721_ADDRESS must be set"),
+            Network::Avalanche => unimplemented!(),
+        }
+    }
 }
 
 #[derive(PartialEq, Clone, Debug, Copy, strum_macros::EnumString, strum_macros::Display)]
