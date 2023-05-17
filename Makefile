@@ -78,7 +78,7 @@ meta-mint: build
 	--network $(NETWORK) \
 	--content-hash $(CONTENT_HASH) \
 	--package $(PACKAGE) \
-	--to-address "0x1341048E3d37046Ca18A09EFB154Ea9771744f41"
+	--to-address $(TO_ADDRESS)
 
 transfer: build
 	./target/debug/cli \
