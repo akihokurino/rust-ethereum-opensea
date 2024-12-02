@@ -21,9 +21,6 @@ build:
 build-impl-ethers-rs:
 	cargo build --lib --package impl-ethers-rs
 
-build-impl-rust-web3:
-	cargo build --lib --package impl-rust-web3
-
 build-ipfs:
 	cargo build --lib --package ipfs
 
