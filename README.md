@@ -4,7 +4,6 @@
 
 - rust v1.68.2
 - ethers-rs ( https://github.com/gakonst/ethers-rs )
-- rust-web3 ( https://github.com/tomusdrw/rust-web3 )
 - rust-secp256k1 ( https://github.com/rust-bitcoin/rust-secp256k1 )
 - infura ( https://infura.io/ )
 - solidity v0.8.17

@@ -14,7 +14,6 @@ path = "src/main.rs"
 [dependencies]
 prelude = { path = "../prelude" }
 impl_ethers_rs = { path = "../impl_ethers_rs" }
-impl_rust_web3 = { path = "../impl_rust_web3" }
 ipfs = { path = "../ipfs" }
 tokio = { version = "1", features = ["full"] }
 dotenv = "0.15.0"

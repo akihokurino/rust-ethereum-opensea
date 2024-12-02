@@ -2,7 +2,6 @@
 members = [
     "prelude",
     "impl_ethers_rs",
-    "impl_rust_web3",
     "ipfs",
     "cli",
     "event_watcher"

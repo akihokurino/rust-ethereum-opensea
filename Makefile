@@ -12,7 +12,6 @@ TO_ADDRESS := "0x0E91D6613a84d7C8b72a289D8b275AF7717C3d2E"
 TOKEN_ID := "1"
 MESSAGE := "world"
 SIGNATURE := "2a30afb5d5b476a505422d931c5b98a10d6ac6b6fb3a56a27c658a9fa36911f10b079fe392893e684881813e7d07a3fd14048ba902c20eb56eb9f0e7f8c2a1131b"
-PACKAGE := "ethers-rs"
 CONTRACT := "nft721"
 CONTENT_HASH := "QmPDE4pXnFvNtqJ2889HgEQUEft8KCdyMaKKt5zzw3NuMS"
 
@@ -37,22 +36,19 @@ build-event-watcher:
 balance: build
 	./target/debug/cli \
 	--command balance \
-	--network $(NETWORK) \
-	--package $(PACKAGE)
+	--network $(NETWORK)
 
 send-eth: build
 	./target/debug/cli \
 	--command send-eth \
 	--ether $(ETHER) \
 	--to-address $(TO_ADDRESS) \
-	--network $(NETWORK) \
-	--package $(PACKAGE)
+	--network $(NETWORK)
 
 info: build
 	./target/debug/cli \
 	--command info \
 	--network $(NETWORK) \
-	--package $(PACKAGE) \
 	--contract $(CONTRACT)
 
 create-metadata: build
@@ -68,8 +64,7 @@ mint: build
 	--contract $(CONTRACT) \
 	--network $(NETWORK) \
 	--content-hash $(CONTENT_HASH) \
-	--amount $(AMOUNT) \
-	--package $(PACKAGE)
+	--amount $(AMOUNT)
 
 meta-mint: build
 	./target/debug/cli \
@@ -77,7 +72,6 @@ meta-mint: build
 	--contract meta-transaction-wallet \
 	--network $(NETWORK) \
 	--content-hash $(CONTENT_HASH) \
-	--package $(PACKAGE) \
 	--to-address $(TO_ADDRESS)
 
 transfer: build
@@ -86,15 +80,13 @@ transfer: build
 	--contract $(CONTRACT) \
 	--network $(NETWORK) \
 	--to-address $(TO_ADDRESS) \
-	--token-id $(TOKEN_ID) \
-	--package $(PACKAGE)
+	--token-id $(TOKEN_ID)
 
 deploy: build
 	./target/debug/cli \
 	--command deploy \
 	--contract $(CONTRACT) \
-	--network $(NETWORK) \
-	--package $(PACKAGE)
+	--network $(NETWORK)
 
 key-gen: build
 	./target/debug/cli \
@@ -143,13 +135,9 @@ run-event-watcher:
 extract-abi:
 	cat ethereum/artifacts/contracts/Nft721.sol/Nft721.json | jq '.abi' > impl_ethers_rs/src/nft_721/abi.json
 	cat ethereum/artifacts/contracts/Nft721.sol/Nft721.json | jq -r '.bytecode' > impl_ethers_rs/src/nft_721/bin
-	cat ethereum/artifacts/contracts/Nft721.sol/Nft721.json | jq '.abi' > impl_rust_web3/src/nft_721/abi.json
-	cat ethereum/artifacts/contracts/Nft721.sol/Nft721.json | jq -r '.bytecode' > impl_rust_web3/src/nft_721/bin
 
 	cat ethereum/artifacts/contracts/Nft1155.sol/Nft1155.json | jq '.abi' > impl_ethers_rs/src/nft_1155/abi.json
 	cat ethereum/artifacts/contracts/Nft1155.sol/Nft1155.json | jq -r '.bytecode' > impl_ethers_rs/src/nft_1155/bin
-	cat ethereum/artifacts/contracts/Nft1155.sol/Nft1155.json | jq '.abi' > impl_rust_web3/src/nft_1155/abi.json
-	cat ethereum/artifacts/contracts/Nft1155.sol/Nft1155.json | jq -r '.bytecode' > impl_rust_web3/src/nft_1155/bin
 
 	cat ethereum/artifacts/contracts/RevealNft721.sol/RevealNft721.json | jq '.abi' > impl_ethers_rs/src/reveal_nft_721/abi.json
 	cat ethereum/artifacts/contracts/RevealNft721.sol/RevealNft721.json | jq '.bytecode' > impl_ethers_rs/src/reveal_nft_721/bin
